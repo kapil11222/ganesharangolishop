@@ -10,12 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
+import { Route as WeddingRouteImport } from './routes/wedding'
 import { Route as TrackOrderRouteImport } from './routes/track-order'
 import { Route as ShopRouteImport } from './routes/shop'
+import { Route as OffersRouteImport } from './routes/offers'
+import { Route as NewArrivalsRouteImport } from './routes/new-arrivals'
+import { Route as FestiveRouteImport } from './routes/festive'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as CartRouteImport } from './routes/cart'
+import { Route as BestSellersRouteImport } from './routes/best-sellers'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
@@ -28,6 +33,11 @@ const WishlistRoute = WishlistRouteImport.update({
   path: '/wishlist',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WeddingRoute = WeddingRouteImport.update({
+  id: '/wedding',
+  path: '/wedding',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TrackOrderRoute = TrackOrderRouteImport.update({
   id: '/track-order',
   path: '/track-order',
@@ -36,6 +46,21 @@ const TrackOrderRoute = TrackOrderRouteImport.update({
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
   path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OffersRoute = OffersRouteImport.update({
+  id: '/offers',
+  path: '/offers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewArrivalsRoute = NewArrivalsRouteImport.update({
+  id: '/new-arrivals',
+  path: '/new-arrivals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FestiveRoute = FestiveRouteImport.update({
+  id: '/festive',
+  path: '/festive',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -56,6 +81,11 @@ const CategoriesRoute = CategoriesRouteImport.update({
 const CartRoute = CartRouteImport.update({
   id: '/cart',
   path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BestSellersRoute = BestSellersRouteImport.update({
+  id: '/best-sellers',
+  path: '/best-sellers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -93,12 +123,17 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
+  '/best-sellers': typeof BestSellersRoute
   '/cart': typeof CartRoute
   '/categories': typeof CategoriesRouteWithChildren
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/festive': typeof FestiveRoute
+  '/new-arrivals': typeof NewArrivalsRoute
+  '/offers': typeof OffersRoute
   '/shop': typeof ShopRoute
   '/track-order': typeof TrackOrderRoute
+  '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
   '/categories/$slug': typeof CategoriesSlugRoute
   '/order-success/$orderNumber': typeof OrderSuccessOrderNumberRoute
@@ -108,12 +143,17 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
+  '/best-sellers': typeof BestSellersRoute
   '/cart': typeof CartRoute
   '/categories': typeof CategoriesRouteWithChildren
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/festive': typeof FestiveRoute
+  '/new-arrivals': typeof NewArrivalsRoute
+  '/offers': typeof OffersRoute
   '/shop': typeof ShopRoute
   '/track-order': typeof TrackOrderRoute
+  '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
   '/categories/$slug': typeof CategoriesSlugRoute
   '/order-success/$orderNumber': typeof OrderSuccessOrderNumberRoute
@@ -124,12 +164,17 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
+  '/best-sellers': typeof BestSellersRoute
   '/cart': typeof CartRoute
   '/categories': typeof CategoriesRouteWithChildren
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/festive': typeof FestiveRoute
+  '/new-arrivals': typeof NewArrivalsRoute
+  '/offers': typeof OffersRoute
   '/shop': typeof ShopRoute
   '/track-order': typeof TrackOrderRoute
+  '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
   '/categories/$slug': typeof CategoriesSlugRoute
   '/order-success/$orderNumber': typeof OrderSuccessOrderNumberRoute
@@ -141,12 +186,17 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/auth'
+    | '/best-sellers'
     | '/cart'
     | '/categories'
     | '/checkout'
     | '/contact'
+    | '/festive'
+    | '/new-arrivals'
+    | '/offers'
     | '/shop'
     | '/track-order'
+    | '/wedding'
     | '/wishlist'
     | '/categories/$slug'
     | '/order-success/$orderNumber'
@@ -156,12 +206,17 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/auth'
+    | '/best-sellers'
     | '/cart'
     | '/categories'
     | '/checkout'
     | '/contact'
+    | '/festive'
+    | '/new-arrivals'
+    | '/offers'
     | '/shop'
     | '/track-order'
+    | '/wedding'
     | '/wishlist'
     | '/categories/$slug'
     | '/order-success/$orderNumber'
@@ -171,12 +226,17 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/auth'
+    | '/best-sellers'
     | '/cart'
     | '/categories'
     | '/checkout'
     | '/contact'
+    | '/festive'
+    | '/new-arrivals'
+    | '/offers'
     | '/shop'
     | '/track-order'
+    | '/wedding'
     | '/wishlist'
     | '/categories/$slug'
     | '/order-success/$orderNumber'
@@ -187,12 +247,17 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
   AuthRoute: typeof AuthRoute
+  BestSellersRoute: typeof BestSellersRoute
   CartRoute: typeof CartRoute
   CategoriesRoute: typeof CategoriesRouteWithChildren
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
+  FestiveRoute: typeof FestiveRoute
+  NewArrivalsRoute: typeof NewArrivalsRoute
+  OffersRoute: typeof OffersRoute
   ShopRoute: typeof ShopRoute
   TrackOrderRoute: typeof TrackOrderRoute
+  WeddingRoute: typeof WeddingRoute
   WishlistRoute: typeof WishlistRoute
   OrderSuccessOrderNumberRoute: typeof OrderSuccessOrderNumberRoute
   ProductsSlugRoute: typeof ProductsSlugRoute
@@ -207,6 +272,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WishlistRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/wedding': {
+      id: '/wedding'
+      path: '/wedding'
+      fullPath: '/wedding'
+      preLoaderRoute: typeof WeddingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/track-order': {
       id: '/track-order'
       path: '/track-order'
@@ -219,6 +291,27 @@ declare module '@tanstack/react-router' {
       path: '/shop'
       fullPath: '/shop'
       preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offers': {
+      id: '/offers'
+      path: '/offers'
+      fullPath: '/offers'
+      preLoaderRoute: typeof OffersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/new-arrivals': {
+      id: '/new-arrivals'
+      path: '/new-arrivals'
+      fullPath: '/new-arrivals'
+      preLoaderRoute: typeof NewArrivalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/festive': {
+      id: '/festive'
+      path: '/festive'
+      fullPath: '/festive'
+      preLoaderRoute: typeof FestiveRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -247,6 +340,13 @@ declare module '@tanstack/react-router' {
       path: '/cart'
       fullPath: '/cart'
       preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/best-sellers': {
+      id: '/best-sellers'
+      path: '/best-sellers'
+      fullPath: '/best-sellers'
+      preLoaderRoute: typeof BestSellersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -310,12 +410,17 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   AuthRoute: AuthRoute,
+  BestSellersRoute: BestSellersRoute,
   CartRoute: CartRoute,
   CategoriesRoute: CategoriesRouteWithChildren,
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
+  FestiveRoute: FestiveRoute,
+  NewArrivalsRoute: NewArrivalsRoute,
+  OffersRoute: OffersRoute,
   ShopRoute: ShopRoute,
   TrackOrderRoute: TrackOrderRoute,
+  WeddingRoute: WeddingRoute,
   WishlistRoute: WishlistRoute,
   OrderSuccessOrderNumberRoute: OrderSuccessOrderNumberRoute,
   ProductsSlugRoute: ProductsSlugRoute,
