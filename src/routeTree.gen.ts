@@ -12,7 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as WeddingRouteImport } from './routes/wedding'
 import { Route as TrackOrderRouteImport } from './routes/track-order'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ShopRouteImport } from './routes/shop'
+import { Route as ShippingRouteImport } from './routes/shipping'
+import { Route as RefundRouteImport } from './routes/refund'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as OffersRouteImport } from './routes/offers'
 import { Route as NewArrivalsRouteImport } from './routes/new-arrivals'
 import { Route as HelpRouteImport } from './routes/help'
@@ -50,9 +54,29 @@ const TrackOrderRoute = TrackOrderRouteImport.update({
   path: '/track-order',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
   path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShippingRoute = ShippingRouteImport.update({
+  id: '/shipping',
+  path: '/shipping',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RefundRoute = RefundRouteImport.update({
+  id: '/refund',
+  path: '/refund',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OffersRoute = OffersRouteImport.update({
@@ -180,7 +204,11 @@ export interface FileRoutesByFullPath {
   '/help': typeof HelpRoute
   '/new-arrivals': typeof NewArrivalsRoute
   '/offers': typeof OffersRoute
+  '/privacy': typeof PrivacyRoute
+  '/refund': typeof RefundRoute
+  '/shipping': typeof ShippingRoute
   '/shop': typeof ShopRoute
+  '/terms': typeof TermsRoute
   '/track-order': typeof TrackOrderRoute
   '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
@@ -207,7 +235,11 @@ export interface FileRoutesByTo {
   '/help': typeof HelpRoute
   '/new-arrivals': typeof NewArrivalsRoute
   '/offers': typeof OffersRoute
+  '/privacy': typeof PrivacyRoute
+  '/refund': typeof RefundRoute
+  '/shipping': typeof ShippingRoute
   '/shop': typeof ShopRoute
+  '/terms': typeof TermsRoute
   '/track-order': typeof TrackOrderRoute
   '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
@@ -235,7 +267,11 @@ export interface FileRoutesById {
   '/help': typeof HelpRoute
   '/new-arrivals': typeof NewArrivalsRoute
   '/offers': typeof OffersRoute
+  '/privacy': typeof PrivacyRoute
+  '/refund': typeof RefundRoute
+  '/shipping': typeof ShippingRoute
   '/shop': typeof ShopRoute
+  '/terms': typeof TermsRoute
   '/track-order': typeof TrackOrderRoute
   '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
@@ -264,7 +300,11 @@ export interface FileRouteTypes {
     | '/help'
     | '/new-arrivals'
     | '/offers'
+    | '/privacy'
+    | '/refund'
+    | '/shipping'
     | '/shop'
+    | '/terms'
     | '/track-order'
     | '/wedding'
     | '/wishlist'
@@ -291,7 +331,11 @@ export interface FileRouteTypes {
     | '/help'
     | '/new-arrivals'
     | '/offers'
+    | '/privacy'
+    | '/refund'
+    | '/shipping'
     | '/shop'
+    | '/terms'
     | '/track-order'
     | '/wedding'
     | '/wishlist'
@@ -318,7 +362,11 @@ export interface FileRouteTypes {
     | '/help'
     | '/new-arrivals'
     | '/offers'
+    | '/privacy'
+    | '/refund'
+    | '/shipping'
     | '/shop'
+    | '/terms'
     | '/track-order'
     | '/wedding'
     | '/wishlist'
@@ -346,7 +394,11 @@ export interface RootRouteChildren {
   HelpRoute: typeof HelpRoute
   NewArrivalsRoute: typeof NewArrivalsRoute
   OffersRoute: typeof OffersRoute
+  PrivacyRoute: typeof PrivacyRoute
+  RefundRoute: typeof RefundRoute
+  ShippingRoute: typeof ShippingRoute
   ShopRoute: typeof ShopRoute
+  TermsRoute: typeof TermsRoute
   TrackOrderRoute: typeof TrackOrderRoute
   WeddingRoute: typeof WeddingRoute
   WishlistRoute: typeof WishlistRoute
@@ -377,11 +429,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackOrderRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/shop': {
       id: '/shop'
       path: '/shop'
       fullPath: '/shop'
       preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shipping': {
+      id: '/shipping'
+      path: '/shipping'
+      fullPath: '/shipping'
+      preLoaderRoute: typeof ShippingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/refund': {
+      id: '/refund'
+      path: '/refund'
+      fullPath: '/refund'
+      preLoaderRoute: typeof RefundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/offers': {
@@ -565,7 +645,11 @@ const rootRouteChildren: RootRouteChildren = {
   HelpRoute: HelpRoute,
   NewArrivalsRoute: NewArrivalsRoute,
   OffersRoute: OffersRoute,
+  PrivacyRoute: PrivacyRoute,
+  RefundRoute: RefundRoute,
+  ShippingRoute: ShippingRoute,
   ShopRoute: ShopRoute,
+  TermsRoute: TermsRoute,
   TrackOrderRoute: TrackOrderRoute,
   WeddingRoute: WeddingRoute,
   WishlistRoute: WishlistRoute,
