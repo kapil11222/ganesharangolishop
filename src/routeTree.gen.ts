@@ -15,14 +15,21 @@ import { Route as TrackOrderRouteImport } from './routes/track-order'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as OffersRouteImport } from './routes/offers'
 import { Route as NewArrivalsRouteImport } from './routes/new-arrivals'
+import { Route as HelpRouteImport } from './routes/help'
 import { Route as FestiveRouteImport } from './routes/festive'
+import { Route as FaqsRouteImport } from './routes/faqs'
+import { Route as CustomOrdersRouteImport } from './routes/custom-orders'
+import { Route as CorporateRouteImport } from './routes/corporate'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as CartRouteImport } from './routes/cart'
+import { Route as BulkOrdersRouteImport } from './routes/bulk-orders'
+import { Route as BlogRouteImport } from './routes/blog'
 import { Route as BestSellersRouteImport } from './routes/best-sellers'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AccountRouteImport } from './routes/account'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
 import { Route as OrderSuccessOrderNumberRouteImport } from './routes/order-success.$orderNumber'
@@ -58,9 +65,29 @@ const NewArrivalsRoute = NewArrivalsRouteImport.update({
   path: '/new-arrivals',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FestiveRoute = FestiveRouteImport.update({
   id: '/festive',
   path: '/festive',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqsRoute = FaqsRouteImport.update({
+  id: '/faqs',
+  path: '/faqs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomOrdersRoute = CustomOrdersRouteImport.update({
+  id: '/custom-orders',
+  path: '/custom-orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CorporateRoute = CorporateRouteImport.update({
+  id: '/corporate',
+  path: '/corporate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -83,6 +110,16 @@ const CartRoute = CartRouteImport.update({
   path: '/cart',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BulkOrdersRoute = BulkOrdersRouteImport.update({
+  id: '/bulk-orders',
+  path: '/bulk-orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BestSellersRoute = BestSellersRouteImport.update({
   id: '/best-sellers',
   path: '/best-sellers',
@@ -96,6 +133,11 @@ const AuthRoute = AuthRouteImport.update({
 const AccountRoute = AccountRouteImport.update({
   id: '/account',
   path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -121,14 +163,21 @@ const CategoriesSlugRoute = CategoriesSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
   '/best-sellers': typeof BestSellersRoute
+  '/blog': typeof BlogRoute
+  '/bulk-orders': typeof BulkOrdersRoute
   '/cart': typeof CartRoute
   '/categories': typeof CategoriesRouteWithChildren
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/corporate': typeof CorporateRoute
+  '/custom-orders': typeof CustomOrdersRoute
+  '/faqs': typeof FaqsRoute
   '/festive': typeof FestiveRoute
+  '/help': typeof HelpRoute
   '/new-arrivals': typeof NewArrivalsRoute
   '/offers': typeof OffersRoute
   '/shop': typeof ShopRoute
@@ -141,14 +190,21 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
   '/best-sellers': typeof BestSellersRoute
+  '/blog': typeof BlogRoute
+  '/bulk-orders': typeof BulkOrdersRoute
   '/cart': typeof CartRoute
   '/categories': typeof CategoriesRouteWithChildren
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/corporate': typeof CorporateRoute
+  '/custom-orders': typeof CustomOrdersRoute
+  '/faqs': typeof FaqsRoute
   '/festive': typeof FestiveRoute
+  '/help': typeof HelpRoute
   '/new-arrivals': typeof NewArrivalsRoute
   '/offers': typeof OffersRoute
   '/shop': typeof ShopRoute
@@ -162,14 +218,21 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
   '/best-sellers': typeof BestSellersRoute
+  '/blog': typeof BlogRoute
+  '/bulk-orders': typeof BulkOrdersRoute
   '/cart': typeof CartRoute
   '/categories': typeof CategoriesRouteWithChildren
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/corporate': typeof CorporateRoute
+  '/custom-orders': typeof CustomOrdersRoute
+  '/faqs': typeof FaqsRoute
   '/festive': typeof FestiveRoute
+  '/help': typeof HelpRoute
   '/new-arrivals': typeof NewArrivalsRoute
   '/offers': typeof OffersRoute
   '/shop': typeof ShopRoute
@@ -184,14 +247,21 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/account'
     | '/auth'
     | '/best-sellers'
+    | '/blog'
+    | '/bulk-orders'
     | '/cart'
     | '/categories'
     | '/checkout'
     | '/contact'
+    | '/corporate'
+    | '/custom-orders'
+    | '/faqs'
     | '/festive'
+    | '/help'
     | '/new-arrivals'
     | '/offers'
     | '/shop'
@@ -204,14 +274,21 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/account'
     | '/auth'
     | '/best-sellers'
+    | '/blog'
+    | '/bulk-orders'
     | '/cart'
     | '/categories'
     | '/checkout'
     | '/contact'
+    | '/corporate'
+    | '/custom-orders'
+    | '/faqs'
     | '/festive'
+    | '/help'
     | '/new-arrivals'
     | '/offers'
     | '/shop'
@@ -224,14 +301,21 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/about'
     | '/account'
     | '/auth'
     | '/best-sellers'
+    | '/blog'
+    | '/bulk-orders'
     | '/cart'
     | '/categories'
     | '/checkout'
     | '/contact'
+    | '/corporate'
+    | '/custom-orders'
+    | '/faqs'
     | '/festive'
+    | '/help'
     | '/new-arrivals'
     | '/offers'
     | '/shop'
@@ -245,14 +329,21 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   AccountRoute: typeof AccountRoute
   AuthRoute: typeof AuthRoute
   BestSellersRoute: typeof BestSellersRoute
+  BlogRoute: typeof BlogRoute
+  BulkOrdersRoute: typeof BulkOrdersRoute
   CartRoute: typeof CartRoute
   CategoriesRoute: typeof CategoriesRouteWithChildren
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
+  CorporateRoute: typeof CorporateRoute
+  CustomOrdersRoute: typeof CustomOrdersRoute
+  FaqsRoute: typeof FaqsRoute
   FestiveRoute: typeof FestiveRoute
+  HelpRoute: typeof HelpRoute
   NewArrivalsRoute: typeof NewArrivalsRoute
   OffersRoute: typeof OffersRoute
   ShopRoute: typeof ShopRoute
@@ -307,11 +398,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewArrivalsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/festive': {
       id: '/festive'
       path: '/festive'
       fullPath: '/festive'
       preLoaderRoute: typeof FestiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faqs': {
+      id: '/faqs'
+      path: '/faqs'
+      fullPath: '/faqs'
+      preLoaderRoute: typeof FaqsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/custom-orders': {
+      id: '/custom-orders'
+      path: '/custom-orders'
+      fullPath: '/custom-orders'
+      preLoaderRoute: typeof CustomOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/corporate': {
+      id: '/corporate'
+      path: '/corporate'
+      fullPath: '/corporate'
+      preLoaderRoute: typeof CorporateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -342,6 +461,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bulk-orders': {
+      id: '/bulk-orders'
+      path: '/bulk-orders'
+      fullPath: '/bulk-orders'
+      preLoaderRoute: typeof BulkOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/best-sellers': {
       id: '/best-sellers'
       path: '/best-sellers'
@@ -361,6 +494,13 @@ declare module '@tanstack/react-router' {
       path: '/account'
       fullPath: '/account'
       preLoaderRoute: typeof AccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -408,14 +548,21 @@ const CategoriesRouteWithChildren = CategoriesRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   AccountRoute: AccountRoute,
   AuthRoute: AuthRoute,
   BestSellersRoute: BestSellersRoute,
+  BlogRoute: BlogRoute,
+  BulkOrdersRoute: BulkOrdersRoute,
   CartRoute: CartRoute,
   CategoriesRoute: CategoriesRouteWithChildren,
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
+  CorporateRoute: CorporateRoute,
+  CustomOrdersRoute: CustomOrdersRoute,
+  FaqsRoute: FaqsRoute,
   FestiveRoute: FestiveRoute,
+  HelpRoute: HelpRoute,
   NewArrivalsRoute: NewArrivalsRoute,
   OffersRoute: OffersRoute,
   ShopRoute: ShopRoute,
