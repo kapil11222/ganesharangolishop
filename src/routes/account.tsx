@@ -127,8 +127,3 @@ function Info({ label, value }: { label: string; value: string }) {
   );
 }
 
-// Empty unused import guard
-const _user = User;
-type User = typeof user_keep;
-const user_keep = { id: "" };
-void _user; void user_keep;
