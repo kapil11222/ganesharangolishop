@@ -92,9 +92,18 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
             <p className="text-xs text-muted-foreground line-clamp-2">{p.short_description}</p>
           )}
           <div className="flex items-center gap-1 text-xs">
-            <Star className="size-3.5 fill-secondary text-secondary" />
-            <span className="font-semibold">{p.rating ?? 4.8}</span>
-            <span className="text-muted-foreground">· In stock</span>
+            {(p.review_count ?? 0) > 0 ? (
+              <>
+                <Star className="size-3.5 fill-secondary text-secondary" />
+                <span className="font-semibold">{p.rating ?? 4.8}</span>
+                <span className="text-muted-foreground">({p.review_count}) · In stock</span>
+              </>
+            ) : (
+              <>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold text-[10px] uppercase tracking-wider">New Product</span>
+                <span className="text-muted-foreground">· In stock</span>
+              </>
+            )}
           </div>
           <div className="flex items-end justify-between pt-1">
             <div>
