@@ -42,6 +42,18 @@ function AuthPage() {
     else { toast.success("Account created! Check your inbox."); navigate({ to: "/account" }); }
   };
 
+  const signInWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo:
+          typeof window !== "undefined" ? window.location.origin + "/account" : undefined,
+      },
+    });
+    if (error) toast.error(error.message);
+  };
+
+
   return (
     <SiteLayout>
       <div className="container-luxe py-16 grid lg:grid-cols-2 gap-12 items-center">
