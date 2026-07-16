@@ -45,9 +45,18 @@ function CheckoutPage() {
   const allowCOD = items.every((i) => i.allow_cod);
   const allowPrepaid = items.every((i) => i.allow_prepaid);
 
-  const shipping = subtotal > 999 ? 0 : subtotal === 0 ? 0 : 79;
+  const [liveRate, setLiveRate] = useState<null | { serviceable: boolean; city?: string; state?: string; cod?: boolean; prepaidRate?: number | null; codRate?: number | null }>(null);
+  const [checkingPin, setCheckingPin] = useState(false);
+  const checkPin = useServerFn(checkPincode);
+
+  const baseShipping = subtotal > 999 ? 0 : subtotal === 0 ? 0 : 79;
+  const liveShipping = liveRate?.serviceable
+    ? (payment === "cod" ? (liveRate.codRate ?? liveRate.prepaidRate ?? baseShipping) : (liveRate.prepaidRate ?? baseShipping))
+    : baseShipping;
+  const shipping = subtotal > 999 ? 0 : liveShipping;
   const tax = Math.round(subtotal * 0.05);
   const total = subtotal + shipping + tax;
+
 
   const [form, setForm] = useState({
     customer_name: "", mobile: "", alt_mobile: "", email: "",
