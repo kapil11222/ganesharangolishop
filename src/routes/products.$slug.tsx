@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Heart, ShoppingBag, Share2, Truck, RefreshCw, ShieldCheck, Star, Minus, Plus, Check } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
+import { PincodeCheck } from "@/components/site/PincodeCheck";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
