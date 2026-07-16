@@ -44,6 +44,53 @@ export type Database = {
         }
         Relationships: []
       }
+      cod_remittance: {
+        Row: {
+          amount: number
+          awb: string
+          collected_at: string | null
+          created_at: string
+          id: string
+          order_id: string | null
+          remitted_at: string | null
+          status: string
+          updated_at: string
+          utr: string | null
+        }
+        Insert: {
+          amount: number
+          awb: string
+          collected_at?: string | null
+          created_at?: string
+          id?: string
+          order_id?: string | null
+          remitted_at?: string | null
+          status?: string
+          updated_at?: string
+          utr?: string | null
+        }
+        Update: {
+          amount?: number
+          awb?: string
+          collected_at?: string | null
+          created_at?: string
+          id?: string
+          order_id?: string | null
+          remitted_at?: string | null
+          status?: string
+          updated_at?: string
+          utr?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cod_remittance_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_messages: {
         Row: {
           created_at: string
@@ -115,6 +162,50 @@ export type Database = {
           used_count?: number
         }
         Relationships: []
+      }
+      ndr_records: {
+        Row: {
+          action: string | null
+          attempt_no: number
+          created_at: string
+          id: string
+          notes: string | null
+          reason: string | null
+          resolved: boolean
+          shipment_id: string
+          updated_at: string
+        }
+        Insert: {
+          action?: string | null
+          attempt_no?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          reason?: string | null
+          resolved?: boolean
+          shipment_id: string
+          updated_at?: string
+        }
+        Update: {
+          action?: string | null
+          attempt_no?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          reason?: string | null
+          resolved?: boolean
+          shipment_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ndr_records_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       newsletter_subscribers: {
         Row: {
@@ -189,6 +280,7 @@ export type Database = {
         Row: {
           address: string
           alt_mobile: string | null
+          awb: string | null
           city: string
           country: string
           coupon_code: string | null
@@ -196,6 +288,7 @@ export type Database = {
           customer_name: string
           discount: number
           email: string
+          expected_delivery_at: string | null
           gst_number: string | null
           id: string
           landmark: string | null
@@ -206,6 +299,8 @@ export type Database = {
           payment_status: string
           pincode: string
           shipping: number
+          shipping_cost_actual: number | null
+          shipping_status: string | null
           state: string
           status: string
           subtotal: number
@@ -213,10 +308,12 @@ export type Database = {
           total: number
           updated_at: string
           user_id: string | null
+          warehouse_id: string | null
         }
         Insert: {
           address: string
           alt_mobile?: string | null
+          awb?: string | null
           city: string
           country?: string
           coupon_code?: string | null
@@ -224,6 +321,7 @@ export type Database = {
           customer_name: string
           discount?: number
           email: string
+          expected_delivery_at?: string | null
           gst_number?: string | null
           id?: string
           landmark?: string | null
@@ -234,6 +332,8 @@ export type Database = {
           payment_status?: string
           pincode: string
           shipping?: number
+          shipping_cost_actual?: number | null
+          shipping_status?: string | null
           state: string
           status?: string
           subtotal: number
@@ -241,10 +341,12 @@ export type Database = {
           total: number
           updated_at?: string
           user_id?: string | null
+          warehouse_id?: string | null
         }
         Update: {
           address?: string
           alt_mobile?: string | null
+          awb?: string | null
           city?: string
           country?: string
           coupon_code?: string | null
@@ -252,6 +354,7 @@ export type Database = {
           customer_name?: string
           discount?: number
           email?: string
+          expected_delivery_at?: string | null
           gst_number?: string | null
           id?: string
           landmark?: string | null
@@ -262,6 +365,8 @@ export type Database = {
           payment_status?: string
           pincode?: string
           shipping?: number
+          shipping_cost_actual?: number | null
+          shipping_status?: string | null
           state?: string
           status?: string
           subtotal?: number
@@ -269,8 +374,64 @@ export type Database = {
           total?: number
           updated_at?: string
           user_id?: string | null
+          warehouse_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "orders_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pickup_requests: {
+        Row: {
+          created_at: string
+          expected_package_count: number
+          id: string
+          pickup_date: string
+          pickup_id: string | null
+          pickup_time: string | null
+          raw_payload: Json | null
+          status: string
+          updated_at: string
+          warehouse_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          expected_package_count?: number
+          id?: string
+          pickup_date: string
+          pickup_id?: string | null
+          pickup_time?: string | null
+          raw_payload?: Json | null
+          status?: string
+          updated_at?: string
+          warehouse_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          expected_package_count?: number
+          id?: string
+          pickup_date?: string
+          pickup_id?: string | null
+          pickup_time?: string | null
+          raw_payload?: Json | null
+          status?: string
+          updated_at?: string
+          warehouse_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pickup_requests_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       products: {
         Row: {
@@ -281,12 +442,14 @@ export type Database = {
           created_at: string
           description: string | null
           festival: string | null
+          height_cm: number | null
           id: string
           images: string[]
           is_active: boolean
           is_best_seller: boolean
           is_featured: boolean
           is_new_arrival: boolean
+          length_cm: number | null
           material: string | null
           meta_description: string | null
           meta_title: string | null
@@ -301,6 +464,8 @@ export type Database = {
           slug: string
           stock: number
           updated_at: string
+          weight_grams: number | null
+          width_cm: number | null
         }
         Insert: {
           allow_cod?: boolean
@@ -310,12 +475,14 @@ export type Database = {
           created_at?: string
           description?: string | null
           festival?: string | null
+          height_cm?: number | null
           id?: string
           images?: string[]
           is_active?: boolean
           is_best_seller?: boolean
           is_featured?: boolean
           is_new_arrival?: boolean
+          length_cm?: number | null
           material?: string | null
           meta_description?: string | null
           meta_title?: string | null
@@ -330,6 +497,8 @@ export type Database = {
           slug: string
           stock?: number
           updated_at?: string
+          weight_grams?: number | null
+          width_cm?: number | null
         }
         Update: {
           allow_cod?: boolean
@@ -339,12 +508,14 @@ export type Database = {
           created_at?: string
           description?: string | null
           festival?: string | null
+          height_cm?: number | null
           id?: string
           images?: string[]
           is_active?: boolean
           is_best_seller?: boolean
           is_featured?: boolean
           is_new_arrival?: boolean
+          length_cm?: number | null
           material?: string | null
           meta_description?: string | null
           meta_title?: string | null
@@ -359,6 +530,8 @@ export type Database = {
           slug?: string
           stock?: number
           updated_at?: string
+          weight_grams?: number | null
+          width_cm?: number | null
         }
         Relationships: [
           {
@@ -396,6 +569,125 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      shipment_events: {
+        Row: {
+          created_at: string
+          event_time: string
+          id: string
+          location: string | null
+          remark: string | null
+          shipment_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          event_time?: string
+          id?: string
+          location?: string | null
+          remark?: string | null
+          shipment_id: string
+          status: string
+        }
+        Update: {
+          created_at?: string
+          event_time?: string
+          id?: string
+          location?: string | null
+          remark?: string | null
+          shipment_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipment_events_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shipments: {
+        Row: {
+          awb: string | null
+          cod_amount: number | null
+          courier: string
+          created_at: string
+          current_location: string | null
+          expected_delivery: string | null
+          height_cm: number | null
+          id: string
+          label_url: string | null
+          length_cm: number | null
+          order_id: string
+          payment_mode: string
+          pickup_id: string | null
+          raw_payload: Json | null
+          status: string
+          updated_at: string
+          warehouse_id: string | null
+          weight_grams: number | null
+          width_cm: number | null
+        }
+        Insert: {
+          awb?: string | null
+          cod_amount?: number | null
+          courier?: string
+          created_at?: string
+          current_location?: string | null
+          expected_delivery?: string | null
+          height_cm?: number | null
+          id?: string
+          label_url?: string | null
+          length_cm?: number | null
+          order_id: string
+          payment_mode?: string
+          pickup_id?: string | null
+          raw_payload?: Json | null
+          status?: string
+          updated_at?: string
+          warehouse_id?: string | null
+          weight_grams?: number | null
+          width_cm?: number | null
+        }
+        Update: {
+          awb?: string | null
+          cod_amount?: number | null
+          courier?: string
+          created_at?: string
+          current_location?: string | null
+          expected_delivery?: string | null
+          height_cm?: number | null
+          id?: string
+          label_url?: string | null
+          length_cm?: number | null
+          order_id?: string
+          payment_mode?: string
+          pickup_id?: string | null
+          raw_payload?: Json | null
+          status?: string
+          updated_at?: string
+          warehouse_id?: string | null
+          weight_grams?: number | null
+          width_cm?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shipments_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       support_tickets: {
         Row: {
@@ -463,6 +755,63 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      warehouses: {
+        Row: {
+          address_line1: string
+          address_line2: string | null
+          city: string
+          contact_person: string | null
+          country: string
+          created_at: string
+          email: string | null
+          id: string
+          is_default: boolean
+          name: string
+          phone: string | null
+          pincode: string
+          return_address: string | null
+          return_pincode: string | null
+          state: string
+          updated_at: string
+        }
+        Insert: {
+          address_line1: string
+          address_line2?: string | null
+          city: string
+          contact_person?: string | null
+          country?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_default?: boolean
+          name: string
+          phone?: string | null
+          pincode: string
+          return_address?: string | null
+          return_pincode?: string | null
+          state: string
+          updated_at?: string
+        }
+        Update: {
+          address_line1?: string
+          address_line2?: string | null
+          city?: string
+          contact_person?: string | null
+          country?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_default?: boolean
+          name?: string
+          phone?: string | null
+          pincode?: string
+          return_address?: string | null
+          return_pincode?: string | null
+          state?: string
+          updated_at?: string
         }
         Relationships: []
       }
