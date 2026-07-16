@@ -20,16 +20,20 @@ export function useAuth() {
       if (mounted) setIsAdmin(!!data);
     };
 
-    supabase.auth.getSession().then(({ data }) => {
+    const init = async () => {
+      const { data } = await supabase.auth.getSession();
       if (!mounted) return;
-      setUser(data.session?.user ?? null);
-      if (data.session?.user) checkRole(data.session.user.id);
-      setLoading(false);
-    });
+      const u = data.session?.user ?? null;
+      setUser(u);
+      if (u) await checkRole(u.id);
+      if (mounted) setLoading(false);
+    };
+    init();
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) checkRole(session.user.id);
+    const { data: sub } = supabase.auth.onAuthStateChange(async (_e, session) => {
+      const u = session?.user ?? null;
+      setUser(u);
+      if (u) await checkRole(u.id);
       else setIsAdmin(false);
     });
 
