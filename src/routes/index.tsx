@@ -13,8 +13,8 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "Ganesha Rangoli — Premium Ready-to-Use Rangolis for Every Festival" },
       { name: "description", content: "Hand-crafted, reusable rangolis for Diwali, weddings & every Indian festival. Free shipping above ₹999. Cash on Delivery available." },
-      { property: "og:title", content: "Ganesha Rangoli — Premium Reusable Rangolis" },
-      { property: "og:description", content: "Beautiful ready-to-use rangolis for every celebration." },
+      { property: "og:title", content: "Ganesha Rangoli — Premium Ready-to-Use Rangolis for Every Festival" },
+      { property: "og:description", content: "Hand-crafted, reusable rangolis for Diwali, weddings & every Indian festival. Free shipping above ₹999. Cash on Delivery available." },
       { property: "og:image", content: "https://images.unsplash.com/photo-1604595287233-3da3fb05fc15?w=1200" },
     ],
   }),
