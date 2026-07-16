@@ -23,9 +23,9 @@ type Order = {
   total: number;
   created_at: string;
   customer_name: string;
-  customer_phone: string | null;
-  address_line1: string | null;
-  address_line2: string | null;
+  mobile: string | null;
+  address: string | null;
+  landmark: string | null;
   city: string | null;
   state: string | null;
   pincode: string | null;
