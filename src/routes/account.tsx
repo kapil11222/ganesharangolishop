@@ -215,3 +215,13 @@ function Info({ label, value }: { label: string; value: string }) {
   );
 }
 
+function statusMeta(status: string) {
+  const s = (status ?? "pending").toLowerCase();
+  if (s === "delivered") return { label: "Delivered", icon: CheckCircle2, cls: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" };
+  if (s === "shipped" || s === "in_transit") return { label: "Shipped", icon: Truck, cls: "bg-blue-500/15 text-blue-600 dark:text-blue-400" };
+  if (s === "confirmed" || s === "processing") return { label: "Confirmed", icon: CheckCircle2, cls: "bg-primary/15 text-primary" };
+  if (s === "cancelled" || s === "canceled") return { label: "Cancelled", icon: XCircle, cls: "bg-destructive/15 text-destructive" };
+  return { label: "Pending", icon: Clock, cls: "bg-amber-500/15 text-amber-600 dark:text-amber-400" };
+}
+
+
