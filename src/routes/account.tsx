@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Package, Heart, MapPin, LogOut, User as UserIcon, Settings, Shield } from "lucide-react";
+import { useEffect } from "react";
+import { Package, Heart, MapPin, LogOut, User as UserIcon, Settings, Shield, Truck, CheckCircle2, Clock, XCircle, ChevronRight, ShoppingBag } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Button } from "@/components/ui/button";
