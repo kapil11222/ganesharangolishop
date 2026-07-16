@@ -134,7 +134,7 @@ export const requestPickup = createServerFn({ method: "POST" })
       pickup_id: res.pickup_id ? String(res.pickup_id) : null,
       expected_package_count: data.expectedCount,
       status: res.success ? "scheduled" : "requested",
-      raw_payload: res as unknown as Record<string, unknown>,
+      raw_payload: JSON.parse(JSON.stringify(res)),
     });
     return { pickupId: res.pickup_id ?? null, success: !!res.success };
   });
