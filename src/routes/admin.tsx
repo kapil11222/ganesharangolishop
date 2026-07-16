@@ -281,7 +281,16 @@ function ProductDialog({ existing, categories, onSaved }: { existing?: AdminProd
           </div>
           <div className="md:col-span-2"><Label>Short description</Label><Input value={form.short_description} onChange={(e) => setForm({ ...form, short_description: e.target.value })} /></div>
           <div className="md:col-span-2"><Label>Description</Label><Textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
-          <div className="md:col-span-2"><Label>Image URLs (comma-separated)</Label><Textarea rows={2} value={form.images} onChange={(e) => setForm({ ...form, images: e.target.value })} /></div>
+          <div className="md:col-span-2">
+            <Label>Product Images</Label>
+            <ImageUpload
+              bucket="product-images"
+              multiple
+              value={form.images}
+              onChange={(v) => setForm({ ...form, images: v as string[] })}
+              label="Add photos"
+            />
+          </div>
           <div className="md:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
             <label className="flex items-center gap-2"><Checkbox checked={form.allow_cod} onCheckedChange={(v) => setForm({ ...form, allow_cod: !!v })} /> Allow COD</label>
             <label className="flex items-center gap-2"><Checkbox checked={form.allow_prepaid} onCheckedChange={(v) => setForm({ ...form, allow_prepaid: !!v })} /> Allow Prepaid</label>
