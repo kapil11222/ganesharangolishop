@@ -21,6 +21,7 @@ import "@fontsource/cormorant-garamond/600.css";
 import "@fontsource/cormorant-garamond/700.css";
 
 import appCss from "../styles.css?url";
+import logoAsset from "@/assets/ganesha-rangoli-logo.png.asset.json";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -84,7 +85,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Ganesha Rangoli — Beautiful Ready-to-Use Rangolis" },
       { name: "description", content: "Hand-crafted, reusable premium rangolis for Diwali, weddings & every Indian festival. Free shipping on orders above ₹999. COD available." },
       { name: "author", content: "Ganesha Rangoli" },
-      { name: "theme-color", content: "#0B0B1A" },
+      { name: "theme-color", content: "#FFF8EE" },
       { property: "og:title", content: "Ganesha Rangoli — Premium Reusable Rangolis" },
       { property: "og:description", content: "Festive, wedding & designer rangolis. Hand-crafted in India." },
       { property: "og:type", content: "website" },
@@ -92,7 +93,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "/favicon.ico" },
+      { rel: "icon", type: "image/png", href: logoAsset.url },
     ],
   }),
   shellComponent: RootShell,
