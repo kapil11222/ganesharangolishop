@@ -40,13 +40,6 @@ export function Navbar() {
 
   return (
     <>
-      {/* Announcement bar */}
-      <div className="gradient-festive text-primary-foreground text-xs md:text-sm py-2 text-center font-medium">
-        <span className="inline-flex items-center gap-2">
-          <Sparkles className="size-3.5" />
-          Free shipping on orders above ₹999 · Use code <strong>WELCOME10</strong> for 10% off
-        </span>
-      </div>
 
       <header
         className={`sticky top-0 z-50 transition-all duration-500 ${
