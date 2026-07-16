@@ -111,11 +111,17 @@ function ProductPage() {
             )}
             <h1 className="font-display text-4xl md:text-5xl font-bold mt-2">{product.name}</h1>
             <div className="flex items-center gap-3 mt-3">
-              <div className="flex">
-                {[...Array(5)].map((_, i) => <Star key={i} className="size-4 fill-secondary text-secondary" />)}
-              </div>
-              <span className="text-sm font-semibold">{product.rating}</span>
-              <span className="text-sm text-muted-foreground">({product.review_count} reviews)</span>
+              {(product.review_count ?? 0) > 0 ? (
+                <>
+                  <div className="flex">
+                    {[...Array(5)].map((_, i) => <Star key={i} className={`size-4 ${i < Math.round(product.rating ?? 0) ? "fill-secondary text-secondary" : "text-muted-foreground/40"}`} />)}
+                  </div>
+                  <span className="text-sm font-semibold">{product.rating}</span>
+                  <span className="text-sm text-muted-foreground">({product.review_count} {product.review_count === 1 ? "review" : "reviews"})</span>
+                </>
+              ) : (
+                <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider">✨ New Product</span>
+              )}
             </div>
             <p className="mt-5 text-muted-foreground leading-relaxed">{product.description}</p>
 
@@ -203,7 +209,15 @@ function ProductPage() {
                 COD available. 7-day easy returns on undamaged items.
               </TabsContent>
               <TabsContent value="reviews" className="mt-4 text-sm text-muted-foreground">
-                Average rating <strong>{product.rating}/5</strong> from {product.review_count} customers. Review submission coming soon.
+                {(product.review_count ?? 0) > 0 ? (
+                  <>Average rating <strong className="text-foreground">{product.rating}/5</strong> from {product.review_count} verified customers. Review submission coming soon.</>
+                ) : (
+                  <div className="text-center py-6">
+                    <div className="text-3xl mb-2">✨</div>
+                    <div className="font-display text-lg font-bold text-foreground">Be the first to review</div>
+                    <div className="text-xs mt-1">This is a fresh arrival — no reviews yet. Order today and share your experience!</div>
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           </div>
