@@ -29,7 +29,7 @@ function AccountPage() {
     queryFn: async () => {
       const { data } = await supabase
         .from("orders")
-        .select("*, order_items(id, name, quantity, price, image)")
+        .select("*, order_items(id, product_name, product_image, quantity, unit_price, total)")
         .eq("user_id", user!.id)
         .order("created_at", { ascending: false });
       return data ?? [];
