@@ -75,11 +75,27 @@ function AuthPage() {
         </div>
 
         <div className="glass-strong rounded-3xl p-8 shadow-luxe max-w-md w-full mx-auto">
+          <Button
+            type="button"
+            onClick={signInWithGoogle}
+            variant="outline"
+            className="w-full h-11 rounded-full mb-4 gap-2 bg-background/60 hover:bg-background"
+          >
+            <svg className="size-4" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.24 1.4-1.66 4.1-5.5 4.1-3.3 0-6-2.75-6-6.15S8.7 5.9 12 5.9c1.88 0 3.15.8 3.87 1.5l2.64-2.55C16.87 3.35 14.65 2.4 12 2.4 6.86 2.4 2.7 6.55 2.7 11.7S6.86 21 12 21c6.94 0 8.87-4.85 8.87-8.05 0-.54-.06-.95-.13-1.35H12z"/>
+            </svg>
+            Continue with Google
+          </Button>
+          <div className="relative mb-4 text-center">
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
+            <span className="relative px-3 text-xs text-muted-foreground bg-card">or</span>
+          </div>
           <Tabs defaultValue="signin">
             <TabsList className="grid grid-cols-2 w-full glass">
               <TabsTrigger value="signin">Sign In</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
             </TabsList>
+
             <TabsContent value="signin" className="mt-6">
               <form onSubmit={signin} className="space-y-4">
                 <div><Label>Email</Label><Input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
