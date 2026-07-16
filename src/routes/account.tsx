@@ -27,7 +27,11 @@ function AccountPage() {
     queryKey: ["my-orders", user?.id],
     enabled: !!user?.id,
     queryFn: async () => {
-      const { data } = await supabase.from("orders").select("*").eq("user_id", user!.id).order("created_at", { ascending: false });
+      const { data } = await supabase
+        .from("orders")
+        .select("*, order_items(id, name, quantity, price, image)")
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: false });
       return data ?? [];
     },
   });
