@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
-import { Menu, X, Search, ShoppingBag, Heart, User, Sparkles, Globe } from "lucide-react";
-import { ThemeToggle } from "./ThemeToggle";
+import { Menu, Search, ShoppingBag, Heart, User, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
@@ -11,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useCart } from "@/lib/cart-store";
+import logoAsset from "@/assets/ganesha-rangoli-logo.png.asset.json";
 
 const nav = [
   { to: "/", label: "Home" },
