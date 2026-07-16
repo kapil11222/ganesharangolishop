@@ -207,6 +207,10 @@ function AdminPage() {
             </div>
           </TabsContent>
 
+          <TabsContent value="categories">
+            <CategoriesTab />
+          </TabsContent>
+
           <TabsContent value="coupons">
             <CouponsTab />
           </TabsContent>
