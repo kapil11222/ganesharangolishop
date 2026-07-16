@@ -56,7 +56,7 @@ function TrackPage() {
     setLive(null);
     const { data } = await supabase
       .from("orders")
-      .select("order_number,status,payment_method,total,created_at,customer_name,customer_phone,address_line1,address_line2,city,state,pincode,awb,shipping_status")
+      .select("order_number,status,payment_method,total,created_at,customer_name,mobile,address,landmark,city,state,pincode,awb,shipping_status")
       .eq("order_number", num.trim().toUpperCase())
       .eq("email", email.trim())
       .maybeSingle();
