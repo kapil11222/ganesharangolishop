@@ -218,6 +218,12 @@ function AdminPage() {
             <CouponsTab />
           </TabsContent>
 
+          <TabsContent value="shipping">
+            <ShippingTab />
+          </TabsContent>
+
+
+
           <TabsContent value="analytics">
             <div className="grid md:grid-cols-3 gap-4">
               <div className="glass rounded-3xl p-6"><TrendingUp className="size-6 text-emerald-500" /><div className="text-xs uppercase text-muted-foreground mt-3">Pending Orders</div><div className="font-display text-3xl font-bold mt-1">{stats?.pending ?? 0}</div></div>
