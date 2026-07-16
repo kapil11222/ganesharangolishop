@@ -16,6 +16,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/lib/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import { formatINR } from "@/lib/cart-store";
 import { toast } from "sonner";
 
@@ -113,6 +114,7 @@ function AdminPage() {
           <TabsList className="glass">
             <TabsTrigger value="orders"><ShoppingBag className="size-4 mr-2" /> Orders</TabsTrigger>
             <TabsTrigger value="products"><Package className="size-4 mr-2" /> Products</TabsTrigger>
+            <TabsTrigger value="categories"><Tag className="size-4 mr-2" /> Categories</TabsTrigger>
             <TabsTrigger value="tickets"><MessageSquare className="size-4 mr-2" /> Tickets</TabsTrigger>
             <TabsTrigger value="coupons"><Tag className="size-4 mr-2" /> Coupons</TabsTrigger>
             <TabsTrigger value="analytics"><BarChart3 className="size-4 mr-2" /> Analytics</TabsTrigger>
@@ -205,6 +207,10 @@ function AdminPage() {
             </div>
           </TabsContent>
 
+          <TabsContent value="categories">
+            <CategoriesTab />
+          </TabsContent>
+
           <TabsContent value="coupons">
             <CouponsTab />
           </TabsContent>
@@ -233,7 +239,7 @@ function ProductDialog({ existing, categories, onSaved }: { existing?: AdminProd
     mrp: existing?.mrp ?? 0,
     stock: existing?.stock ?? 0,
     category_id: existing?.category_id ?? (categories[0]?.id ?? ""),
-    images: existing?.images?.join(",") ?? "",
+    images: (existing?.images ?? []) as string[],
     festival: existing?.festival ?? "",
     allow_cod: existing?.allow_cod ?? true,
     allow_prepaid: existing?.allow_prepaid ?? true,
@@ -248,7 +254,7 @@ function ProductDialog({ existing, categories, onSaved }: { existing?: AdminProd
       price: Number(form.price),
       mrp: Number(form.mrp) || null,
       stock: Number(form.stock),
-      images: form.images.split(",").map((s) => s.trim()).filter(Boolean),
+      images: form.images,
     };
     const op = existing
       ? supabase.from("products").update(payload).eq("id", existing.id)
@@ -280,7 +286,16 @@ function ProductDialog({ existing, categories, onSaved }: { existing?: AdminProd
           </div>
           <div className="md:col-span-2"><Label>Short description</Label><Input value={form.short_description} onChange={(e) => setForm({ ...form, short_description: e.target.value })} /></div>
           <div className="md:col-span-2"><Label>Description</Label><Textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
-          <div className="md:col-span-2"><Label>Image URLs (comma-separated)</Label><Textarea rows={2} value={form.images} onChange={(e) => setForm({ ...form, images: e.target.value })} /></div>
+          <div className="md:col-span-2">
+            <Label>Product Images</Label>
+            <ImageUpload
+              bucket="product-images"
+              multiple
+              value={form.images}
+              onChange={(v) => setForm({ ...form, images: v as string[] })}
+              label="Add photos"
+            />
+          </div>
           <div className="md:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
             <label className="flex items-center gap-2"><Checkbox checked={form.allow_cod} onCheckedChange={(v) => setForm({ ...form, allow_cod: !!v })} /> Allow COD</label>
             <label className="flex items-center gap-2"><Checkbox checked={form.allow_prepaid} onCheckedChange={(v) => setForm({ ...form, allow_prepaid: !!v })} /> Allow Prepaid</label>
@@ -335,6 +350,76 @@ function CouponsTab() {
             ))}
           </tbody>
         </table>
+      </div>
+    </div>
+  );
+}
+
+function CategoriesTab() {
+  const qc = useQueryClient();
+  const { data: cats = [] } = useQuery<{ id: string; name: string; slug: string; description: string | null; image_url: string | null; display_order: number }[]>({
+    queryKey: ["admin-categories-full"],
+    queryFn: async () => ((await supabase.from("categories").select("*").order("display_order")).data ?? []) as any,
+  });
+  const [form, setForm] = useState({ name: "", slug: "", description: "", image_url: "", display_order: 0 });
+  const reset = () => setForm({ name: "", slug: "", description: "", image_url: "", display_order: 0 });
+  const create = async () => {
+    if (!form.name) { toast.error("Name is required"); return; }
+    const slug = form.slug || form.name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    const { error } = await supabase.from("categories").insert({ ...form, slug });
+    if (error) toast.error(error.message);
+    else { toast.success("Category added"); reset(); qc.invalidateQueries({ queryKey: ["admin-categories-full"] }); qc.invalidateQueries({ queryKey: ["admin-cats"] }); }
+  };
+  const updateImage = async (id: string, url: string) => {
+    await supabase.from("categories").update({ image_url: url || null }).eq("id", id);
+    qc.invalidateQueries({ queryKey: ["admin-categories-full"] });
+    qc.invalidateQueries({ queryKey: ["admin-cats"] });
+  };
+  const remove = async (id: string, name: string) => {
+    if (!confirm(`Delete category ${name}?`)) return;
+    const { error } = await supabase.from("categories").delete().eq("id", id);
+    if (error) toast.error(error.message);
+    else { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["admin-categories-full"] }); qc.invalidateQueries({ queryKey: ["admin-cats"] }); }
+  };
+  return (
+    <div className="space-y-4">
+      <div className="glass rounded-3xl p-6 space-y-4">
+        <div className="font-display text-lg font-bold">Add Category</div>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-3">
+            <div><Label>Name</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
+            <div><Label>Slug</Label><Input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="auto from name" /></div>
+            <div><Label>Display order</Label><Input type="number" value={form.display_order} onChange={(e) => setForm({ ...form, display_order: Number(e.target.value) })} /></div>
+            <div><Label>Description</Label><Textarea rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
+          </div>
+          <div>
+            <Label>Image</Label>
+            <ImageUpload bucket="category-images" value={form.image_url} onChange={(v) => setForm({ ...form, image_url: v as string })} label="Upload" />
+          </div>
+        </div>
+        <div><Button onClick={create} className="rounded-full gradient-festive border-0"><Plus className="size-4 mr-2" /> Add Category</Button></div>
+      </div>
+
+      <div className="glass rounded-3xl p-4 md:p-6">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {cats.map((c) => (
+            <div key={c.id} className="rounded-2xl border border-border p-4 space-y-3">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <div className="font-semibold">{c.name}</div>
+                  <div className="text-xs text-muted-foreground">/{c.slug}</div>
+                </div>
+                <Button size="icon" variant="ghost" onClick={() => remove(c.id, c.name)}><Trash2 className="size-4 text-destructive" /></Button>
+              </div>
+              <ImageUpload
+                bucket="category-images"
+                value={c.image_url ?? ""}
+                onChange={(v) => updateImage(c.id, v as string)}
+                label="Change"
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
