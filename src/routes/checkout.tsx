@@ -66,6 +66,27 @@ function CheckoutPage() {
 
   const update = (k: keyof typeof form, v: string) => setForm((p) => ({ ...p, [k]: v }));
 
+  // Auto-check pincode when 6 digits entered
+  useEffect(() => {
+    if (!/^[0-9]{6}$/.test(form.pincode)) { setLiveRate(null); return; }
+    let cancelled = false;
+    setCheckingPin(true);
+    checkPin({ data: { pincode: form.pincode, weightGrams: Math.max(500, items.length * 500), codAmount: total } })
+      .then((r) => {
+        if (cancelled) return;
+        setLiveRate(r);
+        if (r.serviceable) {
+          if (r.city && !form.city) setForm((p) => ({ ...p, city: r.city! }));
+          if (r.state && !form.state) setForm((p) => ({ ...p, state: r.state! }));
+          if (!r.cod && payment === "cod") setPayment("prepaid");
+        }
+      })
+      .catch(() => setLiveRate(null))
+      .finally(() => { if (!cancelled) setCheckingPin(false); });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.pincode]);
+
   const placeOrder = async () => {
     const parsed = schema.safeParse(form);
     if (!parsed.success) {
