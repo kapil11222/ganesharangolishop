@@ -39,58 +39,9 @@ const cols = [
 ];
 
 export function Footer() {
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const subscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-    setLoading(true);
-    const { error } = await supabase.from("newsletter_subscribers").insert({ email });
-    setLoading(false);
-    if (error) {
-      toast.error(error.code === "23505" ? "You're already subscribed!" : "Couldn't subscribe");
-    } else {
-      toast.success("Welcome aboard! 🪔");
-      setEmail("");
-    }
-  };
-
   return (
-    <footer className="relative mt-32 border-t border-border bg-card/40 backdrop-blur">
-      {/* Newsletter */}
-      <div className="container-luxe pt-16 pb-12">
-        <div className="rounded-3xl glass-strong p-8 md:p-12 shadow-luxe relative overflow-hidden">
-          <div className="absolute -top-24 -right-24 size-72 rounded-full gradient-festive opacity-20 blur-3xl" />
-          <div className="absolute -bottom-24 -left-24 size-72 rounded-full bg-secondary opacity-20 blur-3xl" />
-          <div className="relative grid md:grid-cols-2 gap-8 items-center">
-            <div>
-              <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-primary font-semibold">
-                <Sparkles className="size-3.5" /> Festive Insider
-              </div>
-              <h3 className="font-display text-3xl md:text-4xl font-bold mt-3">
-                Get <span className="gradient-text">10% off</span> your first order
-              </h3>
-              <p className="text-muted-foreground mt-2">
-                Festival drops, designer collections & secret offers — straight to your inbox.
-              </p>
-            </div>
-            <form onSubmit={subscribe} className="flex gap-2">
-              <Input
-                type="email"
-                required
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="h-12 rounded-full px-5 bg-background/60"
-              />
-              <Button type="submit" disabled={loading} className="h-12 px-6 rounded-full gradient-festive border-0 shadow-glow">
-                {loading ? "..." : "Subscribe"}
-              </Button>
-            </form>
-          </div>
-        </div>
-      </div>
+    <footer className="relative mt-32 border-t border-border bg-card/40 backdrop-blur pt-16">
+
 
       <div className="container-luxe pb-12 grid gap-10 md:grid-cols-2 lg:grid-cols-5">
         <div className="lg:col-span-2 space-y-5">
