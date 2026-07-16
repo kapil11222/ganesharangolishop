@@ -43,8 +43,7 @@ function CheckoutPage() {
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const [payment, setPayment] = useState<"cod" | "prepaid">("cod");
-  const [authChecking, setAuthChecking] = useState(true);
-  const [authed, setAuthed] = useState(false);
+
 
   const allowCOD = items.every((i) => i.allow_cod);
   const allowPrepaid = items.every((i) => i.allow_prepaid);
