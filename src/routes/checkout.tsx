@@ -160,7 +160,15 @@ function CheckoutPage() {
               <Field label="Landmark"><Input value={form.landmark} onChange={(e) => update("landmark", e.target.value)} /></Field>
               <Field label="City *"><Input value={form.city} onChange={(e) => update("city", e.target.value)} /></Field>
               <Field label="State *"><Input value={form.state} onChange={(e) => update("state", e.target.value)} /></Field>
-              <Field label="Pincode *"><Input value={form.pincode} onChange={(e) => update("pincode", e.target.value)} maxLength={6} /></Field>
+              <Field label="Pincode *">
+                <Input value={form.pincode} onChange={(e) => update("pincode", e.target.value.replace(/[^0-9]/g, "").slice(0, 6))} maxLength={6} />
+                {checkingPin && <div className="mt-1 text-xs text-muted-foreground flex items-center gap-1"><Loader2 className="size-3 animate-spin" /> Checking serviceability…</div>}
+                {liveRate && !checkingPin && (
+                  liveRate.serviceable
+                    ? <div className="mt-1 text-xs text-emerald-600 flex items-center gap-1"><CheckCircle2 className="size-3" /> Delivers to {liveRate.city}, {liveRate.state}{!liveRate.cod && " · COD unavailable"}</div>
+                    : <div className="mt-1 text-xs text-destructive flex items-center gap-1"><XCircle className="size-3" /> Not serviceable</div>
+                )}
+              </Field>
               <Field label="Country *"><Input value={form.country} onChange={(e) => update("country", e.target.value)} /></Field>
               <Field label="GST Number (Optional)" full><Input value={form.gst_number} onChange={(e) => update("gst_number", e.target.value)} /></Field>
               <Field label="Order Notes" full><Textarea value={form.order_notes} onChange={(e) => update("order_notes", e.target.value)} rows={2} placeholder="Anything we should know?" /></Field>
