@@ -172,7 +172,12 @@ function ProductPage() {
               Payment options: {product.allow_cod && "Cash on Delivery"} {product.allow_cod && product.allow_prepaid && " · "} {product.allow_prepaid && "Prepaid (UPI)"}
             </div>
 
-            {/* Trust */}
+            {/* Pincode Check */}
+            <div className="mt-6">
+              <PincodeCheck weightGrams={500} codAmount={product.price * qty} />
+            </div>
+
+
             <div className="mt-8 grid grid-cols-3 gap-3 text-xs">
               {[{ i: Truck, t: "Free Shipping ₹999+" }, { i: RefreshCw, t: "7-Day Returns" }, { i: ShieldCheck, t: "Secure Checkout" }].map((b) => (
                 <div key={b.t} className="glass rounded-2xl p-4 text-center">
