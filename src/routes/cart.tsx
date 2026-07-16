@@ -29,14 +29,32 @@ function CartPage() {
 
   const applyCoupon = async () => {
     if (!coupon.trim()) return;
+    const code = coupon.trim().toUpperCase();
     const { data } = await supabase
-      .from("coupons").select("*").eq("code", coupon.trim().toUpperCase())
+      .from("coupons").select("*").eq("code", code)
       .eq("is_active", true).maybeSingle();
     if (!data) { toast.error("Invalid coupon"); return; }
     if (data.min_order_value && subtotal < Number(data.min_order_value)) {
       toast.error(`Min order ₹${data.min_order_value} required`); return;
     }
     if (data.expires_at && new Date(data.expires_at) < new Date()) { toast.error("Coupon expired"); return; }
+
+    // One-time use per logged-in user
+    const { data: userData } = await supabase.auth.getUser();
+    if (!userData.user) {
+      toast.error("Please sign in to use a coupon");
+      return;
+    }
+    const { count } = await supabase
+      .from("orders")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userData.user.id)
+      .eq("coupon_code", code);
+    if ((count ?? 0) > 0) {
+      toast.error("You've already used this coupon");
+      return;
+    }
+
     const d = data.discount_type === "percentage"
       ? Math.round((subtotal * Number(data.discount_value)) / 100)
       : Number(data.discount_value);
@@ -44,6 +62,7 @@ function CartPage() {
     setAppliedCode(data.code);
     toast.success(`Coupon applied: -${formatINR(d)}`);
   };
+
 
   if (items.length === 0) {
     return (
