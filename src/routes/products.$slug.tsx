@@ -209,7 +209,15 @@ function ProductPage() {
                 COD available. 7-day easy returns on undamaged items.
               </TabsContent>
               <TabsContent value="reviews" className="mt-4 text-sm text-muted-foreground">
-                Average rating <strong>{product.rating}/5</strong> from {product.review_count} customers. Review submission coming soon.
+                {(product.review_count ?? 0) > 0 ? (
+                  <>Average rating <strong className="text-foreground">{product.rating}/5</strong> from {product.review_count} verified customers. Review submission coming soon.</>
+                ) : (
+                  <div className="text-center py-6">
+                    <div className="text-3xl mb-2">✨</div>
+                    <div className="font-display text-lg font-bold text-foreground">Be the first to review</div>
+                    <div className="text-xs mt-1">This is a fresh arrival — no reviews yet. Order today and share your experience!</div>
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           </div>
