@@ -119,6 +119,12 @@ function CheckoutPage() {
   }, [form.pincode]);
 
   const placeOrder = async () => {
+    const { data: session } = await supabase.auth.getSession();
+    if (!session.session?.user) {
+      toast.error("Please sign in to place an order");
+      navigate({ to: "/auth" });
+      return;
+    }
     const parsed = schema.safeParse(form);
     if (!parsed.success) {
       const first = parsed.error.issues[0];
@@ -128,12 +134,11 @@ function CheckoutPage() {
     if (items.length === 0) { toast.error("Cart is empty"); return; }
     setSubmitting(true);
     try {
-      const { data: session } = await supabase.auth.getSession();
       const { data: order, error } = await supabase
         .from("orders")
         .insert({
           ...parsed.data,
-          user_id: session.session?.user?.id ?? null,
+          user_id: session.session.user.id,
           payment_method: payment,
           subtotal, shipping, tax, discount: 0, total,
         })
@@ -146,6 +151,24 @@ function CheckoutPage() {
       }));
       const { error: ie } = await supabase.from("order_items").insert(itemRows);
       if (ie) throw ie;
+
+      // Notify owner (best-effort — don't block success)
+      sendOwnerEmail({
+        data: {
+          orderNumber: order.order_number,
+          customerName: parsed.data.customer_name,
+          email: parsed.data.email,
+          mobile: parsed.data.mobile,
+          address: parsed.data.address,
+          city: parsed.data.city,
+          state: parsed.data.state,
+          pincode: parsed.data.pincode,
+          paymentMethod: payment,
+          total,
+          items: items.map((i) => ({ name: i.name, quantity: i.quantity, price: i.price })),
+        },
+      }).catch((e) => console.error("owner email failed", e));
+
       clear();
       toast.success("Order placed successfully! 🎉");
       navigate({ to: "/order-success/$orderNumber", params: { orderNumber: order.order_number } });
@@ -156,6 +179,7 @@ function CheckoutPage() {
       setSubmitting(false);
     }
   };
+
 
   const summary = useMemo(() => ({ subtotal, shipping, tax, total }), [subtotal, shipping, tax, total]);
 
