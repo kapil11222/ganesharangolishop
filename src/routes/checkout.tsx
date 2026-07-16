@@ -82,9 +82,8 @@ function CheckoutPage() {
         navigate({ to: "/auth" });
         return;
       }
-      setAuthed(true);
-      setAuthChecking(false);
       setForm((p) => ({
+
         ...p,
         email: p.email || u.email || "",
         customer_name:
