@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { ShieldCheck, Wallet, Smartphone, ArrowRight, Lock } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { ShieldCheck, Wallet, Smartphone, ArrowRight, Lock, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useCart, formatINR } from "@/lib/cart-store";
 import { supabase } from "@/integrations/supabase/client";
+import { checkPincode } from "@/lib/delhivery/shipping.functions";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -43,9 +45,18 @@ function CheckoutPage() {
   const allowCOD = items.every((i) => i.allow_cod);
   const allowPrepaid = items.every((i) => i.allow_prepaid);
 
-  const shipping = subtotal > 999 ? 0 : subtotal === 0 ? 0 : 79;
+  const [liveRate, setLiveRate] = useState<null | { serviceable: boolean; city?: string; state?: string; cod?: boolean; prepaidRate?: number | null; codRate?: number | null }>(null);
+  const [checkingPin, setCheckingPin] = useState(false);
+  const checkPin = useServerFn(checkPincode);
+
+  const baseShipping = subtotal > 999 ? 0 : subtotal === 0 ? 0 : 79;
+  const liveShipping = liveRate?.serviceable
+    ? (payment === "cod" ? (liveRate.codRate ?? liveRate.prepaidRate ?? baseShipping) : (liveRate.prepaidRate ?? baseShipping))
+    : baseShipping;
+  const shipping = subtotal > 999 ? 0 : liveShipping;
   const tax = Math.round(subtotal * 0.05);
   const total = subtotal + shipping + tax;
+
 
   const [form, setForm] = useState({
     customer_name: "", mobile: "", alt_mobile: "", email: "",
@@ -54,6 +65,27 @@ function CheckoutPage() {
   });
 
   const update = (k: keyof typeof form, v: string) => setForm((p) => ({ ...p, [k]: v }));
+
+  // Auto-check pincode when 6 digits entered
+  useEffect(() => {
+    if (!/^[0-9]{6}$/.test(form.pincode)) { setLiveRate(null); return; }
+    let cancelled = false;
+    setCheckingPin(true);
+    checkPin({ data: { pincode: form.pincode, weightGrams: Math.max(500, items.length * 500), codAmount: total } })
+      .then((r) => {
+        if (cancelled) return;
+        setLiveRate(r);
+        if (r.serviceable) {
+          if (r.city && !form.city) setForm((p) => ({ ...p, city: r.city! }));
+          if (r.state && !form.state) setForm((p) => ({ ...p, state: r.state! }));
+          if (!r.cod && payment === "cod") setPayment("prepaid");
+        }
+      })
+      .catch(() => setLiveRate(null))
+      .finally(() => { if (!cancelled) setCheckingPin(false); });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.pincode]);
 
   const placeOrder = async () => {
     const parsed = schema.safeParse(form);
@@ -128,7 +160,15 @@ function CheckoutPage() {
               <Field label="Landmark"><Input value={form.landmark} onChange={(e) => update("landmark", e.target.value)} /></Field>
               <Field label="City *"><Input value={form.city} onChange={(e) => update("city", e.target.value)} /></Field>
               <Field label="State *"><Input value={form.state} onChange={(e) => update("state", e.target.value)} /></Field>
-              <Field label="Pincode *"><Input value={form.pincode} onChange={(e) => update("pincode", e.target.value)} maxLength={6} /></Field>
+              <Field label="Pincode *">
+                <Input value={form.pincode} onChange={(e) => update("pincode", e.target.value.replace(/[^0-9]/g, "").slice(0, 6))} maxLength={6} />
+                {checkingPin && <div className="mt-1 text-xs text-muted-foreground flex items-center gap-1"><Loader2 className="size-3 animate-spin" /> Checking serviceability…</div>}
+                {liveRate && !checkingPin && (
+                  liveRate.serviceable
+                    ? <div className="mt-1 text-xs text-emerald-600 flex items-center gap-1"><CheckCircle2 className="size-3" /> Delivers to {liveRate.city}, {liveRate.state}{!liveRate.cod && " · COD unavailable"}</div>
+                    : <div className="mt-1 text-xs text-destructive flex items-center gap-1"><XCircle className="size-3" /> Not serviceable</div>
+                )}
+              </Field>
               <Field label="Country *"><Input value={form.country} onChange={(e) => update("country", e.target.value)} /></Field>
               <Field label="GST Number (Optional)" full><Input value={form.gst_number} onChange={(e) => update("gst_number", e.target.value)} /></Field>
               <Field label="Order Notes" full><Textarea value={form.order_notes} onChange={(e) => update("order_notes", e.target.value)} rows={2} placeholder="Anything we should know?" /></Field>

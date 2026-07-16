@@ -2,7 +2,9 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ShoppingBag, Users, Package, IndianRupee, Plus, Pencil, Trash2, TrendingUp, MessageSquare, Tag, Star, BarChart3 } from "lucide-react";
+import { ShoppingBag, Users, Package, IndianRupee, Plus, Pencil, Trash2, TrendingUp, MessageSquare, Tag, Star, BarChart3, Truck, ExternalLink, RefreshCw } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { createOrderShipment, requestPickup, getWaybillUrl } from "@/lib/delhivery/shipping.functions";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { PageHeader } from "@/components/site/PageHeader";
 import { AnimatedCounter } from "@/components/site/AnimatedCounter";
@@ -117,6 +119,7 @@ function AdminPage() {
             <TabsTrigger value="categories"><Tag className="size-4 mr-2" /> Categories</TabsTrigger>
             <TabsTrigger value="tickets"><MessageSquare className="size-4 mr-2" /> Tickets</TabsTrigger>
             <TabsTrigger value="coupons"><Tag className="size-4 mr-2" /> Coupons</TabsTrigger>
+            <TabsTrigger value="shipping"><Truck className="size-4 mr-2" /> Shipping</TabsTrigger>
             <TabsTrigger value="analytics"><BarChart3 className="size-4 mr-2" /> Analytics</TabsTrigger>
           </TabsList>
 
@@ -214,6 +217,12 @@ function AdminPage() {
           <TabsContent value="coupons">
             <CouponsTab />
           </TabsContent>
+
+          <TabsContent value="shipping">
+            <ShippingTab />
+          </TabsContent>
+
+
 
           <TabsContent value="analytics">
             <div className="grid md:grid-cols-3 gap-4">
@@ -420,6 +429,106 @@ function CategoriesTab() {
             </div>
           ))}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function ShippingTab() {
+  const qc = useQueryClient();
+  const createShip = useServerFn(createOrderShipment);
+  const doPickup = useServerFn(requestPickup);
+  const getSlip = useServerFn(getWaybillUrl);
+
+  const { data: orders = [] } = useQuery({
+    queryKey: ["admin-shipping-orders"],
+    queryFn: async () => (await supabase.from("orders")
+      .select("id,order_number,customer_name,city,state,pincode,payment_method,total,status,awb,shipping_status,created_at")
+      .order("created_at", { ascending: false }).limit(100)).data ?? [],
+  });
+
+  const [busy, setBusy] = useState<string | null>(null);
+  const [pickup, setPickup] = useState({ date: new Date(Date.now() + 86400000).toISOString().slice(0, 10), time: "14:00:00", count: 1 });
+  const [scheduling, setScheduling] = useState(false);
+
+  const generateAwb = async (orderId: string) => {
+    setBusy(orderId);
+    try {
+      const r = await createShip({ data: { orderId, weightGrams: 500 } });
+      toast.success(r.alreadyExists ? `AWB exists: ${r.awb}` : `AWB generated: ${r.awb}`);
+      qc.invalidateQueries({ queryKey: ["admin-shipping-orders"] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed");
+    } finally { setBusy(null); }
+  };
+
+  const openSlip = async (awb: string) => {
+    try {
+      const { url } = await getSlip({ data: { awb } });
+      window.open(url, "_blank");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed");
+    }
+  };
+
+  const schedule = async () => {
+    setScheduling(true);
+    try {
+      const r = await doPickup({ data: { pickupDate: pickup.date, pickupTime: pickup.time, expectedCount: pickup.count } });
+      toast.success(r.success ? `Pickup scheduled #${r.pickupId ?? ""}` : "Pickup requested");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed");
+    } finally { setScheduling(false); }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="glass rounded-3xl p-6 grid md:grid-cols-5 gap-3 items-end">
+        <div className="md:col-span-4 grid md:grid-cols-3 gap-3">
+          <div><Label>Pickup date</Label><Input type="date" value={pickup.date} onChange={(e) => setPickup({ ...pickup, date: e.target.value })} /></div>
+          <div><Label>Pickup time</Label><Input type="time" step={1} value={pickup.time} onChange={(e) => setPickup({ ...pickup, time: e.target.value.length === 5 ? e.target.value + ":00" : e.target.value })} /></div>
+          <div><Label>Expected packages</Label><Input type="number" min={1} value={pickup.count} onChange={(e) => setPickup({ ...pickup, count: Number(e.target.value) })} /></div>
+        </div>
+        <Button onClick={schedule} disabled={scheduling} className="rounded-full gradient-festive border-0"><Truck className="size-4 mr-2" /> {scheduling ? "Scheduling…" : "Schedule Pickup"}</Button>
+      </div>
+
+      <div className="glass rounded-3xl p-4 md:p-6 shadow-card overflow-x-auto">
+        <table className="w-full text-sm min-w-[900px]">
+          <thead className="text-xs uppercase text-muted-foreground border-b border-border">
+            <tr>
+              <th className="text-left p-3">Order</th>
+              <th className="text-left p-3">Customer</th>
+              <th className="text-left p-3">Destination</th>
+              <th className="text-left p-3">Payment</th>
+              <th className="text-left p-3">AWB / Status</th>
+              <th className="text-left p-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.map((o: any) => (
+              <tr key={o.id} className="border-b border-border/50 hover:bg-primary/5">
+                <td className="p-3 font-mono font-bold text-primary">{o.order_number}</td>
+                <td className="p-3">{o.customer_name}</td>
+                <td className="p-3 text-xs">{o.city}, {o.state}<div className="text-muted-foreground">{o.pincode}</div></td>
+                <td className="p-3 uppercase text-xs">{o.payment_method} · {formatINR(Number(o.total))}</td>
+                <td className="p-3">
+                  {o.awb
+                    ? <div><div className="font-mono text-xs">{o.awb}</div><div className="text-xs text-muted-foreground capitalize">{o.shipping_status ?? "manifested"}</div></div>
+                    : <span className="text-xs text-muted-foreground">Not shipped</span>}
+                </td>
+                <td className="p-3 flex gap-2">
+                  {!o.awb
+                    ? <Button size="sm" disabled={busy === o.id} onClick={() => generateAwb(o.id)} className="rounded-full gradient-festive border-0">
+                        {busy === o.id ? <RefreshCw className="size-3 mr-1 animate-spin" /> : <Truck className="size-3 mr-1" />} Generate AWB
+                      </Button>
+                    : <Button size="sm" variant="outline" onClick={() => openSlip(o.awb)} className="rounded-full">
+                        <ExternalLink className="size-3 mr-1" /> Waybill
+                      </Button>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
