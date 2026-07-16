@@ -72,6 +72,31 @@ function CheckoutPage() {
 
   const update = (k: keyof typeof form, v: string) => setForm((p) => ({ ...p, [k]: v }));
 
+  // Require login to access checkout
+  useEffect(() => {
+    let mounted = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!mounted) return;
+      const u = data.session?.user;
+      if (!u) {
+        toast.error("Please sign in to place an order");
+        navigate({ to: "/auth" });
+        return;
+      }
+      setAuthed(true);
+      setAuthChecking(false);
+      setForm((p) => ({
+        ...p,
+        email: p.email || u.email || "",
+        customer_name:
+          p.customer_name || (u.user_metadata?.full_name as string) || "",
+        mobile: p.mobile || (u.user_metadata?.phone as string) || "",
+      }));
+    });
+    return () => { mounted = false; };
+  }, [navigate]);
+
+
   // Auto-check pincode when 6 digits entered
   useEffect(() => {
     if (!/^[0-9]{6}$/.test(form.pincode)) { setLiveRate(null); return; }
