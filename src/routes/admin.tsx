@@ -242,12 +242,6 @@ function ProductDialog({ existing, categories, onSaved }: { existing?: AdminProd
     is_new_arrival: existing?.is_new_arrival ?? false,
     is_best_seller: existing?.is_best_seller ?? false,
   }));
-    allow_cod: existing?.allow_cod ?? true,
-    allow_prepaid: existing?.allow_prepaid ?? true,
-    is_featured: existing?.is_featured ?? false,
-    is_new_arrival: existing?.is_new_arrival ?? false,
-    is_best_seller: existing?.is_best_seller ?? false,
-  }));
   const save = async () => {
     const payload = {
       ...form,
@@ -255,7 +249,7 @@ function ProductDialog({ existing, categories, onSaved }: { existing?: AdminProd
       price: Number(form.price),
       mrp: Number(form.mrp) || null,
       stock: Number(form.stock),
-      images: form.images.split(",").map((s) => s.trim()).filter(Boolean),
+      images: form.images,
     };
     const op = existing
       ? supabase.from("products").update(payload).eq("id", existing.id)
