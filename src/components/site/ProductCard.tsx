@@ -13,6 +13,7 @@ export type ProductCardData = {
   mrp?: number | null;
   images: string[];
   rating?: number | null;
+  review_count?: number | null;
   is_best_seller?: boolean | null;
   is_new_arrival?: boolean | null;
   festival?: string | null;
