@@ -71,17 +71,6 @@ export function Footer() {
               <MapPin className="size-4 text-primary" /> Maharashtra, India
             </div>
           </div>
-          <div className="flex gap-2 pt-2">
-            <a href="#" className="size-10 rounded-full glass grid place-items-center hover:text-primary transition" aria-label="Instagram">
-              <Instagram className="size-4" />
-            </a>
-            <a href="#" className="size-10 rounded-full glass grid place-items-center hover:text-primary transition" aria-label="Facebook">
-              <Facebook className="size-4" />
-            </a>
-            <a href="#" className="size-10 rounded-full glass grid place-items-center hover:text-primary transition" aria-label="YouTube">
-              <Youtube className="size-4" />
-            </a>
-          </div>
         </div>
 
         {cols.map((c) => (
