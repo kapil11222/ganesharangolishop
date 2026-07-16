@@ -11,8 +11,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCart, formatINR } from "@/lib/cart-store";
 import { supabase } from "@/integrations/supabase/client";
 import { checkPincode } from "@/lib/delhivery/shipping.functions";
+import { sendOrderEmailToOwner } from "@/lib/email.functions";
 import { toast } from "sonner";
 import { z } from "zod";
+
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: "Checkout — Ganesha Rangoli" }] }),
