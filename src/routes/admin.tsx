@@ -114,6 +114,7 @@ function AdminPage() {
           <TabsList className="glass">
             <TabsTrigger value="orders"><ShoppingBag className="size-4 mr-2" /> Orders</TabsTrigger>
             <TabsTrigger value="products"><Package className="size-4 mr-2" /> Products</TabsTrigger>
+            <TabsTrigger value="categories"><Tag className="size-4 mr-2" /> Categories</TabsTrigger>
             <TabsTrigger value="tickets"><MessageSquare className="size-4 mr-2" /> Tickets</TabsTrigger>
             <TabsTrigger value="coupons"><Tag className="size-4 mr-2" /> Coupons</TabsTrigger>
             <TabsTrigger value="analytics"><BarChart3 className="size-4 mr-2" /> Analytics</TabsTrigger>
