@@ -175,14 +175,14 @@ function TrackPage() {
                 <h3 className="font-display text-lg font-bold mb-3 flex items-center gap-2"><MapPin className="size-4 text-primary" /> Delivery Address</h3>
                 <div className="text-sm space-y-1">
                   <div className="font-semibold">{order.customer_name}</div>
-                  {order.address_line1 && <div className="text-muted-foreground">{order.address_line1}</div>}
-                  {order.address_line2 && <div className="text-muted-foreground">{order.address_line2}</div>}
+                  {order.address && <div className="text-muted-foreground">{order.address}</div>}
+                  {order.landmark && <div className="text-muted-foreground">Landmark: {order.landmark}</div>}
                   <div className="text-muted-foreground">
                     {[order.city, order.state, order.pincode].filter(Boolean).join(", ")}
                   </div>
-                  {order.customer_phone && (
+                  {order.mobile && (
                     <div className="text-muted-foreground pt-1 flex items-center gap-1.5">
-                      <Phone className="size-3.5" /> {order.customer_phone}
+                      <Phone className="size-3.5" /> {order.mobile}
                     </div>
                   )}
                 </div>
