@@ -85,27 +85,111 @@ function AccountPage() {
         </aside>
 
         <div className="lg:col-span-3 space-y-6">
-          <section id="orders" className="glass rounded-3xl p-6 shadow-card">
-            <h2 className="font-display text-2xl font-bold mb-5">Your Orders</h2>
+          <section id="orders" className="glass rounded-3xl p-6 md:p-7 shadow-card">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="font-display text-2xl font-bold">My Orders</h2>
+                <div className="text-xs text-muted-foreground mt-0.5">{orders.length} {orders.length === 1 ? "order" : "orders"} total</div>
+              </div>
+              <Link to="/shop" className="text-xs text-primary font-semibold hover:underline hidden sm:inline">Continue shopping →</Link>
+            </div>
             {orders.length === 0 ? (
-              <div className="text-center py-10 text-muted-foreground">No orders yet. <Link to="/shop" className="text-primary">Start shopping →</Link></div>
+              <div className="text-center py-12 rounded-2xl border-2 border-dashed border-border">
+                <ShoppingBag className="size-10 mx-auto text-muted-foreground mb-3" />
+                <div className="font-display text-lg font-bold">No orders yet</div>
+                <div className="text-xs text-muted-foreground mt-1">Start exploring our festive collection</div>
+                <Link to="/shop" className="inline-block mt-4 px-5 py-2 rounded-full gradient-festive text-primary-foreground text-sm font-semibold shadow-glow">Shop Now</Link>
+              </div>
             ) : (
-              <div className="space-y-3">
-                {orders.map((o) => (
-                  <div key={o.id} className="flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center p-4 rounded-2xl bg-background/40 border border-border">
-                    <div>
-                      <div className="font-display font-bold">{o.order_number}</div>
-                      <div className="text-xs text-muted-foreground">{new Date(o.created_at).toLocaleDateString("en-IN", { dateStyle: "medium" })} · {o.payment_method.toUpperCase()}</div>
+              <div className="space-y-4">
+                {orders.map((o) => {
+                  const items = (o.order_items ?? []) as Array<{ id: string; product_name: string; product_image: string | null; quantity: number; unit_price: number; total: number }>;
+                  const itemCount = items.reduce((s, i) => s + i.quantity, 0);
+                  const st = statusMeta(o.status);
+                  const StIcon = st.icon;
+                  return (
+                    <div key={o.id} className="rounded-2xl border border-border bg-background/50 overflow-hidden hover:shadow-card transition">
+                      {/* Header strip */}
+                      <div className="flex flex-wrap gap-4 justify-between p-4 bg-muted/30 border-b border-border">
+                        <div className="flex flex-wrap gap-6 text-xs">
+                          <div>
+                            <div className="uppercase tracking-widest text-muted-foreground">Order</div>
+                            <div className="font-display font-bold text-sm mt-0.5">{o.order_number}</div>
+                          </div>
+                          <div>
+                            <div className="uppercase tracking-widest text-muted-foreground">Placed</div>
+                            <div className="font-semibold text-sm mt-0.5">{new Date(o.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</div>
+                          </div>
+                          <div>
+                            <div className="uppercase tracking-widest text-muted-foreground">Total</div>
+                            <div className="font-display font-bold text-sm text-primary mt-0.5">{formatINR(Number(o.total))}</div>
+                          </div>
+                          <div>
+                            <div className="uppercase tracking-widest text-muted-foreground">Payment</div>
+                            <div className="font-semibold text-sm mt-0.5">{o.payment_method.toUpperCase()}</div>
+                          </div>
+                        </div>
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold h-fit ${st.cls}`}>
+                          <StIcon className="size-3.5" /> {st.label}
+                        </span>
+                      </div>
+
+                      {/* Items */}
+                      <div className="p-4 space-y-3">
+                        {items.slice(0, 3).map((it) => (
+                          <div key={it.id} className="flex gap-3 items-center">
+                            <div className="size-14 rounded-xl overflow-hidden bg-muted shrink-0">
+                              {it.product_image ? (
+                                <img src={it.product_image} alt={it.product_name} className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full grid place-items-center text-muted-foreground"><Package className="size-4" /></div>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="font-semibold text-sm line-clamp-1">{it.product_name}</div>
+                              <div className="text-xs text-muted-foreground">Qty: {it.quantity} · {formatINR(Number(it.unit_price))}</div>
+                            </div>
+                            <div className="text-sm font-semibold shrink-0">{formatINR(Number(it.total))}</div>
+                          </div>
+                        ))}
+                        {items.length > 3 && (
+                          <div className="text-xs text-muted-foreground pl-1">+ {items.length - 3} more item{items.length - 3 > 1 ? "s" : ""}</div>
+                        )}
+                        {items.length === 0 && (
+                          <div className="text-xs text-muted-foreground">{itemCount || 1} item(s) in this order</div>
+                        )}
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex flex-wrap gap-2 p-4 pt-0 border-t border-border/50 mt-2">
+                        <Link
+                          to="/track-order"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-primary-foreground text-xs font-semibold hover:opacity-90 transition"
+                        >
+                          <Truck className="size-3.5" /> Track Order
+                        </Link>
+                        {o.awb && (
+                          <button
+                            onClick={() => { navigator.clipboard.writeText(o.awb!); toast.success("AWB copied"); }}
+                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-muted text-xs font-semibold hover:bg-muted/70 transition"
+                          >
+                            AWB: {o.awb}
+                          </button>
+                        )}
+                        <Link
+                          to="/help"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-muted text-xs font-semibold hover:bg-muted/70 transition ml-auto"
+                        >
+                          Need help? <ChevronRight className="size-3.5" />
+                        </Link>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary capitalize">{o.status}</span>
-                      <div className="font-bold text-primary">{formatINR(Number(o.total))}</div>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </section>
+
 
           <section id="profile" className="glass rounded-3xl p-6 shadow-card">
             <h2 className="font-display text-2xl font-bold mb-5">Profile</h2>
