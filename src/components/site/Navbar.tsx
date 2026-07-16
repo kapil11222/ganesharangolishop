@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
-import { Menu, X, Search, ShoppingBag, Heart, User, Sparkles, Globe } from "lucide-react";
-import { ThemeToggle } from "./ThemeToggle";
+import { Menu, Search, ShoppingBag, Heart, User, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
@@ -11,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useCart } from "@/lib/cart-store";
+import logoAsset from "@/assets/ganesha-rangoli-logo.png.asset.json";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -48,17 +48,17 @@ export function Navbar() {
       >
         <div className="container-luxe flex items-center justify-between gap-4 py-3">
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="relative">
-              <div className="size-10 rounded-full gradient-festive grid place-items-center shadow-glow transition-transform group-hover:rotate-12">
-                <span className="font-display text-lg font-bold text-primary-foreground">ॐ</span>
-              </div>
-            </div>
+            <img
+              src={logoAsset.url}
+              alt="Ganesha Rangoli"
+              className="size-11 md:size-12 rounded-full object-cover shadow-card ring-1 ring-border transition-transform group-hover:scale-105"
+            />
             <div className="leading-tight">
               <div className="font-display text-lg md:text-xl font-bold tracking-tight">
                 Ganesha <span className="gradient-text">Rangoli</span>
               </div>
               <div className="text-[10px] text-muted-foreground tracking-widest uppercase hidden md:block">
-                Festive · Premium · Reusable
+                Ready Rangoli, Ready Joy
               </div>
             </div>
           </Link>
@@ -102,7 +102,8 @@ export function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <ThemeToggle />
+
+
 
             <Link to="/wishlist" aria-label="Wishlist">
               <Button variant="ghost" size="icon" className="rounded-full hidden md:inline-flex">
