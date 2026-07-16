@@ -11,8 +11,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCart, formatINR } from "@/lib/cart-store";
 import { supabase } from "@/integrations/supabase/client";
 import { checkPincode } from "@/lib/delhivery/shipping.functions";
+import { sendOrderEmailToOwner } from "@/lib/email.functions";
 import { toast } from "sonner";
 import { z } from "zod";
+
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: "Checkout — Ganesha Rangoli" }] }),
@@ -42,12 +44,15 @@ function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [payment, setPayment] = useState<"cod" | "prepaid">("cod");
 
+
   const allowCOD = items.every((i) => i.allow_cod);
   const allowPrepaid = items.every((i) => i.allow_prepaid);
 
   const [liveRate, setLiveRate] = useState<null | { serviceable: boolean; city?: string; state?: string; cod?: boolean; prepaidRate?: number | null; codRate?: number | null }>(null);
   const [checkingPin, setCheckingPin] = useState(false);
   const checkPin = useServerFn(checkPincode);
+  const sendOwnerEmail = useServerFn(sendOrderEmailToOwner);
+
 
   const baseShipping = subtotal > 999 ? 0 : subtotal === 0 ? 0 : 79;
   const liveShipping = liveRate?.serviceable
@@ -65,6 +70,30 @@ function CheckoutPage() {
   });
 
   const update = (k: keyof typeof form, v: string) => setForm((p) => ({ ...p, [k]: v }));
+
+  // Require login to access checkout
+  useEffect(() => {
+    let mounted = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!mounted) return;
+      const u = data.session?.user;
+      if (!u) {
+        toast.error("Please sign in to place an order");
+        navigate({ to: "/auth" });
+        return;
+      }
+      setForm((p) => ({
+
+        ...p,
+        email: p.email || u.email || "",
+        customer_name:
+          p.customer_name || (u.user_metadata?.full_name as string) || "",
+        mobile: p.mobile || (u.user_metadata?.phone as string) || "",
+      }));
+    });
+    return () => { mounted = false; };
+  }, [navigate]);
+
 
   // Auto-check pincode when 6 digits entered
   useEffect(() => {
@@ -88,6 +117,12 @@ function CheckoutPage() {
   }, [form.pincode]);
 
   const placeOrder = async () => {
+    const { data: session } = await supabase.auth.getSession();
+    if (!session.session?.user) {
+      toast.error("Please sign in to place an order");
+      navigate({ to: "/auth" });
+      return;
+    }
     const parsed = schema.safeParse(form);
     if (!parsed.success) {
       const first = parsed.error.issues[0];
@@ -97,12 +132,11 @@ function CheckoutPage() {
     if (items.length === 0) { toast.error("Cart is empty"); return; }
     setSubmitting(true);
     try {
-      const { data: session } = await supabase.auth.getSession();
       const { data: order, error } = await supabase
         .from("orders")
         .insert({
           ...parsed.data,
-          user_id: session.session?.user?.id ?? null,
+          user_id: session.session.user.id,
           payment_method: payment,
           subtotal, shipping, tax, discount: 0, total,
         })
@@ -115,6 +149,24 @@ function CheckoutPage() {
       }));
       const { error: ie } = await supabase.from("order_items").insert(itemRows);
       if (ie) throw ie;
+
+      // Notify owner (best-effort — don't block success)
+      sendOwnerEmail({
+        data: {
+          orderNumber: order.order_number,
+          customerName: parsed.data.customer_name,
+          email: parsed.data.email,
+          mobile: parsed.data.mobile,
+          address: parsed.data.address,
+          city: parsed.data.city,
+          state: parsed.data.state,
+          pincode: parsed.data.pincode,
+          paymentMethod: payment,
+          total,
+          items: items.map((i) => ({ name: i.name, quantity: i.quantity, price: i.price })),
+        },
+      }).catch((e) => console.error("owner email failed", e));
+
       clear();
       toast.success("Order placed successfully! 🎉");
       navigate({ to: "/order-success/$orderNumber", params: { orderNumber: order.order_number } });
@@ -125,6 +177,7 @@ function CheckoutPage() {
       setSubmitting(false);
     }
   };
+
 
   const summary = useMemo(() => ({ subtotal, shipping, tax, total }), [subtotal, shipping, tax, total]);
 
