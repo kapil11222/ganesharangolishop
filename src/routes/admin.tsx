@@ -354,3 +354,73 @@ function CouponsTab() {
     </div>
   );
 }
+
+function CategoriesTab() {
+  const qc = useQueryClient();
+  const { data: cats = [] } = useQuery<{ id: string; name: string; slug: string; description: string | null; image_url: string | null; display_order: number }[]>({
+    queryKey: ["admin-categories-full"],
+    queryFn: async () => ((await supabase.from("categories").select("*").order("display_order")).data ?? []) as any,
+  });
+  const [form, setForm] = useState({ name: "", slug: "", description: "", image_url: "", display_order: 0 });
+  const reset = () => setForm({ name: "", slug: "", description: "", image_url: "", display_order: 0 });
+  const create = async () => {
+    if (!form.name) { toast.error("Name is required"); return; }
+    const slug = form.slug || form.name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    const { error } = await supabase.from("categories").insert({ ...form, slug });
+    if (error) toast.error(error.message);
+    else { toast.success("Category added"); reset(); qc.invalidateQueries({ queryKey: ["admin-categories-full"] }); qc.invalidateQueries({ queryKey: ["admin-cats"] }); }
+  };
+  const updateImage = async (id: string, url: string) => {
+    await supabase.from("categories").update({ image_url: url || null }).eq("id", id);
+    qc.invalidateQueries({ queryKey: ["admin-categories-full"] });
+    qc.invalidateQueries({ queryKey: ["admin-cats"] });
+  };
+  const remove = async (id: string, name: string) => {
+    if (!confirm(`Delete category ${name}?`)) return;
+    const { error } = await supabase.from("categories").delete().eq("id", id);
+    if (error) toast.error(error.message);
+    else { toast.success("Deleted"); qc.invalidateQueries({ queryKey: ["admin-categories-full"] }); qc.invalidateQueries({ queryKey: ["admin-cats"] }); }
+  };
+  return (
+    <div className="space-y-4">
+      <div className="glass rounded-3xl p-6 space-y-4">
+        <div className="font-display text-lg font-bold">Add Category</div>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-3">
+            <div><Label>Name</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
+            <div><Label>Slug</Label><Input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder="auto from name" /></div>
+            <div><Label>Display order</Label><Input type="number" value={form.display_order} onChange={(e) => setForm({ ...form, display_order: Number(e.target.value) })} /></div>
+            <div><Label>Description</Label><Textarea rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
+          </div>
+          <div>
+            <Label>Image</Label>
+            <ImageUpload bucket="category-images" value={form.image_url} onChange={(v) => setForm({ ...form, image_url: v as string })} label="Upload" />
+          </div>
+        </div>
+        <div><Button onClick={create} className="rounded-full gradient-festive border-0"><Plus className="size-4 mr-2" /> Add Category</Button></div>
+      </div>
+
+      <div className="glass rounded-3xl p-4 md:p-6">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {cats.map((c) => (
+            <div key={c.id} className="rounded-2xl border border-border p-4 space-y-3">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <div className="font-semibold">{c.name}</div>
+                  <div className="text-xs text-muted-foreground">/{c.slug}</div>
+                </div>
+                <Button size="icon" variant="ghost" onClick={() => remove(c.id, c.name)}><Trash2 className="size-4 text-destructive" /></Button>
+              </div>
+              <ImageUpload
+                bucket="category-images"
+                value={c.image_url ?? ""}
+                onChange={(v) => updateImage(c.id, v as string)}
+                label="Change"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
