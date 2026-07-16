@@ -130,7 +130,8 @@ export const requestPickup = createServerFn({ method: "POST" })
       expected_count: data.expectedCount,
     });
     await context.supabase.from("pickup_requests").insert({
-      pickup_time: `${data.pickupDate} ${data.pickupTime}`,
+      pickup_date: data.pickupDate,
+      pickup_time: data.pickupTime,
       pickup_id: res.pickup_id ? String(res.pickup_id) : null,
       expected_package_count: data.expectedCount,
       status: res.success ? "scheduled" : "requested",
