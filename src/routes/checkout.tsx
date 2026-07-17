@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { ShieldCheck, Wallet, Smartphone, ArrowRight, Lock, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { ShieldCheck, Wallet, Smartphone, ArrowRight, Lock, CheckCircle2, XCircle, Loader2, Tag } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -43,6 +43,10 @@ function CheckoutPage() {
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const [payment, setPayment] = useState<"cod" | "prepaid">("cod");
+  const [coupon, setCoupon] = useState("");
+  const [appliedCode, setAppliedCode] = useState("");
+  const [discount, setDiscount] = useState(0);
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
 
 
   const allowCOD = items.every((i) => i.allow_cod);
@@ -60,7 +64,7 @@ function CheckoutPage() {
     : baseShipping;
   const shipping = subtotal > 999 ? 0 : liveShipping;
   const tax = Math.round(subtotal * 0.05);
-  const total = subtotal + shipping + tax;
+  const total = Math.max(0, subtotal + shipping + tax - discount);
 
 
   const [form, setForm] = useState({
@@ -74,7 +78,7 @@ function CheckoutPage() {
   // Require login to access checkout
   useEffect(() => {
     let mounted = true;
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(async ({ data }) => {
       if (!mounted) return;
       const u = data.session?.user;
       if (!u) {
@@ -82,13 +86,19 @@ function CheckoutPage() {
         navigate({ to: "/auth" });
         return;
       }
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name, phone, pincode")
+        .eq("id", u.id)
+        .maybeSingle();
+      if (!mounted) return;
       setForm((p) => ({
-
         ...p,
         email: p.email || u.email || "",
         customer_name:
-          p.customer_name || (u.user_metadata?.full_name as string) || "",
-        mobile: p.mobile || (u.user_metadata?.phone as string) || "",
+          p.customer_name || profile?.full_name || (u.user_metadata?.full_name as string) || "",
+        mobile: p.mobile || profile?.phone || (u.user_metadata?.phone as string) || "",
+        pincode: p.pincode || profile?.pincode || "",
       }));
     });
     return () => { mounted = false; };
@@ -116,6 +126,52 @@ function CheckoutPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.pincode]);
 
+  const applyCoupon = async () => {
+    if (!coupon.trim()) return;
+    const code = coupon.trim().toUpperCase();
+    setApplyingCoupon(true);
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) {
+        toast.error("Please sign in to use a coupon");
+        return;
+      }
+      const { data } = await supabase
+        .from("coupons").select("*").eq("code", code)
+        .eq("is_active", true).maybeSingle();
+      if (!data) { toast.error("Invalid coupon"); return; }
+      if (data.min_order_value && subtotal < Number(data.min_order_value)) {
+        toast.error(`Min order ₹${data.min_order_value} required`); return;
+      }
+      if (data.expires_at && new Date(data.expires_at) < new Date()) { toast.error("Coupon expired"); return; }
+
+      const { count } = await supabase
+        .from("orders")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userData.user.id)
+        .eq("coupon_code", code);
+      if ((count ?? 0) > 0) {
+        toast.error("You've already used this coupon");
+        return;
+      }
+
+      const d = data.discount_type === "percentage"
+        ? Math.round((subtotal * Number(data.discount_value)) / 100)
+        : Number(data.discount_value);
+      setDiscount(d);
+      setAppliedCode(data.code);
+      toast.success(`Coupon applied: -${formatINR(d)}`);
+    } finally {
+      setApplyingCoupon(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setDiscount(0);
+    setAppliedCode("");
+    setCoupon("");
+  };
+
   const placeOrder = async () => {
     const { data: session } = await supabase.auth.getSession();
     if (!session.session?.user) {
@@ -138,7 +194,8 @@ function CheckoutPage() {
           ...parsed.data,
           user_id: session.session.user.id,
           payment_method: payment,
-          subtotal, shipping, tax, discount: 0, total,
+          subtotal, shipping, tax, discount, total,
+          coupon_code: appliedCode || null,
         })
         .select()
         .single();
@@ -286,10 +343,34 @@ function CheckoutPage() {
                 </div>
               ))}
             </div>
+            <div className="border-t border-border pt-4 mb-4">
+              <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2 font-semibold">Have a coupon?</div>
+              {appliedCode ? (
+                <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Tag className="size-4 text-emerald-600" />
+                    <span className="font-semibold text-emerald-700">{appliedCode}</span>
+                    <span className="text-xs text-emerald-600">-{formatINR(discount)}</span>
+                  </div>
+                  <button onClick={removeCoupon} className="text-xs text-muted-foreground hover:text-destructive font-semibold">Remove</button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Tag className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                    <Input placeholder="Enter code" value={coupon} onChange={(e) => setCoupon(e.target.value)} className="pl-9 rounded-full h-10" />
+                  </div>
+                  <Button onClick={applyCoupon} disabled={applyingCoupon || !coupon.trim()} variant="outline" className="rounded-full h-10">
+                    {applyingCoupon ? "…" : "Apply"}
+                  </Button>
+                </div>
+              )}
+            </div>
             <div className="space-y-1.5 text-sm border-t border-border pt-4">
               <div className="flex justify-between"><span>Subtotal</span><span>{formatINR(summary.subtotal)}</span></div>
               <div className="flex justify-between"><span>Shipping</span><span>{summary.shipping === 0 ? "Free" : formatINR(summary.shipping)}</span></div>
-              <div className="flex justify-between"><span>Tax</span><span>{formatINR(summary.tax)}</span></div>
+              <div className="flex justify-between"><span>Tax (5%)</span><span>{formatINR(summary.tax)}</span></div>
+              {discount > 0 && <div className="flex justify-between text-emerald-600"><span>Discount</span><span>-{formatINR(discount)}</span></div>}
             </div>
             <div className="flex justify-between text-lg font-bold mt-4 mb-5"><span>Total</span><span className="text-primary">{formatINR(summary.total)}</span></div>
             <Button onClick={placeOrder} disabled={submitting} className="w-full h-12 rounded-full gradient-festive border-0 shadow-glow text-base font-semibold">

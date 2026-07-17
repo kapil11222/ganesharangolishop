@@ -24,6 +24,7 @@ import appCss from "../styles.css?url";
 import logoAsset from "@/assets/ganesha-rangoli-logo.png.asset.json";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
+import { PincodeGate } from "@/components/site/PincodeGate";
 
 function NotFoundComponent() {
   return (
@@ -124,6 +125,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
+      <PincodeGate />
       <Toaster position="top-center" richColors />
     </QueryClientProvider>
   );

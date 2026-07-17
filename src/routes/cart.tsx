@@ -1,13 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, Tag } from "lucide-react";
-import { useState } from "react";
+import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useCart, formatINR } from "@/lib/cart-store";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({ meta: [{ title: "Cart — Ganesha Rangoli" }] }),
@@ -19,50 +15,6 @@ function CartPage() {
   const updateQty = useCart((s) => s.updateQuantity);
   const remove = useCart((s) => s.removeItem);
   const subtotal = useCart((s) => s.subtotal());
-  const [coupon, setCoupon] = useState("");
-  const [discount, setDiscount] = useState(0);
-  const [appliedCode, setAppliedCode] = useState("");
-
-  const shipping = subtotal > 999 ? 0 : subtotal === 0 ? 0 : 79;
-  const tax = Math.round(subtotal * 0.05);
-  const total = subtotal + shipping + tax - discount;
-
-  const applyCoupon = async () => {
-    if (!coupon.trim()) return;
-    const code = coupon.trim().toUpperCase();
-    const { data } = await supabase
-      .from("coupons").select("*").eq("code", code)
-      .eq("is_active", true).maybeSingle();
-    if (!data) { toast.error("Invalid coupon"); return; }
-    if (data.min_order_value && subtotal < Number(data.min_order_value)) {
-      toast.error(`Min order ₹${data.min_order_value} required`); return;
-    }
-    if (data.expires_at && new Date(data.expires_at) < new Date()) { toast.error("Coupon expired"); return; }
-
-    // One-time use per logged-in user
-    const { data: userData } = await supabase.auth.getUser();
-    if (!userData.user) {
-      toast.error("Please sign in to use a coupon");
-      return;
-    }
-    const { count } = await supabase
-      .from("orders")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", userData.user.id)
-      .eq("coupon_code", code);
-    if ((count ?? 0) > 0) {
-      toast.error("You've already used this coupon");
-      return;
-    }
-
-    const d = data.discount_type === "percentage"
-      ? Math.round((subtotal * Number(data.discount_value)) / 100)
-      : Number(data.discount_value);
-    setDiscount(d);
-    setAppliedCode(data.code);
-    toast.success(`Coupon applied: -${formatINR(d)}`);
-  };
-
 
   if (items.length === 0) {
     return (
@@ -111,26 +63,17 @@ function CartPage() {
 
         <div className="space-y-4">
           <div className="glass-strong rounded-3xl p-6 shadow-luxe sticky top-28">
-            <h3 className="font-display text-xl font-bold mb-4">Order Summary</h3>
-            <div className="flex gap-2 mb-4">
-              <div className="relative flex-1">
-                <Tag className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                <Input placeholder="Coupon code" value={coupon} onChange={(e) => setCoupon(e.target.value)} className="pl-9 rounded-full" />
-              </div>
-              <Button onClick={applyCoupon} variant="outline" className="rounded-full">Apply</Button>
-            </div>
-            {appliedCode && <div className="text-xs text-emerald-500 font-semibold mb-3">✓ {appliedCode} applied</div>}
+            <h3 className="font-display text-xl font-bold mb-4">Cart Summary</h3>
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between"><span>Subtotal</span><span>{formatINR(subtotal)}</span></div>
-              <div className="flex justify-between"><span>Shipping</span><span>{shipping === 0 ? "Free" : formatINR(shipping)}</span></div>
-              <div className="flex justify-between"><span>Tax (5%)</span><span>{formatINR(tax)}</span></div>
-              {discount > 0 && <div className="flex justify-between text-emerald-500"><span>Discount</span><span>-{formatINR(discount)}</span></div>}
+              <div className="flex justify-between"><span>Subtotal</span><span className="font-semibold">{formatINR(subtotal)}</span></div>
+              <div className="flex justify-between text-muted-foreground"><span>Shipping & Tax</span><span>Calculated at checkout</span></div>
+              <div className="flex justify-between text-muted-foreground"><span>Coupon</span><span>Apply at checkout</span></div>
             </div>
             <div className="h-px bg-border my-4" />
-            <div className="flex justify-between text-lg font-bold mb-5"><span>Total</span><span className="text-primary">{formatINR(total)}</span></div>
+            <div className="flex justify-between text-lg font-bold mb-5"><span>Estimated Total</span><span className="text-primary">{formatINR(subtotal)}</span></div>
             <Link to="/checkout">
               <Button className="w-full h-12 rounded-full gradient-festive border-0 shadow-glow text-base font-semibold">
-                Checkout <ArrowRight className="size-4 ml-2" />
+                Proceed to Checkout <ArrowRight className="size-4 ml-2" />
               </Button>
             </Link>
             <p className="text-xs text-muted-foreground text-center mt-3">🔒 Secure 256-bit encrypted checkout</p>
