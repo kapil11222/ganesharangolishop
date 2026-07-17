@@ -78,7 +78,7 @@ function CheckoutPage() {
   // Require login to access checkout
   useEffect(() => {
     let mounted = true;
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(async ({ data }) => {
       if (!mounted) return;
       const u = data.session?.user;
       if (!u) {
@@ -86,13 +86,19 @@ function CheckoutPage() {
         navigate({ to: "/auth" });
         return;
       }
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name, phone, pincode")
+        .eq("id", u.id)
+        .maybeSingle();
+      if (!mounted) return;
       setForm((p) => ({
-
         ...p,
         email: p.email || u.email || "",
         customer_name:
-          p.customer_name || (u.user_metadata?.full_name as string) || "",
-        mobile: p.mobile || (u.user_metadata?.phone as string) || "",
+          p.customer_name || profile?.full_name || (u.user_metadata?.full_name as string) || "",
+        mobile: p.mobile || profile?.phone || (u.user_metadata?.phone as string) || "",
+        pincode: p.pincode || profile?.pincode || "",
       }));
     });
     return () => { mounted = false; };
