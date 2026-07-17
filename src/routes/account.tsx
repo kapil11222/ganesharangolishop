@@ -199,6 +199,7 @@ function AccountPage() {
               <Info label="Email" value={user.email ?? "—"} />
               <Info label="Phone" value={user.user_metadata?.phone ?? "—"} />
               <Info label="Member since" value={new Date(user.created_at).toLocaleDateString("en-IN")} />
+              <PincodeField userId={user.id} />
             </div>
           </section>
         </div>
