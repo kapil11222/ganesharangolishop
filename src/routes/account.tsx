@@ -1,12 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
-import { Package, Heart, MapPin, LogOut, User as UserIcon, Settings, Shield, Truck, CheckCircle2, Clock, XCircle, ChevronRight, ShoppingBag } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Package, Heart, MapPin, LogOut, User as UserIcon, Settings, Shield, Truck, CheckCircle2, Clock, XCircle, ChevronRight, ShoppingBag, Pencil, Check, X } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/use-auth";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatINR } from "@/lib/cart-store";
 import { toast } from "sonner";
 
