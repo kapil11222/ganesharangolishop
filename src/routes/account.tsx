@@ -227,3 +227,59 @@ function statusMeta(status: string) {
 }
 
 
+
+function PincodeField({ userId }: { userId: string }) {
+  const qc = useQueryClient();
+  const { data: profile } = useQuery({
+    queryKey: ["profile", userId],
+    queryFn: async () => {
+      const { data } = await supabase.from("profiles").select("pincode").eq("id", userId).maybeSingle();
+      return data;
+    },
+  });
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => { setValue(profile?.pincode ?? ""); }, [profile?.pincode]);
+
+  const save = async () => {
+    if (!/^[0-9]{6}$/.test(value)) { toast.error("Enter a valid 6-digit pincode"); return; }
+    setSaving(true);
+    const { error } = await supabase.from("profiles").update({ pincode: value }).eq("id", userId);
+    setSaving(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Default pincode updated");
+    setEditing(false);
+    qc.invalidateQueries({ queryKey: ["profile", userId] });
+  };
+
+  return (
+    <div className="p-4 rounded-2xl bg-background/40 border border-border">
+      <div className="text-xs uppercase tracking-widest text-muted-foreground flex items-center justify-between">
+        <span>Default Pincode</span>
+        {!editing && (
+          <button onClick={() => setEditing(true)} className="text-primary hover:underline flex items-center gap-1 normal-case tracking-normal">
+            <Pencil className="size-3" /> Edit
+          </button>
+        )}
+      </div>
+      {editing ? (
+        <div className="mt-2 flex items-center gap-2">
+          <Input
+            inputMode="numeric"
+            value={value}
+            onChange={(e) => setValue(e.target.value.replace(/[^0-9]/g, "").slice(0, 6))}
+            maxLength={6}
+            placeholder="6-digit pincode"
+            className="h-9 rounded-full text-center tracking-widest font-semibold"
+          />
+          <Button size="icon" onClick={save} disabled={saving} className="size-9 rounded-full gradient-festive border-0"><Check className="size-4" /></Button>
+          <Button size="icon" variant="ghost" onClick={() => { setEditing(false); setValue(profile?.pincode ?? ""); }} className="size-9 rounded-full"><X className="size-4" /></Button>
+        </div>
+      ) : (
+        <div className="font-semibold mt-1">{profile?.pincode || "Not set"}</div>
+      )}
+    </div>
+  );
+}
