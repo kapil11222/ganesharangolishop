@@ -64,7 +64,7 @@ function CheckoutPage() {
     : baseShipping;
   const shipping = subtotal > 999 ? 0 : liveShipping;
   const tax = Math.round(subtotal * 0.05);
-  const total = subtotal + shipping + tax;
+  const total = Math.max(0, subtotal + shipping + tax - discount);
 
 
   const [form, setForm] = useState({
