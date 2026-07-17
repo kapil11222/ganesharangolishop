@@ -194,7 +194,8 @@ function CheckoutPage() {
           ...parsed.data,
           user_id: session.session.user.id,
           payment_method: payment,
-          subtotal, shipping, tax, discount: 0, total,
+          subtotal, shipping, tax, discount, total,
+          coupon_code: appliedCode || null,
         })
         .select()
         .single();
