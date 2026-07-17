@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { ShieldCheck, Wallet, Smartphone, ArrowRight, Lock, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { ShieldCheck, Wallet, Smartphone, ArrowRight, Lock, CheckCircle2, XCircle, Loader2, Tag } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Button } from "@/components/ui/button";
