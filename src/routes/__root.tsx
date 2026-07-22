@@ -4,10 +4,11 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 import "@fontsource/playfair-display/400.css";
 import "@fontsource/playfair-display/600.css";
@@ -99,6 +100,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     links: [
       { rel: "stylesheet", href: appCss },
     ],
+    scripts: [
+      {
+        type: "text/javascript",
+        children: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init', '1549638166661185');fbq('track', 'PageView');`,
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -113,11 +120,36 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body className="bg-background text-foreground" suppressHydrationWarning>
+        <noscript>
+          <img
+            height="1"
+            width="1"
+            style={{ display: "none" }}
+            src="https://www.facebook.com/tr?id=1549638166661185&ev=PageView&noscript=1"
+            alt=""
+          />
+        </noscript>
         {children}
         <Scripts />
       </body>
     </html>
   );
+}
+
+function PixelTracker() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isFirst = useRef(true);
+  useEffect(() => {
+    if (isFirst.current) {
+      isFirst.current = false;
+      return;
+    }
+    const fbq = (window as any).fbq;
+    if (typeof fbq === "function") {
+      fbq("track", "PageView");
+    }
+  }, [pathname]);
+  return null;
 }
 
 function RootComponent() {
@@ -127,6 +159,7 @@ function RootComponent() {
       <Outlet />
       <PincodeGate />
       <Toaster position="top-center" richColors />
+      <PixelTracker />
     </QueryClientProvider>
   );
 }
