@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, Truck, ShieldCheck, RefreshCw, Award, Star, Quote } from "lucide-react";
+import { ArrowRight, Star, Quote } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
 import { AnimatedCounter } from "@/components/site/AnimatedCounter";
-import { Button } from "@/components/ui/button";
+import { RangoliShowcase } from "@/components/site/RangoliShowcase";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
