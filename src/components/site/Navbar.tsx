@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useCart } from "@/lib/cart-store";
-import logoAsset from "@/assets/ganesha-rangoli-logo.png.asset.json";
+const LOGO_URL = "/logo.png";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -49,7 +49,7 @@ export function Navbar() {
         <div className="container-luxe flex items-center justify-between gap-4 py-3">
           <Link to="/" className="flex items-center gap-2 group">
             <img
-              src={logoAsset.url}
+              src={LOGO_URL}
               alt="Ganesha Rangoli"
               className="size-11 md:size-12 rounded-full object-cover shadow-card ring-1 ring-border transition-transform group-hover:scale-105"
             />
