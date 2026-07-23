@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useCart } from "@/lib/cart-store";
-import logoAsset from "@/assets/ganesha-rangoli-logo.png.asset.json";
+const LOGO_URL = "/logo.png";
 
 const nav = [
   { to: "/", label: "Home" },
