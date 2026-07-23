@@ -114,7 +114,7 @@ function Home() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="relative aspect-square max-w-[560px] mx-auto"
+            className="relative aspect-square w-full max-w-[520px] mx-auto"
           >
             <div className="absolute inset-0 rounded-full gradient-festive opacity-30 blur-3xl animate-pulse" />
             <div className="absolute inset-8 rounded-full border-2 border-dashed border-secondary/40 animate-spin-slow" />
@@ -125,6 +125,7 @@ function Home() {
                   src="https://images.unsplash.com/photo-1604595287233-3da3fb05fc15?w=900"
                   alt="Premium peacock rangoli"
                   className="w-full h-full object-cover"
+                  loading="eager"
                 />
               </div>
             </div>
@@ -132,32 +133,48 @@ function Home() {
             <motion.div
               animate={{ y: [0, -12, 0] }}
               transition={{ duration: 4, repeat: Infinity }}
-              className="absolute top-6 -left-2 md:left-0 glass-strong rounded-2xl p-3 shadow-luxe"
+              className="absolute top-4 left-2 md:-left-4 glass-strong rounded-2xl px-3 py-2.5 shadow-luxe z-10"
             >
               <div className="flex items-center gap-2">
-                <div className="size-10 rounded-full gradient-festive grid place-items-center">
-                  <Star className="size-5 fill-white text-white" />
+                <div className="size-9 rounded-full gradient-festive grid place-items-center shrink-0">
+                  <Star className="size-4 fill-white text-white" />
                 </div>
                 <div>
-                  <div className="text-xs text-muted-foreground">Rated</div>
-                  <div className="font-bold text-sm">4.9 / 5.0</div>
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Rated</div>
+                  <div className="font-bold text-sm leading-none mt-0.5">4.9 / 5.0</div>
                 </div>
               </div>
             </motion.div>
             <motion.div
               animate={{ y: [0, 12, 0] }}
               transition={{ duration: 5, repeat: Infinity }}
-              className="absolute bottom-10 -right-2 md:right-0 glass-strong rounded-2xl p-3 shadow-luxe"
+              className="absolute bottom-8 right-2 md:-right-4 glass-strong rounded-2xl px-3 py-2.5 shadow-luxe z-10"
             >
               <div className="flex items-center gap-2">
-                <span className="text-2xl animate-diya">🪔</span>
+                <span className="text-2xl animate-diya shrink-0">🪔</span>
                 <div>
-                  <div className="text-xs text-muted-foreground">Reusable</div>
-                  <div className="font-bold text-sm">Many Festivals</div>
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Reusable</div>
+                  <div className="font-bold text-sm leading-none mt-0.5">Many Festivals</div>
+                </div>
+              </div>
+            </motion.div>
+            <motion.div
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 6, repeat: Infinity, delay: 0.5 }}
+              className="absolute top-1/2 -translate-y-1/2 -right-2 md:right-0 lg:-right-6 glass-strong rounded-2xl px-3 py-2.5 shadow-luxe z-10 hidden sm:block"
+            >
+              <div className="flex items-center gap-2">
+                <div className="size-9 rounded-full bg-emerald-500/15 grid place-items-center shrink-0">
+                  <Truck className="size-4 text-emerald-600" />
+                </div>
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Free</div>
+                  <div className="font-bold text-sm leading-none mt-0.5">Shipping ₹999+</div>
                 </div>
               </div>
             </motion.div>
           </motion.div>
+
         </div>
       </section>
 
