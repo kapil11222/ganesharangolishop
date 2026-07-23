@@ -5,7 +5,7 @@ import { SiteLayout } from "@/components/site/SiteLayout";
 import { PageHeader } from "@/components/site/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 
-export const Route = createFileRoute("/categories")({
+export const Route = createFileRoute("/categories/")({
   head: () => ({ meta: [{ title: "Categories — Ganesha Rangoli" }] }),
   component: CatsPage,
 });
