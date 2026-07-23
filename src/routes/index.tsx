@@ -46,7 +46,7 @@ function Home() {
   return (
     <SiteLayout>
       {/* HERO */}
-      <section className="relative overflow-hidden">
+      <section className="relative">
         <div className="container-luxe pt-10 md:pt-20 pb-20 md:pb-32 grid lg:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
