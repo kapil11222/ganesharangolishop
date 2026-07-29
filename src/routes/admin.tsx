@@ -2,7 +2,10 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ShoppingBag, Users, Package, IndianRupee, Plus, Pencil, Trash2, TrendingUp, MessageSquare, Tag, Star, BarChart3, Truck, ExternalLink, RefreshCw } from "lucide-react";
+import { ShoppingBag, Users, Package, IndianRupee, Plus, Pencil, Trash2, TrendingUp, MessageSquare, Tag, Star, BarChart3, Truck, ExternalLink, RefreshCw, Image as ImageIcon, Sparkles } from "lucide-react";
+import { BannersTab } from "@/components/admin/BannersTab";
+import { OffersTab } from "@/components/admin/OffersTab";
+
 import { useServerFn } from "@tanstack/react-start";
 import { createOrderShipment, requestPickup, getWaybillUrl } from "@/lib/delhivery/shipping.functions";
 import { SiteLayout } from "@/components/site/SiteLayout";
