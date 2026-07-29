@@ -113,17 +113,23 @@ function AdminPage() {
         </div>
 
         <Tabs defaultValue="orders" className="space-y-4">
-          <TabsList className="glass">
+          <TabsList className="glass flex-wrap h-auto">
             <TabsTrigger value="orders"><ShoppingBag className="size-4 mr-2" /> Orders</TabsTrigger>
             <TabsTrigger value="products"><Package className="size-4 mr-2" /> Products</TabsTrigger>
             <TabsTrigger value="categories"><Tag className="size-4 mr-2" /> Categories</TabsTrigger>
+            <TabsTrigger value="banners"><ImageIcon className="size-4 mr-2" /> Banners</TabsTrigger>
+            <TabsTrigger value="offers"><Sparkles className="size-4 mr-2" /> Offers</TabsTrigger>
             <TabsTrigger value="tickets"><MessageSquare className="size-4 mr-2" /> Tickets</TabsTrigger>
             <TabsTrigger value="coupons"><Tag className="size-4 mr-2" /> Coupons</TabsTrigger>
             <TabsTrigger value="shipping"><Truck className="size-4 mr-2" /> Shipping</TabsTrigger>
             <TabsTrigger value="analytics"><BarChart3 className="size-4 mr-2" /> Analytics</TabsTrigger>
           </TabsList>
 
+          <TabsContent value="banners"><BannersTab /></TabsContent>
+          <TabsContent value="offers"><OffersTab /></TabsContent>
+
           <TabsContent value="orders">
+
             <div className="glass rounded-3xl p-4 md:p-6 shadow-card overflow-x-auto">
               <table className="w-full text-sm min-w-[700px]">
                 <thead className="text-xs uppercase text-muted-foreground border-b border-border">
