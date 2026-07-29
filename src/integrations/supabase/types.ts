@@ -163,6 +163,57 @@ export type Database = {
         }
         Relationships: []
       }
+      hero_slides: {
+        Row: {
+          created_at: string
+          cta_label: string | null
+          cta_link: string | null
+          display_order: number
+          ends_at: string | null
+          eyebrow: string | null
+          id: string
+          image_url: string
+          is_active: boolean
+          mobile_image_url: string | null
+          starts_at: string | null
+          subtitle: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          cta_label?: string | null
+          cta_link?: string | null
+          display_order?: number
+          ends_at?: string | null
+          eyebrow?: string | null
+          id?: string
+          image_url: string
+          is_active?: boolean
+          mobile_image_url?: string | null
+          starts_at?: string | null
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          cta_label?: string | null
+          cta_link?: string | null
+          display_order?: number
+          ends_at?: string | null
+          eyebrow?: string | null
+          id?: string
+          image_url?: string
+          is_active?: boolean
+          mobile_image_url?: string | null
+          starts_at?: string | null
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ndr_records: {
         Row: {
           action: string | null
@@ -222,6 +273,60 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+        }
+        Relationships: []
+      }
+      offer_campaigns: {
+        Row: {
+          badge_text: string | null
+          banner_url: string | null
+          coupon_code: string | null
+          created_at: string
+          cta_link: string | null
+          description: string | null
+          discount_percent: number | null
+          display_order: number
+          ends_at: string | null
+          id: string
+          is_active: boolean
+          name: string
+          occasion: string
+          starts_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          badge_text?: string | null
+          banner_url?: string | null
+          coupon_code?: string | null
+          created_at?: string
+          cta_link?: string | null
+          description?: string | null
+          discount_percent?: number | null
+          display_order?: number
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          occasion?: string
+          starts_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          badge_text?: string | null
+          banner_url?: string | null
+          coupon_code?: string | null
+          created_at?: string
+          cta_link?: string | null
+          description?: string | null
+          discount_percent?: number | null
+          display_order?: number
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          occasion?: string
+          starts_at?: string | null
+          updated_at?: string
         }
         Relationships: []
       }

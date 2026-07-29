@@ -1,119 +1,56 @@
-# Delhivery Full Integration — Ganesha Rangoli
+## Goal
 
-End-to-end Delhivery shipping inside your website and admin dashboard. All API calls run server-side; your token never touches the browser.
+1. Replace the 3D rangoli hero with a real image slider whose banners you upload from the admin panel.
+2. Remove "Watch Demo" from the whole site.
+3. Make offers management advanced — occasion-based offer campaigns in admin, and a rich Flipkart/Meesho-style offers experience for customers.
 
-## What ships in each phase
+## 1. Hero slider (replaces the 3D section)
 
-### Phase 1 — Customer essentials (launch first)
-- **Pincode serviceability widget** on Product Page and Cart:
-  - "Enter pincode → Check delivery"
-  - Shows: available / not serviceable, COD eligible?, prepaid-only?, expected delivery date.
-- **Live shipping rate** at Checkout:
-  - Calculates real shipping cost from warehouse pincode → customer pincode based on order weight (sum of product weights).
-  - Free shipping above ₹999 still applied on top.
-- **Live Order Tracking page** (`/track-order`):
-  - Beautiful timeline: Manifested → Picked → In Transit → Out for Delivery → Delivered.
-  - Auto-fetches Delhivery status by AWB; shows current location & last scan.
-- **"Get it by <date>"** badge on Product Cards & PDP (uses serviceability API + cutoff time).
+- Delete `RangoliShowcase` (the rotating rangoli, sparkles, petals, tilt) and the "Watch Demo" button.
+- New `HeroSlider` component on the home page:
+  - Full-width responsive banner carousel, autoplay ~5s, pause on hover, swipe on mobile, arrows + dot indicators, smooth fade/slide transitions (Framer Motion), reduced-motion safe.
+  - Each slide supports: desktop image, optional mobile image, headline, subtext, CTA label + link, and a placement/eyebrow tag.
+  - Images lazy-loaded, first slide eager for LCP; text overlay uses existing theme tokens so it stays readable.
+- If no slides are configured, show a clean branded fallback (headline + Shop Now) instead of a blank area.
 
-### Phase 2 — Admin shipping automation
-New **"Shipping"** tab in `/admin` plus per-order actions:
-- **Create Shipment (AWB)** — one click on any order → generates Delhivery waybill.
-- **Download Waybill PDF** — print-ready label with barcode & address.
-- **Schedule Pickup** — request Delhivery to pick up from your warehouse (single or bulk).
-- **Bulk AWB creation** — select multiple orders → generate all at once (Diwali rush saver).
-- **Warehouse settings page** — configure pickup address, phone, default package weight/dimensions.
+## 2. Admin: Banners / Slider tab
 
-### Phase 3 — Advanced ops
-- **NDR dashboard** — see failed deliveries with reason; re-attempt / update address / mark RTO from panel.
-- **RTO / Return tracking** — full return journey visible per order.
-- **COD Remittance tracker** — which COD orders are collected, expected remittance date, reconciliation view.
-- **Auto status sync** — scheduled job pulls latest tracking for all active shipments every 30 min; updates order status + optional email/SMS to customer.
+- New "Banners" tab in `/admin` with full CRUD:
+  - Upload image via the existing ImageUpload component (Supabase storage), optional separate mobile image.
+  - Fields: title, subtitle, CTA text, CTA link, display order, active toggle, optional start/end dates.
+  - Drag-free ordering via a numeric order field + up/down controls, live preview thumbnail.
 
----
+## 3. Advanced offers
 
-## Technical Design
+**Admin — new "Offers" tab (separate from Coupons):**
 
-### Secrets
-- `DELHIVERY_API_TOKEN` — production token (stored via `add_secret`, server-only).
-- `DELHIVERY_CLIENT_NAME` — your registered client/warehouse name.
-- `DELHIVERY_WAREHOUSE_PINCODE` — origin pincode (also editable in admin).
+- Offer campaigns tied to an occasion (Diwali, Navratri, Wedding Season, Holi, Raksha Bandhan, custom).
+- Per campaign: name, occasion, banner image, description, discount badge text (e.g. "Up to 40% OFF"), start/end date, active toggle, display order, optional linked coupon code, and product/category targeting.
+- Coupons tab stays as-is for code-level rules; offers can reference a coupon so the customer sees "Use code X".
+- Live status pill: Scheduled / Live / Expired based on dates.
 
-### Server layer (TanStack)
-All Delhivery calls happen in server functions — never from the browser.
+**Customer `/offers` page — Flipkart/Meesho style:**
 
-`src/lib/delhivery/`
-- `delhivery.server.ts` — thin HTTP client wrapping Delhivery REST endpoints (serviceability, rate, create shipment, track, pickup, NDR, cancel). Handles auth header & error normalization.
-- `delhivery.functions.ts` — server functions callable from routes:
-  - `checkPincode({ pincode, weight })` — public.
-  - `calculateShippingRate({ pincode, weight, cod })` — public.
-  - `trackShipmentPublic({ awb })` — public (for `/track-order`).
-  - `createShipmentForOrder({ orderId })` — admin only.
-  - `downloadWaybill({ awb })` — admin only, returns PDF URL.
-  - `schedulePickup({ orderIds, pickupDate })` — admin only.
-  - `bulkCreateShipments({ orderIds })` — admin only.
-  - `syncTracking({ awb })` / `syncAllActive()` — admin/scheduled.
-  - `updateNDR({ awb, action, notes })` — admin only.
+- Top offer-banner carousel (from active campaigns).
+- "Deals of the Day" strip with a live countdown to the campaign end time.
+- Coupon cards with one-tap Copy Code and eligibility line.
+- Occasion tabs/chips (Diwali, Wedding, Navratri…) filtering the products below.
+- Discount rails: "Under ₹299", "Up to 30% Off", "Best Sellers on Sale", each a horizontal scroll rail.
+- Product cards show MRP strike-through, discount % badge, and the offer tag.
+- Empty/loading skeletons so the page never looks broken.
+- Home page also gets a compact "Festive Offers" strip linking to `/offers`.
 
-Admin functions use `requireSupabaseAuth` + `has_role('admin')` check.
+## Technical notes
 
-### Database changes (Supabase migration)
+- New Supabase tables (public read for active rows, admin-only writes, with GRANTs):
+  - `hero_slides` — image_url, mobile_image_url, title, subtitle, cta_label, cta_link, display_order, is_active, starts_at, ends_at.
+  - `offer_campaigns` — name, slug, occasion, banner_url, description, badge_text, coupon_code, discount_percent, starts_at, ends_at, display_order, is_active.
+  - `offer_products` — links a campaign to specific products/categories (optional targeting).
+- Reuse existing `product-images` / add a `banner-images` storage bucket for slider and offer banners.
+- All queries via TanStack Query; SEO head metadata updated on `/offers`.
 
-**New tables:**
-- `shipments` — `order_id`, `awb`, `courier` (delhivery), `status`, `current_location`, `expected_delivery`, `label_url`, `pickup_id`, `weight`, `dimensions`, `payment_mode`, `raw_status_payload`, timestamps.
-- `shipment_events` — `shipment_id`, `status`, `location`, `event_time`, `remark` (full tracking history).
-- `pickup_requests` — `pickup_date`, `pickup_id`, `count`, `status`, `warehouse_id`.
-- `warehouses` — `name`, `pincode`, `address`, `phone`, `is_default` (start with one row).
-- `ndr_records` — `shipment_id`, `attempt_no`, `reason`, `action_taken`, `resolved`.
-- `cod_remittance` — `awb`, `order_id`, `amount`, `collected_at`, `remitted_at`, `utr`, `status`.
+&nbsp;
 
-**Extensions to existing tables:**
-- `products` → add `weight_grams`, `length_cm`, `width_cm`, `height_cm` (for accurate rate calc).
-- `orders` → add `awb`, `shipping_status`, `expected_delivery_at`, `shipping_cost_actual`, `warehouse_id`.
+And The Home pAge Compunet Also Upadete And Make Profationa And Main Thing Is Make Best For Meta Ads Ecommesrs .
 
-All new tables get RLS: admin full access, users read their own via `orders.user_id` join.
-
-### Public API routes
-- `POST /api/public/webhooks/delhivery` — receives Delhivery status push (if enabled on your account). HMAC-verified using `DELHIVERY_WEBHOOK_SECRET`. Falls back to polling if webhook not configured.
-
-### Scheduled job (Phase 3)
-- `pg_cron` job → hits `/api/public/cron/sync-shipments` every 30 min → updates all active shipments' tracking.
-
-### UI additions
-- `src/components/site/PincodeCheck.tsx` — reusable widget (product page + cart).
-- `src/routes/track-order.tsx` — upgrade existing page to live tracking with AWB input.
-- `src/routes/checkout.tsx` — inject live rate line.
-- `src/routes/admin.tsx` — new **Shipping**, **Warehouse**, **NDR**, **COD Remittance** tabs.
-- Product form → add weight/dimension fields.
-
-### Order flow after integration
-```text
-User places order (COD / Prepaid)
-   → order saved
-   → (optional) auto-create AWB if setting enabled, else appears in admin "To Ship" queue
-Admin clicks "Create Shipment"
-   → Delhivery AWB generated
-   → label PDF ready to print
-   → pickup scheduled (bulk or per-day)
-Delhivery picks up
-   → tracking auto-updates every 30 min
-   → customer sees live status on /track-order
-   → NDR/RTO handled from admin if issues
-   → COD remittance tracked till payout
-```
-
----
-
-## Delivery order
-
-1. **Migration** — add all shipping tables, columns, RLS, grants.
-2. **Save secrets** — `add_secret` prompts for the 3 Delhivery values.
-3. **Server layer** — Delhivery client + all server functions.
-4. **Phase 1 UI** — pincode widget, live rate at checkout, live tracking page, delivery-date badges.
-5. **Phase 2 UI** — admin Shipping tab (AWB, waybill, pickup, bulk), Warehouse settings, product weight/dimension fields.
-6. **Phase 3 UI** — NDR dashboard, COD remittance, scheduled auto-sync, optional webhook route.
-7. **Test** — end-to-end with your live token on one real order (COD + Prepaid).
-
-Each phase is independently shippable, so you can start using Phase 1 immediately while Phase 2 & 3 build in parallel.
-
-Confirm and I'll start with the database migration + secrets.
+&nbsp;
