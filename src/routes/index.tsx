@@ -5,7 +5,7 @@ import { ArrowRight, Star, Quote } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
 import { AnimatedCounter } from "@/components/site/AnimatedCounter";
-import { RangoliShowcase } from "@/components/site/RangoliShowcase";
+import { HeroSlider } from "@/components/site/HeroSlider";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
@@ -45,8 +45,10 @@ function Home() {
 
   return (
     <SiteLayout>
-      {/* HERO — Premium 3D Rangoli Showcase */}
-      <RangoliShowcase />
+      {/* HERO — Admin-managed banner slider */}
+      <HeroSlider />
+
+
 
 
       {/* STATS */}
