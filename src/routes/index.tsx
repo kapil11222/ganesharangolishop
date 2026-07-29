@@ -45,8 +45,10 @@ function Home() {
 
   return (
     <SiteLayout>
-      {/* HERO — Premium 3D Rangoli Showcase */}
-      <RangoliShowcase />
+      {/* HERO — Admin-managed banner slider */}
+      <HeroSlider />
+
+
 
 
       {/* STATS */}
