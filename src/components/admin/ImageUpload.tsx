@@ -19,7 +19,7 @@ export function ImageUpload({
   multiple = false,
   label = "Upload image",
 }: {
-  bucket: "product-images" | "category-images";
+  bucket: "product-images" | "category-images" | "banner-images";
   value: string | string[];
   onChange: (next: string | string[]) => void;
   multiple?: boolean;
