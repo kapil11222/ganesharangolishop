@@ -132,7 +132,7 @@ export function HeroSlider() {
                     </p>
                   )}
                   {slide.cta_label && (
-                    <Link to={(slide.cta_link || "/shop") as string} className="inline-block mt-4 sm:mt-6">
+                    <Link to={(slide.cta_link || "/shop") as never} className="inline-block mt-4 sm:mt-6">
                       <Button size="lg" className="rounded-full gradient-festive border-0 shadow-glow font-semibold h-10 sm:h-12 px-5 sm:px-8">
                         {slide.cta_label} <ArrowRight className="ml-2 size-4" />
                       </Button>
