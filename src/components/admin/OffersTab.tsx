@@ -145,11 +145,14 @@ function OfferDialog({ existing, onSaved }: { existing?: OfferCampaign; onSaved:
       ...form,
       coupon_code: form.coupon_code ? form.coupon_code.toUpperCase() : null,
       banner_url: form.banner_url || null,
+      video_url: form.video_url || null,
+      video_type: form.video_url ? form.video_type || "link" : null,
       discount_percent: Number(form.discount_percent) || null,
       display_order: Number(form.display_order) || 0,
       starts_at: toIso(form.starts_at),
       ends_at: toIso(form.ends_at),
     };
+
     const { error } = existing
       ? await supabase.from("offer_campaigns").update(payload).eq("id", existing.id)
       : await supabase.from("offer_campaigns").insert(payload);
