@@ -1,0 +1,4 @@
+CREATE POLICY "Public read offer-videos" ON storage.objects FOR SELECT USING (bucket_id = 'offer-videos');
+CREATE POLICY "Admins upload offer-videos" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'offer-videos' AND public.has_role(auth.uid(), 'admin'));
+CREATE POLICY "Admins update offer-videos" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'offer-videos' AND public.has_role(auth.uid(), 'admin'));
+CREATE POLICY "Admins delete offer-videos" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'offer-videos' AND public.has_role(auth.uid(), 'admin'));
