@@ -174,6 +174,16 @@ function OfferDialog({ existing, onSaved }: { existing?: OfferCampaign; onSaved:
             <Label>Offer banner</Label>
             <ImageUpload bucket="banner-images" value={form.banner_url} onChange={(v) => setForm({ ...form, banner_url: v as string })} label="Upload" />
           </div>
+          <div className="md:col-span-2">
+            <Label>Offer video (optional — YouTube link or MP4 upload)</Label>
+            <MediaUpload
+              value={form.video_url}
+              type={form.video_type}
+              onChange={(v) => setForm({ ...form, ...v })}
+              label="Offer video"
+            />
+          </div>
+
           <div><Label>Offer name</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Diwali Dhamaka Sale" /></div>
           <div>
             <Label>Occasion</Label>
