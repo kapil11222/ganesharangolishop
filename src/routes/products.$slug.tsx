@@ -255,6 +255,11 @@ function ProductPage() {
           </section>
         )}
       </div>
+
+      <div className="pb-20">
+        <OfferBlocks title="Save more with live offers" subtitle="Apply a coupon at checkout and save instantly." limit={3} />
+      </div>
     </SiteLayout>
+
   );
 }
