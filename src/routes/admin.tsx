@@ -258,6 +258,8 @@ function ProductDialog({ existing, categories, onSaved }: { existing?: AdminProd
     stock: existing?.stock ?? 0,
     category_id: existing?.category_id ?? (categories[0]?.id ?? ""),
     images: (existing?.images ?? []) as string[],
+    video_url: (existing as any)?.video_url ?? "",
+    video_type: (existing as any)?.video_type ?? "",
     festival: existing?.festival ?? "",
     allow_cod: existing?.allow_cod ?? true,
     allow_prepaid: existing?.allow_prepaid ?? true,
@@ -273,7 +275,10 @@ function ProductDialog({ existing, categories, onSaved }: { existing?: AdminProd
       mrp: Number(form.mrp) || null,
       stock: Number(form.stock),
       images: form.images,
+      video_url: form.video_url || null,
+      video_type: form.video_url ? form.video_type || "link" : null,
     };
+
     const op = existing
       ? supabase.from("products").update(payload).eq("id", existing.id)
       : supabase.from("products").insert(payload);
