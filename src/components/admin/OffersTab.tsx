@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { MediaUpload } from "@/components/admin/MediaUpload";
+
 import { supabase } from "@/integrations/supabase/client";
 import { OCCASIONS, occasionLabel, campaignStatus, type OfferCampaign } from "@/lib/offers";
 import { toast } from "sonner";
@@ -18,6 +20,8 @@ const empty = {
   description: "",
   badge_text: "UP TO 30% OFF",
   banner_url: "",
+  video_url: "",
+  video_type: "",
   coupon_code: "",
   discount_percent: 0,
   cta_link: "/shop",
@@ -25,6 +29,7 @@ const empty = {
   starts_at: "",
   ends_at: "",
 };
+
 
 const toIso = (v: string) => (v ? new Date(v).toISOString() : null);
 const toLocal = (v: string | null) => (v ? new Date(v).toISOString().slice(0, 16) : "");
@@ -123,6 +128,8 @@ function OfferDialog({ existing, onSaved }: { existing?: OfferCampaign; onSaved:
           description: existing.description ?? "",
           badge_text: existing.badge_text ?? "",
           banner_url: existing.banner_url ?? "",
+          video_url: existing.video_url ?? "",
+          video_type: existing.video_type ?? "",
           coupon_code: existing.coupon_code ?? "",
           discount_percent: existing.discount_percent ?? 0,
           cta_link: existing.cta_link ?? "",
@@ -133,17 +140,21 @@ function OfferDialog({ existing, onSaved }: { existing?: OfferCampaign; onSaved:
       : { ...empty },
   );
 
+
   const save = async () => {
     if (!form.name.trim()) { toast.error("Offer name is required"); return; }
     const payload = {
       ...form,
       coupon_code: form.coupon_code ? form.coupon_code.toUpperCase() : null,
       banner_url: form.banner_url || null,
+      video_url: form.video_url || null,
+      video_type: form.video_url ? form.video_type || "link" : null,
       discount_percent: Number(form.discount_percent) || null,
       display_order: Number(form.display_order) || 0,
       starts_at: toIso(form.starts_at),
       ends_at: toIso(form.ends_at),
     };
+
     const { error } = existing
       ? await supabase.from("offer_campaigns").update(payload).eq("id", existing.id)
       : await supabase.from("offer_campaigns").insert(payload);
@@ -165,6 +176,16 @@ function OfferDialog({ existing, onSaved }: { existing?: OfferCampaign; onSaved:
             <Label>Offer banner</Label>
             <ImageUpload bucket="banner-images" value={form.banner_url} onChange={(v) => setForm({ ...form, banner_url: v as string })} label="Upload" />
           </div>
+          <div className="md:col-span-2">
+            <Label>Offer video (optional — YouTube link or MP4 upload)</Label>
+            <MediaUpload
+              value={form.video_url}
+              type={form.video_type}
+              onChange={(v) => setForm({ ...form, ...v })}
+              label="Offer video"
+            />
+          </div>
+
           <div><Label>Offer name</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Diwali Dhamaka Sale" /></div>
           <div>
             <Label>Occasion</Label>

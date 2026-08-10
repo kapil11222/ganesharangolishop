@@ -6,7 +6,9 @@ import { SiteLayout } from "@/components/site/SiteLayout";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
 import { AnimatedCounter } from "@/components/site/AnimatedCounter";
 import { HeroSlider } from "@/components/site/HeroSlider";
+import { OfferBlocks } from "@/components/site/OfferBlocks";
 import { supabase } from "@/integrations/supabase/client";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -45,13 +47,16 @@ function Home() {
 
   return (
     <SiteLayout>
-      {/* HERO — Admin-managed banner slider */}
+      {/* HERO — Admin-managed banner slider (full-bleed premium) */}
       <HeroSlider />
 
-
-
+      {/* SITEWIDE OFFER BLOCKS */}
+      <div className="pt-14 md:pt-20">
+        <OfferBlocks title="Festive offers live now" subtitle="Occasion-based campaigns, coupons & video drops." />
+      </div>
 
       {/* STATS */}
+
       <section className="border-y border-border bg-card/40 backdrop-blur">
         <div className="container-luxe py-10 grid grid-cols-2 md:grid-cols-4 gap-6">
           {[

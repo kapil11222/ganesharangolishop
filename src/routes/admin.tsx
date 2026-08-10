@@ -22,6 +22,8 @@ import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/lib/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { MediaUpload } from "@/components/admin/MediaUpload";
+
 import { formatINR } from "@/lib/cart-store";
 import { toast } from "sonner";
 
@@ -258,6 +260,8 @@ function ProductDialog({ existing, categories, onSaved }: { existing?: AdminProd
     stock: existing?.stock ?? 0,
     category_id: existing?.category_id ?? (categories[0]?.id ?? ""),
     images: (existing?.images ?? []) as string[],
+    video_url: (existing as any)?.video_url ?? "",
+    video_type: (existing as any)?.video_type ?? "",
     festival: existing?.festival ?? "",
     allow_cod: existing?.allow_cod ?? true,
     allow_prepaid: existing?.allow_prepaid ?? true,
@@ -273,7 +277,10 @@ function ProductDialog({ existing, categories, onSaved }: { existing?: AdminProd
       mrp: Number(form.mrp) || null,
       stock: Number(form.stock),
       images: form.images,
+      video_url: form.video_url || null,
+      video_type: form.video_url ? form.video_type || "link" : null,
     };
+
     const op = existing
       ? supabase.from("products").update(payload).eq("id", existing.id)
       : supabase.from("products").insert(payload);
@@ -314,6 +321,16 @@ function ProductDialog({ existing, categories, onSaved }: { existing?: AdminProd
               label="Add photos"
             />
           </div>
+          <div className="md:col-span-2">
+            <Label>Product video (optional — YouTube link or MP4 upload)</Label>
+            <MediaUpload
+              value={form.video_url}
+              type={form.video_type}
+              onChange={(v) => setForm({ ...form, ...v })}
+              label="Product video"
+            />
+          </div>
+
           <div className="md:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
             <label className="flex items-center gap-2"><Checkbox checked={form.allow_cod} onCheckedChange={(v) => setForm({ ...form, allow_cod: !!v })} /> Allow COD</label>
             <label className="flex items-center gap-2"><Checkbox checked={form.allow_prepaid} onCheckedChange={(v) => setForm({ ...form, allow_prepaid: !!v })} /> Allow Prepaid</label>

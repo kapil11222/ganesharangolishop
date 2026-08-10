@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { PageHeader } from "@/components/site/PageHeader";
+import { OfferBlocks } from "@/components/site/OfferBlocks";
+
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -95,7 +97,11 @@ function ShopPage() {
         description="Hand-crafted, reusable, festival-ready. Filter by your favourite festival or design."
         crumbs={[{ to: "/shop", label: "Shop" }]}
       />
+      <div className="pb-10">
+        <OfferBlocks title="Live offers" subtitle="Grab a coupon before you check out." limit={3} />
+      </div>
       <div className="container-luxe pb-20">
+
         <div className="flex flex-col lg:flex-row gap-8">
           <aside className="hidden lg:block w-64 shrink-0 sticky top-28 self-start glass rounded-2xl p-6">
             <Filters />

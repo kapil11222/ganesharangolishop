@@ -63,9 +63,10 @@ export function HeroSlider() {
 
   return (
     <section aria-label="Featured offers" className="relative">
-      <div className="container-luxe pt-4 md:pt-6">
+      <div className="w-full">
         <div
-          className="relative overflow-hidden rounded-3xl shadow-luxe border border-border bg-muted"
+          className="relative overflow-hidden shadow-luxe border-b border-border bg-muted"
+
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
           onTouchStart={(e) => { touchX.current = e.touches[0].clientX; setPaused(true); }}

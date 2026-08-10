@@ -32,7 +32,10 @@ export type OfferCampaign = {
   is_active: boolean;
   starts_at: string | null;
   ends_at: string | null;
+  video_url?: string | null;
+  video_type?: string | null;
 };
+
 
 export function campaignStatus(c: { is_active: boolean; starts_at: string | null; ends_at: string | null }) {
   const now = Date.now();
