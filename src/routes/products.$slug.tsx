@@ -80,15 +80,33 @@ function ProductPage() {
               transition={{ duration: 0.4 }}
               className="relative aspect-square rounded-3xl overflow-hidden glass shadow-luxe"
             >
-              <img src={product.images[imgIdx]} alt={product.name} className="w-full h-full object-cover" />
+              {imgIdx === -1 && product.video_url ? (
+                <VideoPlayer url={product.video_url} type={product.video_type} poster={product.images[0]} label={product.name} />
+              ) : (
+                <img src={product.images[imgIdx] ?? product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+              )}
               {off > 0 && (
                 <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-accent text-accent-foreground text-xs font-bold">
                   Save {off}%
                 </div>
               )}
             </motion.div>
-            {product.images.length > 1 && (
+            {(product.images.length > 1 || product.video_url) && (
               <div className="flex gap-3 overflow-x-auto scrollbar-hide">
+                {product.video_url && (
+                  <button
+                    onClick={() => setImgIdx(-1)}
+                    aria-label="Play product video"
+                    className={`relative shrink-0 size-20 rounded-2xl overflow-hidden border-2 transition ${
+                      imgIdx === -1 ? "border-primary" : "border-transparent opacity-70"
+                    }`}
+                  >
+                    <img src={product.images[0]} alt="" className="w-full h-full object-cover" />
+                    <span className="absolute inset-0 grid place-items-center bg-background/40">
+                      <Play className="size-6 text-primary fill-primary" />
+                    </span>
+                  </button>
+                )}
                 {product.images.map((src: string, i: number) => (
                   <button
                     key={i}
@@ -102,6 +120,7 @@ function ProductPage() {
                 ))}
               </div>
             )}
+
           </div>
 
           {/* Details */}
