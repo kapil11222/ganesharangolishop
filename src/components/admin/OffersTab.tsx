@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { MediaUpload } from "@/components/admin/MediaUpload";
+
 import { supabase } from "@/integrations/supabase/client";
 import { OCCASIONS, occasionLabel, campaignStatus, type OfferCampaign } from "@/lib/offers";
 import { toast } from "sonner";
