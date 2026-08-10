@@ -1,0 +1,2 @@
+ALTER TABLE public.offer_campaigns ADD COLUMN IF NOT EXISTS video_url text, ADD COLUMN IF NOT EXISTS video_type text;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS video_url text, ADD COLUMN IF NOT EXISTS video_type text;

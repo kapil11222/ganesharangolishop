@@ -293,6 +293,8 @@ export type Database = {
           occasion: string
           starts_at: string | null
           updated_at: string
+          video_type: string | null
+          video_url: string | null
         }
         Insert: {
           badge_text?: string | null
@@ -310,6 +312,8 @@ export type Database = {
           occasion?: string
           starts_at?: string | null
           updated_at?: string
+          video_type?: string | null
+          video_url?: string | null
         }
         Update: {
           badge_text?: string | null
@@ -327,6 +331,8 @@ export type Database = {
           occasion?: string
           starts_at?: string | null
           updated_at?: string
+          video_type?: string | null
+          video_url?: string | null
         }
         Relationships: []
       }
@@ -569,6 +575,8 @@ export type Database = {
           slug: string
           stock: number
           updated_at: string
+          video_type: string | null
+          video_url: string | null
           weight_grams: number | null
           width_cm: number | null
         }
@@ -602,6 +610,8 @@ export type Database = {
           slug: string
           stock?: number
           updated_at?: string
+          video_type?: string | null
+          video_url?: string | null
           weight_grams?: number | null
           width_cm?: number | null
         }
@@ -635,6 +645,8 @@ export type Database = {
           slug?: string
           stock?: number
           updated_at?: string
+          video_type?: string | null
+          video_url?: string | null
           weight_grams?: number | null
           width_cm?: number | null
         }
