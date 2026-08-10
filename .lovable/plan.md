@@ -1,56 +1,26 @@
-## Goal
+# Premium home, sitewide offers & video support
 
-1. Replace the 3D rangoli hero with a real image slider whose banners you upload from the admin panel.
-2. Remove "Watch Demo" from the whole site.
-3. Make offers management advanced — occasion-based offer campaigns in admin, and a rich Flipkart/Meesho-style offers experience for customers.
+## 1. Home page — more premium
+- Keep the admin-managed carousel on the home page, but make it full-bleed (edge-to-edge on mobile, rounded inset on desktop) with taller cinematic aspect ratios, gradient scrim, animated eyebrow/title/CTA reveal, progress-bar autoplay indicator and refined arrows/dots.
+- Upgrade the sections below it: a marquee trust bar, a "Shop by occasion" collection grid with hover reveal, a new "Deals live now" rail pulling active offer campaigns, a festive editorial band, and polished testimonial/stat blocks with softer shadows, gold accents and consistent spacing.
+- Keep everything responsive and use existing design tokens (no hardcoded colors).
 
-## 1. Hero slider (replaces the 3D section)
+## 2. Offers visible on every page (Flipkart/Meesho style)
+- New `OfferStrip` component mounted in the site layout, under the navbar on all pages: auto-rotating one-line offer/coupon ticker with copy-code action, dismissible for the session.
+- New `OfferBlocks` component reused on Home, Shop and Product pages: horizontally scrollable campaign banner cards (badge, title, discount, coupon, CTA) built from live campaigns.
+- Both read the same `offer_campaigns` data with the existing live/scheduled filtering.
 
-- Delete `RangoliShowcase` (the rotating rangoli, sparkles, petals, tilt) and the "Watch Demo" button.
-- New `HeroSlider` component on the home page:
-  - Full-width responsive banner carousel, autoplay ~5s, pause on hover, swipe on mobile, arrows + dot indicators, smooth fade/slide transitions (Framer Motion), reduced-motion safe.
-  - Each slide supports: desktop image, optional mobile image, headline, subtext, CTA label + link, and a placement/eyebrow tag.
-  - Images lazy-loaded, first slide eager for LCP; text overlay uses existing theme tokens so it stays readable.
-- If no slides are configured, show a clean branded fallback (headline + Shop Now) instead of a blank area.
+## 3. Offer mode — more functionality
+- Offers page gains: countdown timers per campaign, "grab now" coupon cards, occasion filter chips, sorting of deal rails by discount depth, and a video block per campaign.
+- Admin Offers tab gains: video (link or upload), priority ordering with quick up/down, duplicate-campaign action, live/scheduled/expired filtering, and per-campaign preview.
 
-## 2. Admin: Banners / Slider tab
-
-- New "Banners" tab in `/admin` with full CRUD:
-  - Upload image via the existing ImageUpload component (Supabase storage), optional separate mobile image.
-  - Fields: title, subtitle, CTA text, CTA link, display order, active toggle, optional start/end dates.
-  - Drag-free ordering via a numeric order field + up/down controls, live preview thumbnail.
-
-## 3. Advanced offers
-
-**Admin — new "Offers" tab (separate from Coupons):**
-
-- Offer campaigns tied to an occasion (Diwali, Navratri, Wedding Season, Holi, Raksha Bandhan, custom).
-- Per campaign: name, occasion, banner image, description, discount badge text (e.g. "Up to 40% OFF"), start/end date, active toggle, display order, optional linked coupon code, and product/category targeting.
-- Coupons tab stays as-is for code-level rules; offers can reference a coupon so the customer sees "Use code X".
-- Live status pill: Scheduled / Live / Expired based on dates.
-
-**Customer `/offers` page — Flipkart/Meesho style:**
-
-- Top offer-banner carousel (from active campaigns).
-- "Deals of the Day" strip with a live countdown to the campaign end time.
-- Coupon cards with one-tap Copy Code and eligibility line.
-- Occasion tabs/chips (Diwali, Wedding, Navratri…) filtering the products below.
-- Discount rails: "Under ₹299", "Up to 30% Off", "Best Sellers on Sale", each a horizontal scroll rail.
-- Product cards show MRP strike-through, discount % badge, and the offer tag.
-- Empty/loading skeletons so the page never looks broken.
-- Home page also gets a compact "Festive Offers" strip linking to `/offers`.
+## 4. Video support
+- Offers: each campaign can have a video — paste a YouTube/Vimeo link or upload an MP4. Shown as an autoplay-muted inline player on the offers page and inside offer banner blocks.
+- Products: each product can have a video — link or upload. Shown as an extra thumbnail in the product gallery that opens the player, plus a small play badge on product cards that have video.
+- Admin: a reusable `MediaUpload` control (link field + upload button) added to both the Offer dialog and the Product dialog.
 
 ## Technical notes
-
-- New Supabase tables (public read for active rows, admin-only writes, with GRANTs):
-  - `hero_slides` — image_url, mobile_image_url, title, subtitle, cta_label, cta_link, display_order, is_active, starts_at, ends_at.
-  - `offer_campaigns` — name, slug, occasion, banner_url, description, badge_text, coupon_code, discount_percent, starts_at, ends_at, display_order, is_active.
-  - `offer_products` — links a campaign to specific products/categories (optional targeting).
-- Reuse existing `product-images` / add a `banner-images` storage bucket for slider and offer banners.
-- All queries via TanStack Query; SEO head metadata updated on `/offers`.
-
-&nbsp;
-
-And The Home pAge Compunet Also Upadete And Make Profationa And Main Thing Is Make Best For Meta Ads Ecommesrs .
-
-&nbsp;
+- Migration: add `video_url text` and `video_type text` (`link` | `upload`) to `public.offer_campaigns` and `public.products`; no policy changes needed beyond the existing ones.
+- New private storage bucket `offer-videos` (used for both offer and product uploads, path-prefixed), with RLS on `storage.objects`: admins can write, signed URLs for reads — matching the existing `banner-images` pattern.
+- Files: new `src/components/site/OfferStrip.tsx`, `src/components/site/OfferBlocks.tsx`, `src/components/site/VideoPlayer.tsx`, `src/components/admin/MediaUpload.tsx`; edits to `HeroSlider.tsx`, `SiteLayout.tsx`, `routes/index.tsx`, `routes/shop.tsx`, `routes/products.$slug.tsx`, `routes/offers.tsx`, `components/admin/OffersTab.tsx`, `routes/admin.tsx` (product dialog), `src/lib/offers.ts` (types).
+- Uploads capped (~30 MB) with type validation; players are muted/lazy so they never block page load.
