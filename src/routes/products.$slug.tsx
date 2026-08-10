@@ -2,10 +2,13 @@ import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-ro
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Heart, ShoppingBag, Share2, Truck, RefreshCw, ShieldCheck, Star, Minus, Plus, Check } from "lucide-react";
+import { Heart, ShoppingBag, Share2, Truck, RefreshCw, ShieldCheck, Star, Minus, Plus, Check, Play } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { PincodeCheck } from "@/components/site/PincodeCheck";
+import { VideoPlayer } from "@/components/site/VideoPlayer";
+import { OfferBlocks } from "@/components/site/OfferBlocks";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
+
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useCart, formatINR } from "@/lib/cart-store";
