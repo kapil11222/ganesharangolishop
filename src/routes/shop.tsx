@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { PageHeader } from "@/components/site/PageHeader";
+import { OfferBlocks } from "@/components/site/OfferBlocks";
+
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
