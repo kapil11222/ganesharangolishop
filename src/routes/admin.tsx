@@ -319,6 +319,16 @@ function ProductDialog({ existing, categories, onSaved }: { existing?: AdminProd
               label="Add photos"
             />
           </div>
+          <div className="md:col-span-2">
+            <Label>Product video (optional — YouTube link or MP4 upload)</Label>
+            <MediaUpload
+              value={form.video_url}
+              type={form.video_type}
+              onChange={(v) => setForm({ ...form, ...v })}
+              label="Product video"
+            />
+          </div>
+
           <div className="md:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
             <label className="flex items-center gap-2"><Checkbox checked={form.allow_cod} onCheckedChange={(v) => setForm({ ...form, allow_cod: !!v })} /> Allow COD</label>
             <label className="flex items-center gap-2"><Checkbox checked={form.allow_prepaid} onCheckedChange={(v) => setForm({ ...form, allow_prepaid: !!v })} /> Allow Prepaid</label>
