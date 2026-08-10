@@ -6,7 +6,9 @@ import { SiteLayout } from "@/components/site/SiteLayout";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
 import { AnimatedCounter } from "@/components/site/AnimatedCounter";
 import { HeroSlider } from "@/components/site/HeroSlider";
+import { OfferBlocks } from "@/components/site/OfferBlocks";
 import { supabase } from "@/integrations/supabase/client";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
