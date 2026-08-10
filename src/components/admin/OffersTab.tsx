@@ -18,6 +18,8 @@ const empty = {
   description: "",
   badge_text: "UP TO 30% OFF",
   banner_url: "",
+  video_url: "",
+  video_type: "",
   coupon_code: "",
   discount_percent: 0,
   cta_link: "/shop",
@@ -25,6 +27,7 @@ const empty = {
   starts_at: "",
   ends_at: "",
 };
+
 
 const toIso = (v: string) => (v ? new Date(v).toISOString() : null);
 const toLocal = (v: string | null) => (v ? new Date(v).toISOString().slice(0, 16) : "");
