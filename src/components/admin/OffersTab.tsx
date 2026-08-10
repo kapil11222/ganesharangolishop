@@ -126,6 +126,8 @@ function OfferDialog({ existing, onSaved }: { existing?: OfferCampaign; onSaved:
           description: existing.description ?? "",
           badge_text: existing.badge_text ?? "",
           banner_url: existing.banner_url ?? "",
+          video_url: existing.video_url ?? "",
+          video_type: existing.video_type ?? "",
           coupon_code: existing.coupon_code ?? "",
           discount_percent: existing.discount_percent ?? 0,
           cta_link: existing.cta_link ?? "",
@@ -135,6 +137,7 @@ function OfferDialog({ existing, onSaved }: { existing?: OfferCampaign; onSaved:
         }
       : { ...empty },
   );
+
 
   const save = async () => {
     if (!form.name.trim()) { toast.error("Offer name is required"); return; }
