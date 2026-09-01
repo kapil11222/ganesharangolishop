@@ -1,0 +1,1 @@
+ALTER TABLE public.offer_campaigns ADD COLUMN IF NOT EXISTS product_ids uuid[] NOT NULL DEFAULT '{}'::uuid[];

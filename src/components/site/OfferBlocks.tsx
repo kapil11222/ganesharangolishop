@@ -1,12 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ArrowRight, Flame, Copy, Check } from "lucide-react";
+import { ArrowRight, Flame, Copy, Check, Timer, Package } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { occasionLabel, type OfferCampaign } from "@/lib/offers";
+import { occasionLabel, isUpcoming, type OfferCampaign } from "@/lib/offers";
 import { useLiveCampaigns } from "@/components/site/OfferStrip";
+import { OfferCountdownPill } from "@/components/site/OfferCountdown";
 import { VideoPlayer } from "@/components/site/VideoPlayer";
 import { toast } from "sonner";
+
 
 /** Scrollable campaign banner cards, injected on Home / Shop / Product pages. */
 export function OfferBlocks({
@@ -82,18 +84,29 @@ function OfferBlockCard({ c, index }: { c: OfferCampaign; index: number }) {
           <span className="absolute top-3 left-3 rounded-full bg-background/85 border border-border px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-primary">
             {occasionLabel(c.occasion)}
           </span>
+          {isUpcoming(c) && (
+            <span className="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-blue-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
+              <Timer className="size-3" /> Upcoming
+            </span>
+          )}
         </div>
         <div className="p-4 space-y-2">
           <h3 className="font-display text-lg font-bold line-clamp-1">{c.name}</h3>
           {c.badge_text && <div className="gradient-text font-display text-xl font-bold">{c.badge_text}</div>}
+          <OfferCountdownPill campaign={c} />
           {c.description && <p className="text-xs text-muted-foreground line-clamp-2">{c.description}</p>}
+          {(c.product_ids?.length ?? 0) > 0 && (
+            <div className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
+              <Package className="size-3" /> Valid on {c.product_ids!.length} selected product{c.product_ids!.length > 1 ? "s" : ""}
+            </div>
+          )}
           <div className="flex items-center gap-2 pt-1">
-            <Link to={(c.cta_link || "/shop") as never} className="flex-1">
+            <Link to={((isUpcoming(c) ? "/offers" : c.cta_link || "/shop")) as never} className="flex-1">
               <Button className="w-full rounded-full gradient-festive border-0 font-semibold">
-                Shop offer <ArrowRight className="ml-1.5 size-4" />
+                {isUpcoming(c) ? "See details" : "Shop offer"} <ArrowRight className="ml-1.5 size-4" />
               </Button>
             </Link>
-            {c.coupon_code && (
+            {!isUpcoming(c) && c.coupon_code && (
               <button
                 type="button"
                 onClick={copy}
@@ -105,6 +118,7 @@ function OfferBlockCard({ c, index }: { c: OfferCampaign; index: number }) {
               </button>
             )}
           </div>
+
         </div>
       </div>
     </motion.div>
