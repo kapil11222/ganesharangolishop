@@ -58,20 +58,21 @@ function Home() {
       {/* STATS */}
 
       <section className="border-y border-border bg-card/40 backdrop-blur">
-        <div className="container-luxe py-10 grid grid-cols-2 md:grid-cols-4 gap-6">
-          {[
-            { n: 10, suffix: "+", label: "Years Experience" },
-            { n: 10000, suffix: "+", label: "Happy Customers" },
-            { n: 50000, suffix: "+", label: "Orders Delivered" },
-            { n: 200, suffix: "+", label: "Unique Designs" },
-          ].map((s) => (
-            <div key={s.label} className="text-center">
-              <div className="font-display text-4xl md:text-5xl font-bold gradient-text">
-                <AnimatedCounter to={s.n} suffix={s.suffix} />
-              </div>
-              <div className="text-xs uppercase tracking-widest text-muted-foreground mt-2">{s.label}</div>
+        <div className="container-luxe py-10 grid grid-cols-3 gap-6">
+          <div className="text-center">
+            <div className="font-display text-4xl md:text-5xl font-bold gradient-text">
+              <AnimatedCounter to={20} suffix="+" />
             </div>
-          ))}
+            <div className="text-xs uppercase tracking-widest text-muted-foreground mt-2">Designs</div>
+          </div>
+          <div className="text-center">
+            <div className="font-display text-4xl md:text-5xl font-bold gradient-text">4.2</div>
+            <div className="text-xs uppercase tracking-widest text-muted-foreground mt-2">Rating on Meesho</div>
+          </div>
+          <div className="text-center">
+            <div className="font-display text-4xl md:text-5xl font-bold gradient-text">4.8</div>
+            <div className="text-xs uppercase tracking-widest text-muted-foreground mt-2">Rating on Our Website</div>
+          </div>
         </div>
       </section>
 
