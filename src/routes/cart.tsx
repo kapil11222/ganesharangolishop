@@ -66,7 +66,8 @@ function CartPage() {
             <h3 className="font-display text-xl font-bold mb-4">Cart Summary</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between"><span>Subtotal</span><span className="font-semibold">{formatINR(subtotal)}</span></div>
-              <div className="flex justify-between text-muted-foreground"><span>Shipping & Tax</span><span>Calculated at checkout</span></div>
+              <div className="flex justify-between text-muted-foreground"><span>Shipping</span><span>Calculated at checkout</span></div>
+              <div className="flex justify-between text-muted-foreground"><span>Tax</span><span>Inclusive in price</span></div>
               <div className="flex justify-between text-muted-foreground"><span>Coupon</span><span>Apply at checkout</span></div>
             </div>
             <div className="h-px bg-border my-4" />
