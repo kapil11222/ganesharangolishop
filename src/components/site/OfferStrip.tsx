@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
-import { BadgePercent, Copy, Check } from "lucide-react";
+import { BadgePercent, Copy, Check, Timer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { isLive, occasionLabel, type OfferCampaign } from "@/lib/offers";
+import { isLiveOrUpcoming, isUpcoming, occasionLabel, type OfferCampaign } from "@/lib/offers";
+import { useCountdown, countdownTarget } from "@/components/site/OfferCountdown";
 import { toast } from "sonner";
 
+/** Live + scheduled (upcoming) campaigns, ordered so live ones come first. */
 export function useLiveCampaigns() {
   return useQuery<OfferCampaign[]>({
     queryKey: ["offer-campaigns"],
@@ -16,13 +18,15 @@ export function useLiveCampaigns() {
         .select("*")
         .eq("is_active", true)
         .order("display_order");
-      return ((data ?? []) as OfferCampaign[]).filter(isLive);
+      return ((data ?? []) as OfferCampaign[])
+        .filter(isLiveOrUpcoming)
+        .sort((a, b) => Number(isUpcoming(a)) - Number(isUpcoming(b)));
     },
-    staleTime: 5 * 60_000,
+    staleTime: 60_000,
   });
 }
 
-/** Sitewide auto-rotating offer ticker (Flipkart/Meesho style). */
+/** Sitewide auto-rotating offer ticker with start/end countdown (Flipkart/Meesho style). */
 export function OfferStrip() {
   const { data: campaigns = [] } = useLiveCampaigns();
   const [i, setI] = useState(0);
@@ -37,6 +41,7 @@ export function OfferStrip() {
 
   if (count === 0) return null;
   const c = campaigns[i % count];
+  const upcoming = isUpcoming(c);
 
   const copy = async () => {
     if (!c.coupon_code) return;
@@ -53,7 +58,7 @@ export function OfferStrip() {
   return (
     <div className="relative overflow-hidden gradient-festive text-primary-foreground">
       <div className="container-luxe h-9 md:h-10 flex items-center justify-center gap-3 text-[11px] md:text-xs font-semibold">
-        <BadgePercent className="size-3.5 shrink-0" />
+        {upcoming ? <Timer className="size-3.5 shrink-0" /> : <BadgePercent className="size-3.5 shrink-0" />}
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={c.id}
@@ -68,7 +73,8 @@ export function OfferStrip() {
               <span className="mx-1.5 opacity-60">·</span>
               {c.badge_text || c.name}
             </Link>
-            {c.coupon_code && (
+            <StripCountdown campaign={c} />
+            {!upcoming && c.coupon_code && (
               <button
                 type="button"
                 onClick={copy}
@@ -83,5 +89,20 @@ export function OfferStrip() {
         </AnimatePresence>
       </div>
     </div>
+  );
+}
+
+function StripCountdown({ campaign }: { campaign: OfferCampaign }) {
+  const { phase, at } = countdownTarget(campaign);
+  const { d, h, m, s, over } = useCountdown(at);
+  if (phase === "none" || over) return null;
+  const value =
+    d > 0
+      ? `${d}d ${String(h).padStart(2, "0")}h ${String(m).padStart(2, "0")}m`
+      : `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  return (
+    <span className="shrink-0 inline-flex items-center gap-1 rounded-full bg-primary-foreground/20 px-2 py-0.5 tabular-nums">
+      {phase === "starts" ? "Starts in" : "Ends in"} {value}
+    </span>
   );
 }
