@@ -63,8 +63,8 @@ function CheckoutPage() {
     ? (payment === "cod" ? (liveRate.codRate ?? liveRate.prepaidRate ?? baseShipping) : (liveRate.prepaidRate ?? baseShipping))
     : baseShipping;
   const shipping = subtotal > 999 ? 0 : liveShipping;
-  const tax = Math.round(subtotal * 0.05);
-  const total = Math.max(0, subtotal + shipping + tax - discount);
+  const tax = 0;
+  const total = Math.max(0, subtotal + shipping - discount);
 
 
   const [form, setForm] = useState({
@@ -369,7 +369,7 @@ function CheckoutPage() {
             <div className="space-y-1.5 text-sm border-t border-border pt-4">
               <div className="flex justify-between"><span>Subtotal</span><span>{formatINR(summary.subtotal)}</span></div>
               <div className="flex justify-between"><span>Shipping</span><span>{summary.shipping === 0 ? "Free" : formatINR(summary.shipping)}</span></div>
-              <div className="flex justify-between"><span>Tax (5%)</span><span>{formatINR(summary.tax)}</span></div>
+              <div className="flex justify-between text-muted-foreground"><span>Tax</span><span>Inclusive in price</span></div>
               {discount > 0 && <div className="flex justify-between text-emerald-600"><span>Discount</span><span>-{formatINR(discount)}</span></div>}
             </div>
             <div className="flex justify-between text-lg font-bold mt-4 mb-5"><span>Total</span><span className="text-primary">{formatINR(summary.total)}</span></div>
