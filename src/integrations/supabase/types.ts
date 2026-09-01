@@ -291,6 +291,7 @@ export type Database = {
           is_active: boolean
           name: string
           occasion: string
+          product_ids: string[]
           starts_at: string | null
           updated_at: string
           video_type: string | null
@@ -310,6 +311,7 @@ export type Database = {
           is_active?: boolean
           name: string
           occasion?: string
+          product_ids?: string[]
           starts_at?: string | null
           updated_at?: string
           video_type?: string | null
@@ -329,6 +331,7 @@ export type Database = {
           is_active?: boolean
           name?: string
           occasion?: string
+          product_ids?: string[]
           starts_at?: string | null
           updated_at?: string
           video_type?: string | null
