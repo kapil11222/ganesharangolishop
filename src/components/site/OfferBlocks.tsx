@@ -1,12 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ArrowRight, Flame, Copy, Check } from "lucide-react";
+import { ArrowRight, Flame, Copy, Check, Timer, Package } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { occasionLabel, type OfferCampaign } from "@/lib/offers";
+import { occasionLabel, isUpcoming, type OfferCampaign } from "@/lib/offers";
 import { useLiveCampaigns } from "@/components/site/OfferStrip";
+import { OfferCountdownPill } from "@/components/site/OfferCountdown";
 import { VideoPlayer } from "@/components/site/VideoPlayer";
 import { toast } from "sonner";
+
 
 /** Scrollable campaign banner cards, injected on Home / Shop / Product pages. */
 export function OfferBlocks({
