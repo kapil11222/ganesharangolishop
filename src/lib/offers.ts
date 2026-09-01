@@ -34,6 +34,7 @@ export type OfferCampaign = {
   ends_at: string | null;
   video_url?: string | null;
   video_type?: string | null;
+  product_ids?: string[] | null;
 };
 
 
@@ -48,3 +49,14 @@ export function campaignStatus(c: { is_active: boolean; starts_at: string | null
 export function isLive(c: { is_active: boolean; starts_at: string | null; ends_at: string | null }) {
   return campaignStatus(c) === "live";
 }
+
+/** Scheduled (announced but not started yet) campaigns — used for "Offer starts in …" teasers. */
+export function isUpcoming(c: { is_active: boolean; starts_at: string | null; ends_at: string | null }) {
+  return campaignStatus(c) === "scheduled";
+}
+
+export function isLiveOrUpcoming(c: { is_active: boolean; starts_at: string | null; ends_at: string | null }) {
+  const st = campaignStatus(c);
+  return st === "live" || st === "scheduled";
+}
+
