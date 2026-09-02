@@ -35,6 +35,11 @@ export type OfferCampaign = {
   video_url?: string | null;
   video_type?: string | null;
   product_ids?: string[] | null;
+  /** Sale-mode presentation (Flipkart-style sale period) */
+  accent_color?: string | null;
+  sale_mode?: boolean | null;
+  priority?: number | null;
+  urgency_text?: string | null;
 };
 
 
