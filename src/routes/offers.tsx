@@ -143,10 +143,20 @@ function OffersPage() {
           </section>
         )}
 
+        {/* PRODUCT-WISE CAMPAIGN RAILS */}
+        {campaigns
+          .filter((c) => (c.product_ids?.length ?? 0) > 0)
+          .map((c) => {
+            const ids = new Set(c.product_ids ?? []);
+            const items = products.filter((p: any) => ids.has(p.id));
+            return <Rail key={c.id} title={`${c.name}${c.badge_text ? ` — ${c.badge_text}` : ""}`} items={items} emoji="🎯" />;
+          })}
+
         {/* RAILS */}
         <Rail title="Deals Under ₹299" items={under299} emoji="💸" />
         <Rail title="30% Off & More" items={bigDiscounts} emoji="🔥" />
         <Rail title="Best Sellers on Sale" items={bestSellersOnSale} emoji="⭐" />
+
 
         {/* ALL DISCOUNTED */}
         <section>
