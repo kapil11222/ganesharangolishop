@@ -238,32 +238,38 @@ function OfferCarousel({ campaigns }: { campaigns: OfferCampaign[] }) {
   );
 }
 
-function useCountdown(target?: string | null) {
-  const [left, setLeft] = useState(() => (target ? new Date(target).getTime() - Date.now() : 0));
-  useEffect(() => {
-    if (!target) return;
-    const t = setInterval(() => setLeft(new Date(target).getTime() - Date.now()), 1000);
-    return () => clearInterval(t);
-  }, [target]);
-  const clamped = Math.max(0, left);
-  return {
-    d: Math.floor(clamped / 86400000),
-    h: Math.floor((clamped / 3600000) % 24),
-    m: Math.floor((clamped / 60000) % 60),
-    s: Math.floor((clamped / 1000) % 60),
-    over: clamped <= 0,
-  };
+function UpcomingCard({ campaign }: { campaign: OfferCampaign }) {
+  const { at } = countdownTarget(campaign);
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="glass rounded-3xl p-5 shadow-card space-y-3"
+    >
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-500/40 bg-blue-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-blue-600">
+          <Timer className="size-3" /> {occasionLabel(campaign.occasion)}
+        </span>
+        <OfferCountdownPill campaign={campaign} />
+      </div>
+      <h3 className="font-display text-xl md:text-2xl font-bold">{campaign.name}</h3>
+      {campaign.badge_text && <div className="gradient-text font-display text-lg font-bold">{campaign.badge_text}</div>}
+      {campaign.description && <p className="text-sm text-muted-foreground line-clamp-2">{campaign.description}</p>}
+      {campaign.video_url && (
+        <VideoPlayer url={campaign.video_url} type={campaign.video_type} className="rounded-2xl overflow-hidden" />
+      )}
+      <CountdownBoxes target={at} />
+      {campaign.coupon_code && (
+        <div className="text-sm text-muted-foreground">
+          Code <span className="font-mono font-bold text-primary">{campaign.coupon_code}</span> works once it goes live
+        </div>
+      )}
+    </motion.div>
+  );
 }
 
 function DealOfTheDay({ campaign }: { campaign: OfferCampaign }) {
-  const { d, h, m, s, over } = useCountdown(campaign.ends_at);
-  if (over) return null;
-  const cells = [
-    { v: d, l: "Days" },
-    { v: h, l: "Hrs" },
-    { v: m, l: "Min" },
-    { v: s, l: "Sec" },
-  ];
   return (
     <motion.section
       initial={{ opacity: 0, y: 20 }}
@@ -281,17 +287,11 @@ function DealOfTheDay({ campaign }: { campaign: OfferCampaign }) {
           <div className="text-sm text-muted-foreground mt-2">Use code <span className="font-mono font-bold text-primary">{campaign.coupon_code}</span> at checkout</div>
         )}
       </div>
-      <div className="flex gap-2">
-        {cells.map((c) => (
-          <div key={c.l} className="min-w-[62px] rounded-2xl bg-background/70 border border-border px-3 py-2 text-center shadow-card">
-            <div className="font-display text-2xl font-bold tabular-nums">{String(c.v).padStart(2, "0")}</div>
-            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{c.l}</div>
-          </div>
-        ))}
-      </div>
+      <CountdownBoxes target={campaign.ends_at} />
     </motion.section>
   );
 }
+
 
 function CouponCard({ coupon }: { coupon: any }) {
   const [copied, setCopied] = useState(false);
