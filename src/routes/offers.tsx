@@ -2,14 +2,17 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Tag, Sparkles, Copy, Check, Clock, ChevronLeft, ChevronRight, Flame, BadgePercent } from "lucide-react";
+import { Tag, Sparkles, Copy, Check, Clock, ChevronLeft, ChevronRight, Flame, BadgePercent, Timer } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { PageHeader } from "@/components/site/PageHeader";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { isLive, occasionLabel, type OfferCampaign } from "@/lib/offers";
+import { isLive, isUpcoming, isLiveOrUpcoming, occasionLabel, type OfferCampaign } from "@/lib/offers";
+import { CountdownBoxes, OfferCountdownPill, countdownTarget } from "@/components/site/OfferCountdown";
+import { VideoPlayer } from "@/components/site/VideoPlayer";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/offers")({
   head: () => ({
