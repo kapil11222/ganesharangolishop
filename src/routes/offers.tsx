@@ -97,8 +97,19 @@ function OffersPage() {
           <OfferCarousel campaigns={campaigns} />
         ) : null}
 
+        {/* UPCOMING OFFERS */}
+        {upcoming.length > 0 && (
+          <section>
+            <SectionHead icon={<Timer className="size-5" />} title={<>Offers <span className="gradient-text">starting soon</span></>} sub="Get ready — these deals go live shortly." />
+            <div className="grid md:grid-cols-2 gap-4">
+              {upcoming.map((c) => <UpcomingCard key={c.id} campaign={c} />)}
+            </div>
+          </section>
+        )}
+
         {/* DEAL OF THE DAY */}
         {dealOfDay?.ends_at && <DealOfTheDay campaign={dealOfDay} />}
+
 
         {/* COUPONS */}
         {coupons.length > 0 && (
