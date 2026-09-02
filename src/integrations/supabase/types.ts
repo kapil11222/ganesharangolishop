@@ -278,6 +278,7 @@ export type Database = {
       }
       offer_campaigns: {
         Row: {
+          accent_color: string | null
           badge_text: string | null
           banner_url: string | null
           coupon_code: string | null
@@ -291,13 +292,17 @@ export type Database = {
           is_active: boolean
           name: string
           occasion: string
+          priority: number
           product_ids: string[]
+          sale_mode: boolean
           starts_at: string | null
           updated_at: string
+          urgency_text: string | null
           video_type: string | null
           video_url: string | null
         }
         Insert: {
+          accent_color?: string | null
           badge_text?: string | null
           banner_url?: string | null
           coupon_code?: string | null
@@ -311,13 +316,17 @@ export type Database = {
           is_active?: boolean
           name: string
           occasion?: string
+          priority?: number
           product_ids?: string[]
+          sale_mode?: boolean
           starts_at?: string | null
           updated_at?: string
+          urgency_text?: string | null
           video_type?: string | null
           video_url?: string | null
         }
         Update: {
+          accent_color?: string | null
           badge_text?: string | null
           banner_url?: string | null
           coupon_code?: string | null
@@ -331,13 +340,45 @@ export type Database = {
           is_active?: boolean
           name?: string
           occasion?: string
+          priority?: number
           product_ids?: string[]
+          sale_mode?: boolean
           starts_at?: string | null
           updated_at?: string
+          urgency_text?: string | null
           video_type?: string | null
           video_url?: string | null
         }
         Relationships: []
+      }
+      offer_reminders: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offer_reminders_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "offer_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       order_items: {
         Row: {
