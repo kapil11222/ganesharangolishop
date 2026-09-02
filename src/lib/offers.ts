@@ -35,6 +35,11 @@ export type OfferCampaign = {
   video_url?: string | null;
   video_type?: string | null;
   product_ids?: string[] | null;
+  /** Sale-mode presentation (Flipkart-style sale period) */
+  accent_color?: string | null;
+  sale_mode?: boolean | null;
+  priority?: number | null;
+  urgency_text?: string | null;
 };
 
 
@@ -60,3 +65,49 @@ export function isLiveOrUpcoming(c: { is_active: boolean; starts_at: string | nu
   return st === "live" || st === "scheduled";
 }
 
+
+/* ------------------------------------------------------------------ *
+ * Sale-mode helpers (Flipkart-style "sale period" experience)
+ * ------------------------------------------------------------------ */
+
+const byPriority = (a: OfferCampaign, b: OfferCampaign) =>
+  (b.priority ?? 0) - (a.priority ?? 0) || a.display_order - b.display_order;
+
+/** The campaign that owns the sitewide sale bar: live sale-mode wins, else upcoming sale-mode. */
+export function pickSaleCampaign(campaigns: OfferCampaign[]): OfferCampaign | null {
+  const sale = campaigns.filter((c) => c.sale_mode && isLiveOrUpcoming(c)).sort(byPriority);
+  return sale.find(isLive) ?? sale[0] ?? null;
+}
+
+export function campaignAppliesTo(c: OfferCampaign, productId: string) {
+  const ids = c.product_ids ?? [];
+  return ids.length === 0 || ids.includes(productId);
+}
+
+export type ProductSale = {
+  campaign: OfferCampaign;
+  percent: number;
+  salePrice: number;
+};
+
+/** Best live campaign discount for a product, or null when no sale applies. */
+export function productSaleFor(
+  productId: string,
+  price: number,
+  campaigns: OfferCampaign[],
+): ProductSale | null {
+  const best = campaigns
+    .filter((c) => isLive(c) && (c.discount_percent ?? 0) > 0 && campaignAppliesTo(c, productId))
+    .sort((a, b) => (b.discount_percent ?? 0) - (a.discount_percent ?? 0))[0];
+  if (!best) return null;
+  const percent = Math.min(90, Math.round(Number(best.discount_percent)));
+  const salePrice = Math.max(1, Math.round(price - (price * percent) / 100));
+  if (salePrice >= price) return null;
+  return { campaign: best, percent, salePrice };
+}
+
+/** Safe CSS colour for a campaign accent (falls back to the brand primary). */
+export function accentOf(c?: OfferCampaign | null) {
+  const v = (c?.accent_color ?? "").trim();
+  return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v) ? v : "var(--primary)";
+}
