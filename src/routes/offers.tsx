@@ -214,6 +214,8 @@ function OfferCarousel({ campaigns }: { campaigns: OfferCampaign[] }) {
             <span className="inline-flex items-center gap-1.5 rounded-full bg-background/85 border border-border px-3 py-1 text-[10px] sm:text-xs font-bold uppercase tracking-widest text-primary">
               <Flame className="size-3" /> {occasionLabel(c.occasion)}
             </span>
+            <OfferCountdownPill campaign={c} className="ml-2 align-middle" />
+
             <h3 className="mt-3 font-display text-2xl sm:text-4xl font-bold">{c.name}</h3>
             {c.badge_text && <div className="mt-1 font-display text-lg sm:text-2xl gradient-text font-bold">{c.badge_text}</div>}
             {c.description && <p className="mt-2 text-xs sm:text-sm text-muted-foreground line-clamp-2">{c.description}</p>}
