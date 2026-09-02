@@ -2,14 +2,17 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Tag, Sparkles, Copy, Check, Clock, ChevronLeft, ChevronRight, Flame, BadgePercent } from "lucide-react";
+import { Tag, Sparkles, Copy, Check, Clock, ChevronLeft, ChevronRight, Flame, BadgePercent, Timer } from "lucide-react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { PageHeader } from "@/components/site/PageHeader";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { isLive, occasionLabel, type OfferCampaign } from "@/lib/offers";
+import { isLive, isUpcoming, isLiveOrUpcoming, occasionLabel, type OfferCampaign } from "@/lib/offers";
+import { CountdownBoxes, OfferCountdownPill, countdownTarget } from "@/components/site/OfferCountdown";
+import { VideoPlayer } from "@/components/site/VideoPlayer";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/offers")({
   head: () => ({
@@ -28,13 +31,17 @@ export const Route = createFileRoute("/offers")({
 function OffersPage() {
   const [occasion, setOccasion] = useState<string>("all");
 
-  const { data: campaigns = [], isLoading: loadingOffers } = useQuery<OfferCampaign[]>({
+  const { data: allCampaigns = [], isLoading: loadingOffers } = useQuery<OfferCampaign[]>({
     queryKey: ["offer-campaigns"],
     queryFn: async () => {
       const { data } = await supabase.from("offer_campaigns").select("*").eq("is_active", true).order("display_order");
-      return ((data ?? []) as OfferCampaign[]).filter(isLive);
+      return ((data ?? []) as OfferCampaign[]).filter(isLiveOrUpcoming);
     },
   });
+
+  const campaigns = useMemo(() => allCampaigns.filter(isLive), [allCampaigns]);
+  const upcoming = useMemo(() => allCampaigns.filter(isUpcoming), [allCampaigns]);
+
 
   const { data: products = [], isLoading: loadingProducts } = useQuery<ProductCardData[]>({
     queryKey: ["offers-products"],
@@ -90,8 +97,19 @@ function OffersPage() {
           <OfferCarousel campaigns={campaigns} />
         ) : null}
 
+        {/* UPCOMING OFFERS */}
+        {upcoming.length > 0 && (
+          <section>
+            <SectionHead icon={<Timer className="size-5" />} title={<>Offers <span className="gradient-text">starting soon</span></>} sub="Get ready — these deals go live shortly." />
+            <div className="grid md:grid-cols-2 gap-4">
+              {upcoming.map((c) => <UpcomingCard key={c.id} campaign={c} />)}
+            </div>
+          </section>
+        )}
+
         {/* DEAL OF THE DAY */}
         {dealOfDay?.ends_at && <DealOfTheDay campaign={dealOfDay} />}
+
 
         {/* COUPONS */}
         {coupons.length > 0 && (
@@ -125,10 +143,20 @@ function OffersPage() {
           </section>
         )}
 
+        {/* PRODUCT-WISE CAMPAIGN RAILS */}
+        {campaigns
+          .filter((c) => (c.product_ids?.length ?? 0) > 0)
+          .map((c) => {
+            const ids = new Set(c.product_ids ?? []);
+            const items = products.filter((p: any) => ids.has(p.id));
+            return <Rail key={c.id} title={`${c.name}${c.badge_text ? ` — ${c.badge_text}` : ""}`} items={items} emoji="🎯" />;
+          })}
+
         {/* RAILS */}
         <Rail title="Deals Under ₹299" items={under299} emoji="💸" />
         <Rail title="30% Off & More" items={bigDiscounts} emoji="🔥" />
         <Rail title="Best Sellers on Sale" items={bestSellersOnSale} emoji="⭐" />
+
 
         {/* ALL DISCOUNTED */}
         <section>
@@ -186,6 +214,8 @@ function OfferCarousel({ campaigns }: { campaigns: OfferCampaign[] }) {
             <span className="inline-flex items-center gap-1.5 rounded-full bg-background/85 border border-border px-3 py-1 text-[10px] sm:text-xs font-bold uppercase tracking-widest text-primary">
               <Flame className="size-3" /> {occasionLabel(c.occasion)}
             </span>
+            <OfferCountdownPill campaign={c} className="ml-2 align-middle" />
+
             <h3 className="mt-3 font-display text-2xl sm:text-4xl font-bold">{c.name}</h3>
             {c.badge_text && <div className="mt-1 font-display text-lg sm:text-2xl gradient-text font-bold">{c.badge_text}</div>}
             {c.description && <p className="mt-2 text-xs sm:text-sm text-muted-foreground line-clamp-2">{c.description}</p>}
@@ -210,32 +240,38 @@ function OfferCarousel({ campaigns }: { campaigns: OfferCampaign[] }) {
   );
 }
 
-function useCountdown(target?: string | null) {
-  const [left, setLeft] = useState(() => (target ? new Date(target).getTime() - Date.now() : 0));
-  useEffect(() => {
-    if (!target) return;
-    const t = setInterval(() => setLeft(new Date(target).getTime() - Date.now()), 1000);
-    return () => clearInterval(t);
-  }, [target]);
-  const clamped = Math.max(0, left);
-  return {
-    d: Math.floor(clamped / 86400000),
-    h: Math.floor((clamped / 3600000) % 24),
-    m: Math.floor((clamped / 60000) % 60),
-    s: Math.floor((clamped / 1000) % 60),
-    over: clamped <= 0,
-  };
+function UpcomingCard({ campaign }: { campaign: OfferCampaign }) {
+  const { at } = countdownTarget(campaign);
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="glass rounded-3xl p-5 shadow-card space-y-3"
+    >
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-500/40 bg-blue-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-blue-600">
+          <Timer className="size-3" /> {occasionLabel(campaign.occasion)}
+        </span>
+        <OfferCountdownPill campaign={campaign} />
+      </div>
+      <h3 className="font-display text-xl md:text-2xl font-bold">{campaign.name}</h3>
+      {campaign.badge_text && <div className="gradient-text font-display text-lg font-bold">{campaign.badge_text}</div>}
+      {campaign.description && <p className="text-sm text-muted-foreground line-clamp-2">{campaign.description}</p>}
+      {campaign.video_url && (
+        <VideoPlayer url={campaign.video_url} type={campaign.video_type} className="rounded-2xl overflow-hidden" />
+      )}
+      <CountdownBoxes target={at} />
+      {campaign.coupon_code && (
+        <div className="text-sm text-muted-foreground">
+          Code <span className="font-mono font-bold text-primary">{campaign.coupon_code}</span> works once it goes live
+        </div>
+      )}
+    </motion.div>
+  );
 }
 
 function DealOfTheDay({ campaign }: { campaign: OfferCampaign }) {
-  const { d, h, m, s, over } = useCountdown(campaign.ends_at);
-  if (over) return null;
-  const cells = [
-    { v: d, l: "Days" },
-    { v: h, l: "Hrs" },
-    { v: m, l: "Min" },
-    { v: s, l: "Sec" },
-  ];
   return (
     <motion.section
       initial={{ opacity: 0, y: 20 }}
@@ -253,17 +289,11 @@ function DealOfTheDay({ campaign }: { campaign: OfferCampaign }) {
           <div className="text-sm text-muted-foreground mt-2">Use code <span className="font-mono font-bold text-primary">{campaign.coupon_code}</span> at checkout</div>
         )}
       </div>
-      <div className="flex gap-2">
-        {cells.map((c) => (
-          <div key={c.l} className="min-w-[62px] rounded-2xl bg-background/70 border border-border px-3 py-2 text-center shadow-card">
-            <div className="font-display text-2xl font-bold tabular-nums">{String(c.v).padStart(2, "0")}</div>
-            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{c.l}</div>
-          </div>
-        ))}
-      </div>
+      <CountdownBoxes target={campaign.ends_at} />
     </motion.section>
   );
 }
+
 
 function CouponCard({ coupon }: { coupon: any }) {
   const [copied, setCopied] = useState(false);
