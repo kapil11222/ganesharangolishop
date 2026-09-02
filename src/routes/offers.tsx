@@ -31,13 +31,17 @@ export const Route = createFileRoute("/offers")({
 function OffersPage() {
   const [occasion, setOccasion] = useState<string>("all");
 
-  const { data: campaigns = [], isLoading: loadingOffers } = useQuery<OfferCampaign[]>({
+  const { data: allCampaigns = [], isLoading: loadingOffers } = useQuery<OfferCampaign[]>({
     queryKey: ["offer-campaigns"],
     queryFn: async () => {
       const { data } = await supabase.from("offer_campaigns").select("*").eq("is_active", true).order("display_order");
-      return ((data ?? []) as OfferCampaign[]).filter(isLive);
+      return ((data ?? []) as OfferCampaign[]).filter(isLiveOrUpcoming);
     },
   });
+
+  const campaigns = useMemo(() => allCampaigns.filter(isLive), [allCampaigns]);
+  const upcoming = useMemo(() => allCampaigns.filter(isUpcoming), [allCampaigns]);
+
 
   const { data: products = [], isLoading: loadingProducts } = useQuery<ProductCardData[]>({
     queryKey: ["offers-products"],
