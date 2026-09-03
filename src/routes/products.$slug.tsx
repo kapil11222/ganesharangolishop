@@ -147,15 +147,7 @@ function ProductPage() {
             </div>
             <p className="mt-5 text-muted-foreground leading-relaxed">{product.description}</p>
 
-            <div className="mt-7 flex items-end gap-3">
-              <div className="font-display text-4xl font-bold text-primary">{formatINR(product.price)}</div>
-              {product.mrp && product.mrp > product.price && (
-                <>
-                  <div className="text-lg text-muted-foreground line-through">{formatINR(product.mrp)}</div>
-                  <div className="text-sm font-semibold text-accent">{off}% off</div>
-                </>
-              )}
-            </div>
+            <PriceBlock id={product.id} price={product.price} mrp={product.mrp} off={off} />
 
             <div className="mt-3 inline-flex items-center gap-2 text-sm">
               <Check className={`size-4 ${inStock ? "text-emerald-500" : "text-destructive"}`} />
