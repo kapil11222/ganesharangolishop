@@ -108,13 +108,18 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
               </>
             )}
           </div>
+          {sale && <DealEndsPill sale={sale} />}
           <div className="flex items-end justify-between pt-1">
-            <div>
-              <div className="font-display text-xl font-bold text-primary">{formatINR(p.price)}</div>
-              {p.mrp && p.mrp > p.price && (
-                <div className="text-xs text-muted-foreground line-through">{formatINR(p.mrp)}</div>
-              )}
-            </div>
+            {sale ? (
+              <SalePrice sale={sale} price={p.price} />
+            ) : (
+              <div>
+                <div className="font-display text-xl font-bold text-primary">{formatINR(p.price)}</div>
+                {p.mrp && p.mrp > p.price && (
+                  <div className="text-xs text-muted-foreground line-through">{formatINR(p.mrp)}</div>
+                )}
+              </div>
+            )}
             <button
               onClick={(e) => {
                 e.preventDefault();
