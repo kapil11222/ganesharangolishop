@@ -3,6 +3,7 @@ import { Heart, ShoppingBag, Star } from "lucide-react";
 import { useCart, formatINR } from "@/lib/cart-store";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { useProductSale, SaleTag, DealEndsPill, SalePrice } from "@/components/site/SaleProductBadge";
 
 export type ProductCardData = {
   id: string;
