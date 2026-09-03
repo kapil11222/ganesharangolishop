@@ -4,6 +4,8 @@ import { SiteLayout } from "@/components/site/SiteLayout";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Button } from "@/components/ui/button";
 import { useCart, formatINR } from "@/lib/cart-store";
+import { useLiveCampaigns } from "@/components/site/OfferStrip";
+import { productSaleFor } from "@/lib/offers";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({ meta: [{ title: "Cart — Ganesha Rangoli" }] }),
@@ -15,6 +17,12 @@ function CartPage() {
   const updateQty = useCart((s) => s.updateQuantity);
   const remove = useCart((s) => s.removeItem);
   const subtotal = useCart((s) => s.subtotal());
+  const { data: campaigns = [] } = useLiveCampaigns();
+  const saleSavings = items.reduce((sum, it) => {
+    const sale = productSaleFor(it.id, it.price, campaigns);
+    return sum + (sale ? (it.price - sale.salePrice) * it.quantity : 0);
+  }, 0);
+  const bestCoupon = campaigns.find((c) => c.coupon_code)?.coupon_code ?? null;
 
   if (items.length === 0) {
     return (
@@ -70,6 +78,16 @@ function CartPage() {
               <div className="flex justify-between text-muted-foreground"><span>Tax</span><span>Inclusive in price</span></div>
               <div className="flex justify-between text-muted-foreground"><span>Coupon</span><span>Apply at checkout</span></div>
             </div>
+            {saleSavings > 0 && (
+              <div className="mt-3 rounded-2xl bg-emerald-500/10 px-3 py-2 text-sm font-semibold text-emerald-600">
+                🎉 You saved {formatINR(saleSavings)} in this sale
+              </div>
+            )}
+            {bestCoupon && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Best offer for you: use code <span className="font-mono font-bold">{bestCoupon}</span> at checkout.
+              </p>
+            )}
             <div className="h-px bg-border my-4" />
             <div className="flex justify-between text-lg font-bold mb-5"><span>Estimated Total</span><span className="text-primary">{formatINR(subtotal)}</span></div>
             <Link to="/checkout">

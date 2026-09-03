@@ -12,6 +12,7 @@ import { ProductCard, type ProductCardData } from "@/components/site/ProductCard
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useCart, formatINR } from "@/lib/cart-store";
+import { useProductSale, SalePrice, DealEndsPill } from "@/components/site/SaleProductBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -147,15 +148,7 @@ function ProductPage() {
             </div>
             <p className="mt-5 text-muted-foreground leading-relaxed">{product.description}</p>
 
-            <div className="mt-7 flex items-end gap-3">
-              <div className="font-display text-4xl font-bold text-primary">{formatINR(product.price)}</div>
-              {product.mrp && product.mrp > product.price && (
-                <>
-                  <div className="text-lg text-muted-foreground line-through">{formatINR(product.mrp)}</div>
-                  <div className="text-sm font-semibold text-accent">{off}% off</div>
-                </>
-              )}
-            </div>
+            <PriceBlock id={product.id} price={product.price} mrp={product.mrp} off={off} />
 
             <div className="mt-3 inline-flex items-center gap-2 text-sm">
               <Check className={`size-4 ${inStock ? "text-emerald-500" : "text-destructive"}`} />
@@ -261,5 +254,29 @@ function ProductPage() {
       </div>
     </SiteLayout>
 
+  );
+}
+
+function PriceBlock({ id, price, mrp, off }: { id: string; price: number; mrp?: number | null; off: number }) {
+  const sale = useProductSale(id, price);
+  return (
+    <div className="mt-7 space-y-2">
+      {sale ? (
+        <>
+          <SalePrice sale={sale} price={price} big />
+          <DealEndsPill sale={sale} />
+        </>
+      ) : (
+        <div className="flex items-end gap-3">
+          <div className="font-display text-4xl font-bold text-primary">{formatINR(price)}</div>
+          {mrp && mrp > price && (
+            <>
+              <div className="text-lg text-muted-foreground line-through">{formatINR(mrp)}</div>
+              <div className="text-sm font-semibold text-accent">{off}% off</div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

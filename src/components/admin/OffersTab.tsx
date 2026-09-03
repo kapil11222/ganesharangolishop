@@ -30,6 +30,10 @@ const empty = {
   starts_at: "",
   ends_at: "",
   product_ids: [] as string[],
+  sale_mode: false,
+  accent_color: "",
+  priority: 0,
+  urgency_text: "",
 };
 
 
@@ -155,6 +159,10 @@ function OfferDialog({ existing, onSaved }: { existing?: OfferCampaign; onSaved:
           starts_at: toLocal(existing.starts_at),
           ends_at: toLocal(existing.ends_at),
           product_ids: existing.product_ids ?? [],
+          sale_mode: !!existing.sale_mode,
+          accent_color: existing.accent_color ?? "",
+          priority: existing.priority ?? 0,
+          urgency_text: existing.urgency_text ?? "",
         }
       : { ...empty },
   );
@@ -179,6 +187,10 @@ function OfferDialog({ existing, onSaved }: { existing?: OfferCampaign; onSaved:
       starts_at: toIso(form.starts_at),
       ends_at: toIso(form.ends_at),
       product_ids: form.product_ids ?? [],
+      sale_mode: !!form.sale_mode,
+      accent_color: form.accent_color || null,
+      priority: Number(form.priority) || 0,
+      urgency_text: form.urgency_text || null,
     };
 
     const { error } = existing
@@ -246,6 +258,25 @@ function OfferDialog({ existing, onSaved }: { existing?: OfferCampaign; onSaved:
           <div><Label>Starts</Label><Input type="datetime-local" value={form.starts_at} onChange={(e) => setForm({ ...form, starts_at: e.target.value })} /></div>
           <div><Label>Ends</Label><Input type="datetime-local" value={form.ends_at} onChange={(e) => setForm({ ...form, ends_at: e.target.value })} /></div>
           <div><Label>Display order</Label><Input type="number" value={form.display_order} onChange={(e) => setForm({ ...form, display_order: Number(e.target.value) })} /></div>
+
+          <div className="md:col-span-2 rounded-2xl border border-border p-3 grid md:grid-cols-2 gap-3">
+            <div className="md:col-span-2 flex items-center justify-between gap-3">
+              <div>
+                <Label>Sale mode (sitewide sale bar like Flipkart)</Label>
+                <p className="text-xs text-muted-foreground">Shows a big sale banner with countdown on every page.</p>
+              </div>
+              <Switch checked={form.sale_mode} onCheckedChange={(v) => setForm({ ...form, sale_mode: v })} />
+            </div>
+            <div>
+              <Label>Accent colour</Label>
+              <div className="flex gap-2">
+                <Input type="color" className="w-14 p-1" value={form.accent_color || "#c2410c"} onChange={(e) => setForm({ ...form, accent_color: e.target.value })} />
+                <Input value={form.accent_color} onChange={(e) => setForm({ ...form, accent_color: e.target.value })} placeholder="#c2410c" />
+              </div>
+            </div>
+            <div><Label>Priority (higher owns the sale bar)</Label><Input type="number" value={form.priority} onChange={(e) => setForm({ ...form, priority: Number(e.target.value) })} /></div>
+            <div className="md:col-span-2"><Label>Urgency text</Label><Input value={form.urgency_text} onChange={(e) => setForm({ ...form, urgency_text: e.target.value })} placeholder="Hurry! Limited stock" /></div>
+          </div>
 
           <div className="md:col-span-2">
             <Label>Products in this offer (leave empty for all products)</Label>

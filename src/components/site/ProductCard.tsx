@@ -3,6 +3,7 @@ import { Heart, ShoppingBag, Star } from "lucide-react";
 import { useCart, formatINR } from "@/lib/cart-store";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { useProductSale, SaleTag, DealEndsPill, SalePrice } from "@/components/site/SaleProductBadge";
 
 export type ProductCardData = {
   id: string;
@@ -26,6 +27,7 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
   const toggleWish = useCart((s) => s.toggleWishlist);
   const inWish = useCart((s) => s.wishlist.includes(p.id));
   const off = p.mrp && p.mrp > p.price ? Math.round(((p.mrp - p.price) / p.mrp) * 100) : 0;
+  const sale = useProductSale(p.id, p.price);
 
   return (
     <motion.div
@@ -47,7 +49,8 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
-            <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+            <div className="absolute top-3 left-3 flex flex-col gap-1.5 items-start">
+              {sale && <SaleTag sale={sale} />}
               {off > 0 && (
                 <span className="px-2.5 py-1 rounded-full bg-accent text-accent-foreground text-[10px] font-bold tracking-wide">
                   -{off}%
@@ -105,13 +108,18 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
               </>
             )}
           </div>
+          {sale && <DealEndsPill sale={sale} />}
           <div className="flex items-end justify-between pt-1">
-            <div>
-              <div className="font-display text-xl font-bold text-primary">{formatINR(p.price)}</div>
-              {p.mrp && p.mrp > p.price && (
-                <div className="text-xs text-muted-foreground line-through">{formatINR(p.mrp)}</div>
-              )}
-            </div>
+            {sale ? (
+              <SalePrice sale={sale} price={p.price} />
+            ) : (
+              <div>
+                <div className="font-display text-xl font-bold text-primary">{formatINR(p.price)}</div>
+                {p.mrp && p.mrp > p.price && (
+                  <div className="text-xs text-muted-foreground line-through">{formatINR(p.mrp)}</div>
+                )}
+              </div>
+            )}
             <button
               onClick={(e) => {
                 e.preventDefault();
