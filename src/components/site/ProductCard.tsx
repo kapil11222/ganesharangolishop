@@ -49,7 +49,8 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
-            <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+            <div className="absolute top-3 left-3 flex flex-col gap-1.5 items-start">
+              {sale && <SaleTag sale={sale} />}
               {off > 0 && (
                 <span className="px-2.5 py-1 rounded-full bg-accent text-accent-foreground text-[10px] font-bold tracking-wide">
                   -{off}%
