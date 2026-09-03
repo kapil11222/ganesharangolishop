@@ -7,6 +7,7 @@ import { ProductCard, type ProductCardData } from "@/components/site/ProductCard
 import { AnimatedCounter } from "@/components/site/AnimatedCounter";
 import { HeroSlider } from "@/components/site/HeroSlider";
 import { OfferBlocks } from "@/components/site/OfferBlocks";
+import { DealsOfTheDayRail } from "@/components/site/DealsOfTheDayRail";
 import { supabase } from "@/integrations/supabase/client";
 
 
@@ -53,6 +54,11 @@ function Home() {
       {/* SITEWIDE OFFER BLOCKS */}
       <div className="pt-14 md:pt-20">
         <OfferBlocks title="Festive offers live now" subtitle="Occasion-based campaigns, coupons & video drops." />
+      </div>
+
+      {/* DEALS OF THE DAY (sale mode) */}
+      <div className="pt-14 md:pt-20">
+        <DealsOfTheDayRail />
       </div>
 
       {/* STATS */}
