@@ -27,6 +27,7 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
   const toggleWish = useCart((s) => s.toggleWishlist);
   const inWish = useCart((s) => s.wishlist.includes(p.id));
   const off = p.mrp && p.mrp > p.price ? Math.round(((p.mrp - p.price) / p.mrp) * 100) : 0;
+  const sale = useProductSale(p.id, p.price);
 
   return (
     <motion.div
