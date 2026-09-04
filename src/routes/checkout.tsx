@@ -13,6 +13,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { checkPincode } from "@/lib/delhivery/shipping.functions";
 import { sendOrderEmailToOwner } from "@/lib/email.functions";
 import { toast } from "sonner";
+import { useLiveCampaigns } from "@/components/site/OfferStrip";
+import { productSaleFor } from "@/lib/offers";
 import { z } from "zod";
 
 
