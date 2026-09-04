@@ -1,16 +1,24 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Zap, Timer, ArrowRight } from "lucide-react";
+import { Zap, Timer, ArrowRight, Copy } from "lucide-react";
+import { toast } from "sonner";
 import { accentOf, isLive, occasionLabel, pickSaleCampaign } from "@/lib/offers";
-import { useLiveCampaigns } from "@/components/site/OfferStrip";
+import { useLiveCampaigns, OfferStrip } from "@/components/site/OfferStrip";
 import { useCountdown, countdownTarget } from "@/components/site/OfferCountdown";
 import { SaleReminderButton } from "@/components/site/SaleReminderButton";
+
+/** Shows exactly one sitewide offer bar: the sale bar when a campaign owns it, else the ticker. */
+export function OfferBars() {
+  const { data: campaigns = [] } = useLiveCampaigns();
+  return pickSaleCampaign(campaigns) ? <SaleModeBar /> : <OfferStrip />;
+}
 
 /** Flipkart-style sitewide sale bar: takes over the top of every page while a sale-mode campaign runs. */
 export function SaleModeBar() {
   const { data: campaigns = [] } = useLiveCampaigns();
   const c = pickSaleCampaign(campaigns);
   if (!c) return null;
+
 
   const live = isLive(c);
   const accent = accentOf(c);
