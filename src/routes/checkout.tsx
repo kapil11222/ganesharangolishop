@@ -13,6 +13,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { checkPincode } from "@/lib/delhivery/shipping.functions";
 import { sendOrderEmailToOwner } from "@/lib/email.functions";
 import { toast } from "sonner";
+import { useLiveCampaigns } from "@/components/site/OfferStrip";
+import { productSaleFor } from "@/lib/offers";
 import { z } from "zod";
 
 
@@ -48,6 +50,16 @@ function CheckoutPage() {
   const [discount, setDiscount] = useState(0);
   const [applyingCoupon, setApplyingCoupon] = useState(false);
 
+
+  const { data: campaigns = [] } = useLiveCampaigns();
+  const saleLines = items
+    .map((it) => {
+      const sale = productSaleFor(it.id, it.price, campaigns);
+      return sale ? { name: sale.campaign.name, saved: (it.price - sale.salePrice) * it.quantity } : null;
+    })
+    .filter(Boolean) as { name: string; saved: number }[];
+  const saleSavings = saleLines.reduce((s, l) => s + l.saved, 0);
+  const saleCampaignName = saleLines[0]?.name ?? null;
 
   const allowCOD = items.every((i) => i.allow_cod);
   const allowPrepaid = items.every((i) => i.allow_prepaid);
@@ -370,6 +382,12 @@ function CheckoutPage() {
               <div className="flex justify-between"><span>Subtotal</span><span>{formatINR(summary.subtotal)}</span></div>
               <div className="flex justify-between"><span>Shipping</span><span>{summary.shipping === 0 ? "Free" : formatINR(summary.shipping)}</span></div>
               <div className="flex justify-between text-muted-foreground"><span>Tax</span><span>Inclusive in price</span></div>
+              {saleSavings > 0 && (
+                <div className="flex justify-between text-emerald-600">
+                  <span>Sale savings{saleCampaignName ? ` · ${saleCampaignName}` : ""}</span>
+                  <span>-{formatINR(saleSavings)}</span>
+                </div>
+              )}
               {discount > 0 && <div className="flex justify-between text-emerald-600"><span>Discount</span><span>-{formatINR(discount)}</span></div>}
             </div>
             <div className="flex justify-between text-lg font-bold mt-4 mb-5"><span>Total</span><span className="text-primary">{formatINR(summary.total)}</span></div>
