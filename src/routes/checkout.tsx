@@ -51,6 +51,16 @@ function CheckoutPage() {
   const [applyingCoupon, setApplyingCoupon] = useState(false);
 
 
+  const { data: campaigns = [] } = useLiveCampaigns();
+  const saleLines = items
+    .map((it) => {
+      const sale = productSaleFor(it.id, it.price, campaigns);
+      return sale ? { name: sale.campaign.name, saved: (it.price - sale.salePrice) * it.quantity } : null;
+    })
+    .filter(Boolean) as { name: string; saved: number }[];
+  const saleSavings = saleLines.reduce((s, l) => s + l.saved, 0);
+  const saleCampaignName = saleLines[0]?.name ?? null;
+
   const allowCOD = items.every((i) => i.allow_cod);
   const allowPrepaid = items.every((i) => i.allow_prepaid);
 
