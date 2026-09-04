@@ -76,7 +76,11 @@ const byPriority = (a: OfferCampaign, b: OfferCampaign) =>
 /** The campaign that owns the sitewide sale bar: live sale-mode wins, else upcoming sale-mode. */
 export function pickSaleCampaign(campaigns: OfferCampaign[]): OfferCampaign | null {
   const sale = campaigns.filter((c) => c.sale_mode && isLiveOrUpcoming(c)).sort(byPriority);
-  return sale.find(isLive) ?? sale[0] ?? null;
+  const picked = sale.find(isLive) ?? sale[0] ?? null;
+  if (picked) return picked;
+  // Fallback: any live/upcoming campaign still deserves the sitewide sale bar.
+  const any = campaigns.filter(isLiveOrUpcoming).sort(byPriority);
+  return any.find(isLive) ?? any[0] ?? null;
 }
 
 export function campaignAppliesTo(c: OfferCampaign, productId: string) {
