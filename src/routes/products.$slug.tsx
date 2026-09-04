@@ -12,7 +12,7 @@ import { ProductCard, type ProductCardData } from "@/components/site/ProductCard
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useCart, formatINR } from "@/lib/cart-store";
-import { useProductSale, SalePrice, DealEndsPill } from "@/components/site/SaleProductBadge";
+import { useProductSale, SalePrice, DealEndsPill, ProductOffersBox } from "@/components/site/SaleProductBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -277,6 +277,7 @@ function PriceBlock({ id, price, mrp, off }: { id: string; price: number; mrp?: 
           )}
         </div>
       )}
+      <ProductOffersBox productId={id} price={price} />
     </div>
   );
 }

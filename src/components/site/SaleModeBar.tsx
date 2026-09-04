@@ -1,16 +1,24 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Zap, Timer, ArrowRight } from "lucide-react";
+import { Zap, Timer, ArrowRight, Copy } from "lucide-react";
+import { toast } from "sonner";
 import { accentOf, isLive, occasionLabel, pickSaleCampaign } from "@/lib/offers";
-import { useLiveCampaigns } from "@/components/site/OfferStrip";
+import { useLiveCampaigns, OfferStrip } from "@/components/site/OfferStrip";
 import { useCountdown, countdownTarget } from "@/components/site/OfferCountdown";
 import { SaleReminderButton } from "@/components/site/SaleReminderButton";
+
+/** Shows exactly one sitewide offer bar: the sale bar when a campaign owns it, else the ticker. */
+export function OfferBars() {
+  const { data: campaigns = [] } = useLiveCampaigns();
+  return pickSaleCampaign(campaigns) ? <SaleModeBar /> : <OfferStrip />;
+}
 
 /** Flipkart-style sitewide sale bar: takes over the top of every page while a sale-mode campaign runs. */
 export function SaleModeBar() {
   const { data: campaigns = [] } = useLiveCampaigns();
   const c = pickSaleCampaign(campaigns);
   if (!c) return null;
+
 
   const live = isLive(c);
   const accent = accentOf(c);
@@ -44,6 +52,23 @@ export function SaleModeBar() {
         <BarCountdown campaign={c} />
 
         <div className="flex items-center gap-2">
+          {live && c.coupon_code && (
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(c.coupon_code!);
+                  toast.success(`Code ${c.coupon_code} copied`);
+                } catch {
+                  toast.error("Could not copy the code");
+                }
+              }}
+              className="inline-flex items-center gap-1.5 rounded-full border border-primary-foreground/40 bg-primary-foreground/10 px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wider hover:bg-primary-foreground/20 transition"
+            >
+              {c.coupon_code} <Copy className="size-3" />
+            </button>
+          )}
+
           <Link to={c.cta_link?.startsWith("/") ? (c.cta_link as "/shop") : "/shop"}>
             <button className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground px-4 py-1.5 text-xs md:text-sm font-bold text-foreground hover:opacity-90 transition">
               {live ? "Shop the sale" : "Preview deals"} <ArrowRight className="size-3.5" />

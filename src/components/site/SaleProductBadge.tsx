@@ -1,6 +1,7 @@
-import { Flame } from "lucide-react";
+import { Flame, BadgePercent, Tag } from "lucide-react";
+import { toast } from "sonner";
 import { formatINR } from "@/lib/cart-store";
-import { accentOf, productSaleFor, type ProductSale } from "@/lib/offers";
+import { accentOf, campaignAppliesTo, isLive, occasionLabel, productSaleFor, type ProductSale } from "@/lib/offers";
 import { useLiveCampaigns } from "@/components/site/OfferStrip";
 import { useCountdown } from "@/components/site/OfferCountdown";
 
@@ -56,6 +57,61 @@ export function SalePrice({ sale, price, big = false }: { sale: ProductSale; pri
         Sale price · {sale.campaign.name}
         {sale.campaign.urgency_text ? ` · ${sale.campaign.urgency_text}` : ""}
       </div>
+    </div>
+  );
+}
+
+/** Flipkart-style "Available offers" box shown right under the product price. */
+export function ProductOffersBox({ productId, price }: { productId: string; price: number }) {
+  const { data: campaigns = [] } = useLiveCampaigns();
+  const applicable = campaigns.filter((c) => isLive(c) && campaignAppliesTo(c, productId));
+  const sale = productSaleFor(productId, price, campaigns);
+  if (applicable.length === 0) return null;
+
+  return (
+    <div className="mt-5 rounded-2xl border border-border bg-card/60 p-4">
+      <div className="flex items-center gap-2 text-sm font-bold">
+        <BadgePercent className="size-4 text-primary" /> Available offers
+      </div>
+      <ul className="mt-2.5 space-y-2 text-sm">
+        {sale && (
+          <li className="flex gap-2">
+            <Tag className="size-4 shrink-0 mt-0.5" style={{ color: accentOf(sale.campaign) }} />
+            <span>
+              <b>Sale offer</b> Flat {sale.percent}% off — pay {formatINR(sale.salePrice)} instead of {formatINR(price)}
+              <span className="text-muted-foreground"> ({sale.campaign.name})</span>
+            </span>
+          </li>
+        )}
+        {applicable.map((c) => (
+          <li key={c.id} className="flex gap-2">
+            <Tag className="size-4 shrink-0 mt-0.5" style={{ color: accentOf(c) }} />
+            <span>
+              <b>{occasionLabel(c.occasion)}</b> {c.badge_text || c.description || c.name}
+              {c.coupon_code && (
+                <>
+                  {" "}with code{" "}
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText(c.coupon_code!);
+                        toast.success(`Code ${c.coupon_code} copied`);
+                      } catch {
+                        toast.error("Could not copy the code");
+                      }
+                    }}
+                    className="font-mono text-xs font-bold uppercase rounded-md border border-dashed border-primary/50 px-1.5 py-0.5 hover:bg-primary/10"
+                  >
+                    {c.coupon_code}
+                  </button>
+                </>
+              )}
+              {c.urgency_text && <span className="text-muted-foreground"> · {c.urgency_text}</span>}
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
