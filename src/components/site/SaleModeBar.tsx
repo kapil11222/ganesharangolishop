@@ -52,6 +52,23 @@ export function SaleModeBar() {
         <BarCountdown campaign={c} />
 
         <div className="flex items-center gap-2">
+          {live && c.coupon_code && (
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(c.coupon_code!);
+                  toast.success(`Code ${c.coupon_code} copied`);
+                } catch {
+                  toast.error("Could not copy the code");
+                }
+              }}
+              className="inline-flex items-center gap-1.5 rounded-full border border-primary-foreground/40 bg-primary-foreground/10 px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wider hover:bg-primary-foreground/20 transition"
+            >
+              {c.coupon_code} <Copy className="size-3" />
+            </button>
+          )}
+
           <Link to={c.cta_link?.startsWith("/") ? (c.cta_link as "/shop") : "/shop"}>
             <button className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground px-4 py-1.5 text-xs md:text-sm font-bold text-foreground hover:opacity-90 transition">
               {live ? "Shop the sale" : "Preview deals"} <ArrowRight className="size-3.5" />
