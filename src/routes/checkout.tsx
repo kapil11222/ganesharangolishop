@@ -382,6 +382,12 @@ function CheckoutPage() {
               <div className="flex justify-between"><span>Subtotal</span><span>{formatINR(summary.subtotal)}</span></div>
               <div className="flex justify-between"><span>Shipping</span><span>{summary.shipping === 0 ? "Free" : formatINR(summary.shipping)}</span></div>
               <div className="flex justify-between text-muted-foreground"><span>Tax</span><span>Inclusive in price</span></div>
+              {saleSavings > 0 && (
+                <div className="flex justify-between text-emerald-600">
+                  <span>Sale savings{saleCampaignName ? ` · ${saleCampaignName}` : ""}</span>
+                  <span>-{formatINR(saleSavings)}</span>
+                </div>
+              )}
               {discount > 0 && <div className="flex justify-between text-emerald-600"><span>Discount</span><span>-{formatINR(discount)}</span></div>}
             </div>
             <div className="flex justify-between text-lg font-bold mt-4 mb-5"><span>Total</span><span className="text-primary">{formatINR(summary.total)}</span></div>
