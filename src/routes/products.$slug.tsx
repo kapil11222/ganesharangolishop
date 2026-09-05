@@ -256,7 +256,17 @@ function ProductPage() {
       <div className="pb-20">
         <OfferBlocks title="Save more with live offers" subtitle="Apply a coupon at checkout and save instantly." limit={3} />
       </div>
-    </SiteLayout>
+
+      {/* Sticky mobile buy bar */}
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 glass-strong border-t border-border px-3 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] flex gap-2">
+        <Button onClick={onAdd} disabled={!inStock} variant="outline" className="flex-1 rounded-full h-12">
+          <ShoppingBag className="size-4 mr-2" /> Add to Cart
+        </Button>
+        <Button onClick={onBuy} disabled={!inStock} className="flex-1 rounded-full h-12 gradient-festive border-0 shadow-glow">
+          Buy Now
+        </Button>
+      </div>
+      <div className="sm:hidden h-16" />
 
   );
 }
