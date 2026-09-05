@@ -110,6 +110,14 @@ export function productSaleFor(
   return { campaign: best, percent, salePrice };
 }
 
+/**
+ * True when the sale price is the lowest this product has ever been offered at:
+ * below both its regular selling price and its MRP.
+ */
+export function isLowestEver(sale: ProductSale, price: number, mrp?: number | null) {
+  return sale.salePrice < price && (!mrp || sale.salePrice < mrp);
+}
+
 /** Safe CSS colour for a campaign accent (falls back to the brand primary). */
 export function accentOf(c?: OfferCampaign | null) {
   const v = (c?.accent_color ?? "").trim();
