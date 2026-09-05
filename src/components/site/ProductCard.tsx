@@ -104,32 +104,20 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
               {p.name}
             </h3>
           </Link>
-          {p.short_description && (
-            <p className="text-xs text-muted-foreground line-clamp-2">{p.short_description}</p>
-          )}
-          <div className="flex items-center gap-1 text-xs">
-            {(p.review_count ?? 0) > 0 ? (
-              <>
-                <Star className="size-3.5 fill-secondary text-secondary" />
-                <span className="font-semibold">{p.rating ?? 4.8}</span>
-                <span className="text-muted-foreground">({p.review_count}) · In stock</span>
-              </>
-            ) : (
-              <>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold text-[10px] uppercase tracking-wider">New Product</span>
-                <span className="text-muted-foreground">· In stock</span>
-              </>
-            )}
-          </div>
-          {sale && <DealEndsPill sale={sale} />}
-          <div className="flex items-end justify-between pt-1">
+
+          <div className="flex items-end justify-between gap-2 pt-0.5">
             {sale ? (
-              <SalePrice sale={sale} price={p.price} />
+              <SalePrice sale={sale} price={p.price} mrp={p.mrp} />
             ) : (
-              <div>
+              <div className="flex flex-wrap items-end gap-x-2 gap-y-1">
                 <div className="font-display text-xl font-bold text-primary">{formatINR(p.price)}</div>
                 {p.mrp && p.mrp > p.price && (
-                  <div className="text-xs text-muted-foreground line-through">{formatINR(p.mrp)}</div>
+                  <>
+                    <div className="text-xs text-muted-foreground line-through">{formatINR(p.mrp)}</div>
+                    <span className="rounded-full bg-emerald-500/12 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                      {off}% off · save {formatINR(p.mrp - p.price)}
+                    </span>
+                  </>
                 )}
               </div>
             )}
