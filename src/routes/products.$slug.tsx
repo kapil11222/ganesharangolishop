@@ -267,7 +267,7 @@ function ProductPage() {
         </Button>
       </div>
       <div className="sm:hidden h-16" />
-
+    </SiteLayout>
   );
 }
 
