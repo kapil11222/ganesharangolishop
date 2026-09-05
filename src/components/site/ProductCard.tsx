@@ -142,6 +142,40 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
               <ShoppingBag className="size-4" />
             </button>
           </div>
+
+          {sale && (
+            <div
+              className="rounded-xl px-2.5 py-2 text-[11px] font-semibold"
+              style={{ background: `${accentOf(sale.campaign)}14`, color: accentOf(sale.campaign) }}
+            >
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span>{sale.campaign.name} offer</span>
+                {sale.campaign.coupon_code && (
+                  <span className="font-mono uppercase rounded border border-dashed px-1.5">{sale.campaign.coupon_code}</span>
+                )}
+              </div>
+              <DealEndsPill sale={sale} className="mt-1" />
+            </div>
+          )}
+
+          {p.short_description && (
+            <p className="text-xs text-muted-foreground line-clamp-2">{p.short_description}</p>
+          )}
+
+          <div className="flex items-center gap-1 text-xs">
+            {(p.review_count ?? 0) > 0 ? (
+              <>
+                <Star className="size-3.5 fill-secondary text-secondary" />
+                <span className="font-semibold">{p.rating ?? 4.8}</span>
+                <span className="text-muted-foreground">({p.review_count}) · In stock</span>
+              </>
+            ) : (
+              <>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 font-semibold text-[10px] uppercase tracking-wider">New Product</span>
+                <span className="text-muted-foreground">· In stock</span>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </motion.div>
