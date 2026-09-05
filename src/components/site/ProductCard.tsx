@@ -4,6 +4,7 @@ import { useCart, formatINR } from "@/lib/cart-store";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useProductSale, SaleTag, DealEndsPill, SalePrice } from "@/components/site/SaleProductBadge";
+import { accentOf } from "@/lib/offers";
 
 export type ProductCardData = {
   id: string;
