@@ -1,7 +1,7 @@
-import { Flame, BadgePercent, Tag } from "lucide-react";
+import { Flame, BadgePercent, Tag, TrendingDown } from "lucide-react";
 import { toast } from "sonner";
 import { formatINR } from "@/lib/cart-store";
-import { accentOf, campaignAppliesTo, isLive, occasionLabel, productSaleFor, type ProductSale } from "@/lib/offers";
+import { accentOf, campaignAppliesTo, isLive, isLowestEver, occasionLabel, productSaleFor, type ProductSale } from "@/lib/offers";
 import { useLiveCampaigns } from "@/components/site/OfferStrip";
 import { useCountdown } from "@/components/site/OfferCountdown";
 
