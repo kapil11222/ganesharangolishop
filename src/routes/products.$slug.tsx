@@ -146,9 +146,9 @@ function ProductPage() {
                 <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider">✨ New Product</span>
               )}
             </div>
-            <p className="mt-5 text-muted-foreground leading-relaxed">{product.description}</p>
-
             <PriceBlock id={product.id} price={product.price} mrp={product.mrp} off={off} />
+
+            <p className="mt-5 text-sm sm:text-base text-muted-foreground leading-relaxed">{product.description}</p>
 
             <div className="mt-3 inline-flex items-center gap-2 text-sm">
               <Check className={`size-4 ${inStock ? "text-emerald-500" : "text-destructive"}`} />
