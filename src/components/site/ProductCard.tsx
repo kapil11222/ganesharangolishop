@@ -38,7 +38,14 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
       whileHover={{ y: -6 }}
       className="group relative"
     >
-      <div className="relative rounded-3xl glass overflow-hidden shadow-card hover:shadow-luxe transition-all duration-500">
+      <div
+        className={`relative rounded-3xl glass overflow-hidden transition-all duration-500 ${
+          sale
+            ? "ring-2 ring-offset-2 ring-offset-background shadow-luxe"
+            : "shadow-card hover:shadow-luxe"
+        }`}
+        style={sale ? { boxShadow: `0 0 0 1px ${accentOf(sale.campaign)}22, 0 18px 40px -18px ${accentOf(sale.campaign)}66`, borderColor: accentOf(sale.campaign) } : undefined}
+      >
         <Link to="/products/$slug" params={{ slug: p.slug }} className="block">
           <div className="aspect-[4/5] overflow-hidden bg-muted relative">
             <img
