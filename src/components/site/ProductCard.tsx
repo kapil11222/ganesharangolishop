@@ -4,6 +4,7 @@ import { useCart, formatINR } from "@/lib/cart-store";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useProductSale, SaleTag, DealEndsPill, SalePrice } from "@/components/site/SaleProductBadge";
+import { accentOf } from "@/lib/offers";
 
 export type ProductCardData = {
   id: string;
@@ -38,7 +39,19 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
       whileHover={{ y: -6 }}
       className="group relative"
     >
-      <div className="relative rounded-3xl glass overflow-hidden shadow-card hover:shadow-luxe transition-all duration-500">
+      <div
+        className={`relative rounded-3xl glass overflow-hidden transition-all duration-500 ${
+          sale ? "border-2 shadow-luxe" : "shadow-card hover:shadow-luxe"
+        }`}
+        style={
+          sale
+            ? {
+                borderColor: accentOf(sale.campaign),
+                boxShadow: `0 18px 44px -20px ${accentOf(sale.campaign)}`,
+              }
+            : undefined
+        }
+      >
         <Link to="/products/$slug" params={{ slug: p.slug }} className="block">
           <div className="aspect-[4/5] overflow-hidden bg-muted relative">
             <img
@@ -91,32 +104,20 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
               {p.name}
             </h3>
           </Link>
-          {p.short_description && (
-            <p className="text-xs text-muted-foreground line-clamp-2">{p.short_description}</p>
-          )}
-          <div className="flex items-center gap-1 text-xs">
-            {(p.review_count ?? 0) > 0 ? (
-              <>
-                <Star className="size-3.5 fill-secondary text-secondary" />
-                <span className="font-semibold">{p.rating ?? 4.8}</span>
-                <span className="text-muted-foreground">({p.review_count}) · In stock</span>
-              </>
-            ) : (
-              <>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold text-[10px] uppercase tracking-wider">New Product</span>
-                <span className="text-muted-foreground">· In stock</span>
-              </>
-            )}
-          </div>
-          {sale && <DealEndsPill sale={sale} />}
-          <div className="flex items-end justify-between pt-1">
+
+          <div className="flex items-end justify-between gap-2 pt-0.5">
             {sale ? (
-              <SalePrice sale={sale} price={p.price} />
+              <SalePrice sale={sale} price={p.price} mrp={p.mrp} />
             ) : (
-              <div>
+              <div className="flex flex-wrap items-end gap-x-2 gap-y-1">
                 <div className="font-display text-xl font-bold text-primary">{formatINR(p.price)}</div>
                 {p.mrp && p.mrp > p.price && (
-                  <div className="text-xs text-muted-foreground line-through">{formatINR(p.mrp)}</div>
+                  <>
+                    <div className="text-xs text-muted-foreground line-through">{formatINR(p.mrp)}</div>
+                    <span className="rounded-full bg-emerald-500/12 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                      {off}% off · save {formatINR(p.mrp - p.price)}
+                    </span>
+                  </>
                 )}
               </div>
             )}
@@ -140,6 +141,40 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
             >
               <ShoppingBag className="size-4" />
             </button>
+          </div>
+
+          {sale && (
+            <div
+              className="rounded-xl px-2.5 py-2 text-[11px] font-semibold"
+              style={{ background: `${accentOf(sale.campaign)}14`, color: accentOf(sale.campaign) }}
+            >
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span>{sale.campaign.name} offer</span>
+                {sale.campaign.coupon_code && (
+                  <span className="font-mono uppercase rounded border border-dashed px-1.5">{sale.campaign.coupon_code}</span>
+                )}
+              </div>
+              <DealEndsPill sale={sale} className="mt-1" />
+            </div>
+          )}
+
+          {p.short_description && (
+            <p className="text-xs text-muted-foreground line-clamp-2">{p.short_description}</p>
+          )}
+
+          <div className="flex items-center gap-1 text-xs">
+            {(p.review_count ?? 0) > 0 ? (
+              <>
+                <Star className="size-3.5 fill-secondary text-secondary" />
+                <span className="font-semibold">{p.rating ?? 4.8}</span>
+                <span className="text-muted-foreground">({p.review_count}) · In stock</span>
+              </>
+            ) : (
+              <>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 font-semibold text-[10px] uppercase tracking-wider">New Product</span>
+                <span className="text-muted-foreground">· In stock</span>
+              </>
+            )}
           </div>
         </div>
       </div>

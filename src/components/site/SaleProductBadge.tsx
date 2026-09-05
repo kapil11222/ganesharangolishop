@@ -1,7 +1,7 @@
-import { Flame, BadgePercent, Tag } from "lucide-react";
+import { Flame, BadgePercent, Tag, TrendingDown } from "lucide-react";
 import { toast } from "sonner";
 import { formatINR } from "@/lib/cart-store";
-import { accentOf, campaignAppliesTo, isLive, occasionLabel, productSaleFor, type ProductSale } from "@/lib/offers";
+import { accentOf, campaignAppliesTo, isLive, isLowestEver, occasionLabel, productSaleFor, type ProductSale } from "@/lib/offers";
 import { useLiveCampaigns } from "@/components/site/OfferStrip";
 import { useCountdown } from "@/components/site/OfferCountdown";
 
@@ -40,20 +40,51 @@ export function DealEndsPill({ sale, className = "" }: { sale: ProductSale; clas
   );
 }
 
-/** Sale price block: sale price, struck original, campaign name. */
-export function SalePrice({ sale, price, big = false }: { sale: ProductSale; price: number; big?: boolean }) {
+/** "Lowest price since launch" tag. */
+export function LowestPriceTag({ className = "" }: { className?: string }) {
   return (
-    <div>
-      <div className="flex items-end gap-2">
+    <span
+      className={`inline-flex items-center gap-1 rounded-full bg-emerald-500/12 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700 ${className}`}
+    >
+      <TrendingDown className="size-3" /> Lowest price since launch
+    </span>
+  );
+}
+
+/** Sale price block: sale price, struck original, rupee saving, campaign name. */
+export function SalePrice({
+  sale,
+  price,
+  mrp,
+  big = false,
+}: {
+  sale: ProductSale;
+  price: number;
+  mrp?: number | null;
+  big?: boolean;
+}) {
+  const base = mrp && mrp > price ? mrp : price;
+  const saved = base - sale.salePrice;
+  return (
+    <div className="space-y-1">
+      <div className="flex flex-wrap items-end gap-x-2 gap-y-1">
         <div
-          className={`font-display font-bold ${big ? "text-4xl" : "text-xl"}`}
+          className={`font-display font-bold ${big ? "text-3xl sm:text-4xl" : "text-xl"}`}
           style={{ color: accentOf(sale.campaign) }}
         >
           {formatINR(sale.salePrice)}
         </div>
-        <div className={`${big ? "text-lg" : "text-xs"} text-muted-foreground line-through`}>{formatINR(price)}</div>
+        <div className={`${big ? "text-base sm:text-lg" : "text-xs"} text-muted-foreground line-through`}>
+          {formatINR(base)}
+        </div>
+        <span
+          className={`rounded-full bg-emerald-500/12 px-2 py-0.5 font-bold text-emerald-700 ${big ? "text-xs" : "text-[10px]"}`}
+        >
+          {sale.percent}% off · save {formatINR(saved)}
+        </span>
       </div>
-      <div className="text-[11px] font-semibold text-emerald-600">
+      {isLowestEver(sale, price, mrp) && <LowestPriceTag />}
+      <div className="text-[11px] font-semibold text-muted-foreground">
         Sale price · {sale.campaign.name}
         {sale.campaign.urgency_text ? ` · ${sale.campaign.urgency_text}` : ""}
       </div>

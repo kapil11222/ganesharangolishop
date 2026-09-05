@@ -132,8 +132,8 @@ function ProductPage() {
             {product.festival && (
               <div className="text-xs uppercase tracking-[0.3em] text-primary font-semibold">{product.festival}</div>
             )}
-            <h1 className="font-display text-4xl md:text-5xl font-bold mt-2">{product.name}</h1>
-            <div className="flex items-center gap-3 mt-3">
+            <h1 className="font-display text-2xl sm:text-3xl md:text-5xl font-bold mt-2 leading-tight">{product.name}</h1>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-3">
               {(product.review_count ?? 0) > 0 ? (
                 <>
                   <div className="flex">
@@ -146,9 +146,9 @@ function ProductPage() {
                 <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider">✨ New Product</span>
               )}
             </div>
-            <p className="mt-5 text-muted-foreground leading-relaxed">{product.description}</p>
-
             <PriceBlock id={product.id} price={product.price} mrp={product.mrp} off={off} />
+
+            <p className="mt-5 text-sm sm:text-base text-muted-foreground leading-relaxed">{product.description}</p>
 
             <div className="mt-3 inline-flex items-center gap-2 text-sm">
               <Check className={`size-4 ${inStock ? "text-emerald-500" : "text-destructive"}`} />
@@ -163,30 +163,34 @@ function ProductPage() {
             </div>
 
             {/* Quantity + CTAs */}
-            <div className="mt-7 flex flex-wrap gap-3 items-center">
-              <div className="flex items-center gap-2 glass rounded-full p-1">
-                <Button size="icon" variant="ghost" className="rounded-full" onClick={() => setQty(Math.max(1, qty - 1))}><Minus className="size-4" /></Button>
-                <span className="w-8 text-center font-bold">{qty}</span>
-                <Button size="icon" variant="ghost" className="rounded-full" onClick={() => setQty(qty + 1)}><Plus className="size-4" /></Button>
+            <div className="mt-7 grid grid-cols-[auto_1fr] gap-3 items-center sm:flex sm:flex-wrap">
+              <div className="flex items-center gap-1 glass rounded-full p-1 shrink-0">
+                <Button size="icon" variant="ghost" className="rounded-full size-9" onClick={() => setQty(Math.max(1, qty - 1))}><Minus className="size-4" /></Button>
+                <span className="w-7 text-center font-bold">{qty}</span>
+                <Button size="icon" variant="ghost" className="rounded-full size-9" onClick={() => setQty(qty + 1)}><Plus className="size-4" /></Button>
               </div>
-              <Button onClick={onAdd} disabled={!inStock} size="lg" variant="outline" className="rounded-full h-12 px-6">
-                <ShoppingBag className="size-4 mr-2" /> Add to Cart
-              </Button>
-              <Button onClick={onBuy} disabled={!inStock} size="lg" className="rounded-full h-12 px-8 gradient-festive border-0 shadow-glow">
-                Buy Now
-              </Button>
-              <Button
-                size="icon" variant="outline" className="rounded-full h-12 w-12"
-                onClick={() => { toggleWish(product.id); toast.success("Wishlist updated"); }}
-              >
-                <Heart className={`size-4 ${inWish ? "fill-accent text-accent" : ""}`} />
-              </Button>
-              <Button
-                size="icon" variant="outline" className="rounded-full h-12 w-12"
-                onClick={() => { navigator.clipboard.writeText(window.location.href); toast.success("Link copied"); }}
-              >
-                <Share2 className="size-4" />
-              </Button>
+              <div className="flex gap-2 min-w-0">
+                <Button
+                  size="icon" variant="outline" className="rounded-full h-11 w-11 shrink-0"
+                  onClick={() => { toggleWish(product.id); toast.success("Wishlist updated"); }}
+                >
+                  <Heart className={`size-4 ${inWish ? "fill-accent text-accent" : ""}`} />
+                </Button>
+                <Button
+                  size="icon" variant="outline" className="rounded-full h-11 w-11 shrink-0"
+                  onClick={() => { navigator.clipboard.writeText(window.location.href); toast.success("Link copied"); }}
+                >
+                  <Share2 className="size-4" />
+                </Button>
+              </div>
+              <div className="col-span-2 hidden sm:flex gap-3">
+                <Button onClick={onAdd} disabled={!inStock} size="lg" variant="outline" className="rounded-full h-12 px-6">
+                  <ShoppingBag className="size-4 mr-2" /> Add to Cart
+                </Button>
+                <Button onClick={onBuy} disabled={!inStock} size="lg" className="rounded-full h-12 px-8 gradient-festive border-0 shadow-glow">
+                  Buy Now
+                </Button>
+              </div>
             </div>
 
             <div className="mt-3 text-xs text-muted-foreground">
@@ -252,27 +256,39 @@ function ProductPage() {
       <div className="pb-20">
         <OfferBlocks title="Save more with live offers" subtitle="Apply a coupon at checkout and save instantly." limit={3} />
       </div>
-    </SiteLayout>
 
+      {/* Sticky mobile buy bar */}
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 glass-strong border-t border-border px-3 py-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] flex gap-2">
+        <Button onClick={onAdd} disabled={!inStock} variant="outline" className="flex-1 rounded-full h-12">
+          <ShoppingBag className="size-4 mr-2" /> Add to Cart
+        </Button>
+        <Button onClick={onBuy} disabled={!inStock} className="flex-1 rounded-full h-12 gradient-festive border-0 shadow-glow">
+          Buy Now
+        </Button>
+      </div>
+      <div className="sm:hidden h-16" />
+    </SiteLayout>
   );
 }
 
 function PriceBlock({ id, price, mrp, off }: { id: string; price: number; mrp?: number | null; off: number }) {
   const sale = useProductSale(id, price);
   return (
-    <div className="mt-7 space-y-2">
+    <div className="mt-6 space-y-2">
       {sale ? (
         <>
-          <SalePrice sale={sale} price={price} big />
+          <SalePrice sale={sale} price={price} mrp={mrp} big />
           <DealEndsPill sale={sale} />
         </>
       ) : (
-        <div className="flex items-end gap-3">
-          <div className="font-display text-4xl font-bold text-primary">{formatINR(price)}</div>
+        <div className="flex flex-wrap items-end gap-x-3 gap-y-1">
+          <div className="font-display text-3xl sm:text-4xl font-bold text-primary">{formatINR(price)}</div>
           {mrp && mrp > price && (
             <>
-              <div className="text-lg text-muted-foreground line-through">{formatINR(mrp)}</div>
-              <div className="text-sm font-semibold text-accent">{off}% off</div>
+              <div className="text-base sm:text-lg text-muted-foreground line-through">{formatINR(mrp)}</div>
+              <div className="rounded-full bg-emerald-500/12 px-2 py-0.5 text-xs font-bold text-emerald-700">
+                {off}% off · save {formatINR(mrp - price)}
+              </div>
             </>
           )}
         </div>
