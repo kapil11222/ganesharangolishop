@@ -132,8 +132,8 @@ function ProductPage() {
             {product.festival && (
               <div className="text-xs uppercase tracking-[0.3em] text-primary font-semibold">{product.festival}</div>
             )}
-            <h1 className="font-display text-4xl md:text-5xl font-bold mt-2">{product.name}</h1>
-            <div className="flex items-center gap-3 mt-3">
+            <h1 className="font-display text-2xl sm:text-3xl md:text-5xl font-bold mt-2 leading-tight">{product.name}</h1>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-3">
               {(product.review_count ?? 0) > 0 ? (
                 <>
                   <div className="flex">
