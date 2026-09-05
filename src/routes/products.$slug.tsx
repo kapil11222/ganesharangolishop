@@ -274,19 +274,21 @@ function ProductPage() {
 function PriceBlock({ id, price, mrp, off }: { id: string; price: number; mrp?: number | null; off: number }) {
   const sale = useProductSale(id, price);
   return (
-    <div className="mt-7 space-y-2">
+    <div className="mt-6 space-y-2">
       {sale ? (
         <>
-          <SalePrice sale={sale} price={price} big />
+          <SalePrice sale={sale} price={price} mrp={mrp} big />
           <DealEndsPill sale={sale} />
         </>
       ) : (
-        <div className="flex items-end gap-3">
-          <div className="font-display text-4xl font-bold text-primary">{formatINR(price)}</div>
+        <div className="flex flex-wrap items-end gap-x-3 gap-y-1">
+          <div className="font-display text-3xl sm:text-4xl font-bold text-primary">{formatINR(price)}</div>
           {mrp && mrp > price && (
             <>
-              <div className="text-lg text-muted-foreground line-through">{formatINR(mrp)}</div>
-              <div className="text-sm font-semibold text-accent">{off}% off</div>
+              <div className="text-base sm:text-lg text-muted-foreground line-through">{formatINR(mrp)}</div>
+              <div className="rounded-full bg-emerald-500/12 px-2 py-0.5 text-xs font-bold text-emerald-700">
+                {off}% off · save {formatINR(mrp - price)}
+              </div>
             </>
           )}
         </div>
