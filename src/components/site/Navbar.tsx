@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useCart } from "@/lib/cart-store";
+import { LANGUAGES, getCurrentLanguage, setSiteLanguage, loadTranslator } from "@/lib/site-language";
 const LOGO_URL = "/logo.png";
 
 const nav = [
@@ -29,9 +30,12 @@ export function Navbar() {
   const [mounted, setMounted] = useState(false);
   const location = useLocation();
   const count = useCart((s) => s.itemCount());
+  const [lang, setLang] = useState("en");
 
   useEffect(() => {
     setMounted(true);
+    setLang(getCurrentLanguage());
+    loadTranslator();
     const onScroll = () => setScrolled(window.scrollY > 20);
     onScroll();
     window.addEventListener("scroll", onScroll);
@@ -95,10 +99,12 @@ export function Navbar() {
                   <Globe className="size-5" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="glass">
-                <DropdownMenuItem>English</DropdownMenuItem>
-                <DropdownMenuItem>हिन्दी (Hindi)</DropdownMenuItem>
-                <DropdownMenuItem>मराठी (Marathi)</DropdownMenuItem>
+              <DropdownMenuContent align="end" className="glass notranslate">
+                {LANGUAGES.map((l) => (
+                  <DropdownMenuItem key={l.code} onClick={() => setSiteLanguage(l.code)} className={lang === l.code ? "text-primary font-semibold" : ""}>
+                    {l.label}
+                  </DropdownMenuItem>
+                ))}
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -159,6 +165,15 @@ export function Navbar() {
                   <Link to="/help" onClick={() => setOpen(false)} className="px-4 py-3 rounded-xl font-medium hover:bg-primary/10">
                     Help Center
                   </Link>
+                  <div className="h-px bg-border my-2" />
+                  <div className="px-4 py-1 text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Globe className="size-3.5" /> Language</div>
+                  <div className="flex flex-wrap gap-2 px-4 notranslate">
+                    {LANGUAGES.map((l) => (
+                      <button key={l.code} onClick={() => setSiteLanguage(l.code)} className={`px-3 py-1.5 rounded-full border text-sm ${lang === l.code ? "border-primary text-primary bg-primary/10" : "border-border"}`}>
+                        {l.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>

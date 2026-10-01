@@ -219,3 +219,8 @@
   }
   .animate-diya { animation: diya-glow 3s ease-in-out infinite; }
 }
+
+/* Hide Google Translate banner/tooltips */
+.goog-te-banner-frame, .skiptranslate iframe, #goog-gt-tt, .goog-te-balloon-frame, .VIpgJd-ZVi9od-ORHb-OEVmcd { display: none !important; }
+body { top: 0 !important; }
+.goog-text-highlight { background: none !important; box-shadow: none !important; }
