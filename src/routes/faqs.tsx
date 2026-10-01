@@ -8,7 +8,7 @@ const faqs = [
   { q: "What's the delivery time?", a: "We dispatch within 24 hours. Delivery typically takes 3-7 business days across India, depending on your pincode." },
   { q: "Is Cash on Delivery available?", a: "Yes, COD is available on most products and pincodes. You can also pay via UPI — we'll call you to confirm and collect payment securely." },
   { q: "Do you offer custom designs?", a: "Absolutely! Visit our Custom Orders page or WhatsApp us at +91 9209063985 with your idea." },
-  { q: "What is the return policy?", a: "We accept returns within 7 days of delivery for unused, undamaged items. See our Refund Policy for full details." },
+  { q: "What is the return policy?", a: "Returns or exchanges are accepted only if the product arrives damaged or you received the wrong product — an unboxing video is mandatory for such claims. See our Refund & Exchange Policy for full details." },
   { q: "Do you accept bulk/corporate orders?", a: "Yes, we offer special pricing and custom branding for bulk and corporate orders. Visit our Bulk Orders or Corporate Orders pages." },
   { q: "How do I clean the rangoli?", a: "Simply use a soft, dry cloth or a soft brush. For deeper cleaning, gentle wiping with a damp cloth works — avoid soaking." },
   { q: "Do you ship internationally?", a: "Currently we ship across India. For international shipping, please WhatsApp us for a custom quote." },
