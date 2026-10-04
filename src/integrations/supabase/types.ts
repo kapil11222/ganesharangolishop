@@ -299,6 +299,7 @@ export type Database = {
           starts_at: string | null
           updated_at: string
           urgency_text: string | null
+          festival_template: unknown | null
           video_type: string | null
           video_url: string | null
         }
@@ -324,6 +325,7 @@ export type Database = {
           starts_at?: string | null
           updated_at?: string
           urgency_text?: string | null
+          festival_template?: unknown | null
           video_type?: string | null
           video_url?: string | null
         }
@@ -349,6 +351,7 @@ export type Database = {
           starts_at?: string | null
           updated_at?: string
           urgency_text?: string | null
+          festival_template?: unknown | null
           video_type?: string | null
           video_url?: string | null
         }
