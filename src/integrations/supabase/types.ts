@@ -288,6 +288,7 @@ export type Database = {
           discount_percent: number | null
           display_order: number
           ends_at: string | null
+          festival_template: Json | null
           id: string
           is_active: boolean
           name: string
@@ -312,6 +313,7 @@ export type Database = {
           discount_percent?: number | null
           display_order?: number
           ends_at?: string | null
+          festival_template?: Json | null
           id?: string
           is_active?: boolean
           name: string
@@ -336,6 +338,7 @@ export type Database = {
           discount_percent?: number | null
           display_order?: number
           ends_at?: string | null
+          festival_template?: Json | null
           id?: string
           is_active?: boolean
           name?: string
