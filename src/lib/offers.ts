@@ -40,6 +40,8 @@ export type OfferCampaign = {
   sale_mode?: boolean | null;
   priority?: number | null;
   urgency_text?: string | null;
+  /** Validated festival UI settings (see src/lib/festival.ts); never executable. */
+  festival_template?: unknown;
 };
 
 
@@ -120,6 +122,7 @@ export function isLowestEver(sale: ProductSale, price: number, mrp?: number | nu
 
 /** Safe CSS colour for a campaign accent (falls back to the brand primary). */
 export function accentOf(c?: OfferCampaign | null) {
-  const v = (c?.accent_color ?? "").trim();
+  const ft = c?.festival_template as { primary_color?: string } | null | undefined;
+  const v = (ft?.primary_color || c?.accent_color || "").trim();
   return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v) ? v : "var(--primary)";
 }
