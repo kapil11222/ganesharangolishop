@@ -40,6 +40,8 @@ export type OfferCampaign = {
   sale_mode?: boolean | null;
   priority?: number | null;
   urgency_text?: string | null;
+  /** Validated festival UI settings (see src/lib/festival.ts); never executable. */
+  festival_template?: unknown;
 };
 
 

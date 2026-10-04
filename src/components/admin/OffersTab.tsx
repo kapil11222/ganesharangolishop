@@ -14,6 +14,8 @@ import { OfferCountdownPill } from "@/components/site/OfferCountdown";
 import { supabase } from "@/integrations/supabase/client";
 import { OCCASIONS, occasionLabel, campaignStatus, type OfferCampaign } from "@/lib/offers";
 import { toast } from "sonner";
+import { FestivalEditor } from "@/components/admin/FestivalEditor";
+import { festivalSchema, readTemplate, type FestivalTemplate } from "@/lib/festival";
 
 const empty = {
   name: "",
@@ -166,6 +168,9 @@ function OfferDialog({ existing, onSaved }: { existing?: OfferCampaign; onSaved:
         }
       : { ...empty },
   );
+  const [festival, setFestival] = useState<FestivalTemplate | null>(() =>
+    existing?.festival_template ? readTemplate(existing.festival_template, existing.occasion) : null,
+  );
   const [customOccasion, setCustomOccasion] = useState(() =>
     existing && !OCCASIONS.includes(existing.occasion as never) ? true : false,
   );
@@ -191,6 +196,7 @@ function OfferDialog({ existing, onSaved }: { existing?: OfferCampaign; onSaved:
       accent_color: form.accent_color || null,
       priority: Number(form.priority) || 0,
       urgency_text: form.urgency_text || null,
+      festival_template: festival ? (festivalSchema.parse(festival) as never) : null,
     };
 
     const { error } = existing
@@ -285,6 +291,11 @@ function OfferDialog({ existing, onSaved }: { existing?: OfferCampaign; onSaved:
               onChange={(ids) => setForm({ ...form, product_ids: ids })}
             />
           </div>
+          <FestivalEditor
+            value={festival}
+            onChange={setFestival}
+            ctx={{ name: form.name, occasion: form.occasion, starts_at: form.starts_at, ends_at: form.ends_at, discount_percent: Number(form.discount_percent) || 0, cta_link: form.cta_link, is_active: true }}
+          />
         </div>
         <DialogFooter><Button onClick={save} className="rounded-full gradient-festive border-0">Save</Button></DialogFooter>
       </DialogContent>
