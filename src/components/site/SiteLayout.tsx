@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen flex flex-col gradient-hero">
+    <div className="festival-storefront min-h-screen flex flex-col gradient-hero">
       <FestivalExperience />
       <Navbar />
       <OfferBars />

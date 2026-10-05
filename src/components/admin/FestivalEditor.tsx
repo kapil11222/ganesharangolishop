@@ -61,7 +61,7 @@ export function FestivalEditor({
             <div className="md:col-span-2"><Label>Greeting</Label><Input maxLength={60} value={tpl.greeting} onChange={(e) => set({ greeting: e.target.value })} /></div>
             <div className="md:col-span-2"><Label>Supporting text</Label><Input maxLength={140} value={tpl.subtitle} onChange={(e) => set({ subtitle: e.target.value })} /></div>
             <div><Label>Button text</Label><Input maxLength={30} value={tpl.cta_text} onChange={(e) => set({ cta_text: e.target.value })} /></div>
-            <div><Label>Show for (seconds)</Label><Input type="number" min={2} max={8} value={tpl.duration_seconds} onChange={(e) => set({ duration_seconds: Math.min(8, Math.max(2, Number(e.target.value) || 4)) })} /></div>
+            <div><Label>Show for (seconds)</Label><Input type="number" min={2} max={3} value={Math.min(3, tpl.duration_seconds)} onChange={(e) => set({ duration_seconds: Math.min(3, Math.max(2, Number(e.target.value) || 3)) })} /></div>
             <div><Label>Main colour</Label><Input type="color" className="p-1" value={tpl.primary_color} onChange={(e) => set({ primary_color: e.target.value })} /></div>
             <div><Label>Second colour</Label><Input type="color" className="p-1" value={tpl.secondary_color} onChange={(e) => set({ secondary_color: e.target.value })} /></div>
             <div><Label>Decoration amount</Label>
