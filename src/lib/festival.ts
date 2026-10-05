@@ -42,6 +42,8 @@ export const festivalSchema = z
     secondary_color: hex,
     desktop_image_url: url,
     mobile_image_url: url,
+    custom_html: z.string().max(20000).optional(),
+    custom_css: z.string().max(20000).optional(),
   })
   .strict();
 export type FestivalTemplate = z.infer<typeof festivalSchema>;
@@ -76,7 +78,64 @@ export function readTemplate(raw: unknown, occasion = "sale"): FestivalTemplate 
 }
 
 /** Parse admin-pasted ChatGPT output. Returns data or human-readable errors. */
-export function parsePastedTemplate(input: string): { ok: true; data: FestivalTemplate } | { ok: false; errors: string[] } {
+/** Make pasted CSS safe: no imports, no scripts, only https images, cannot break out of <style>. */
+export function sanitizeCss(css: string) {
+  return css
+    .replace(/<\/?[a-z][^>]*>/gi, "")
+    .replace(/@import[^;]*;?/gi, "")
+    .replace(/expression\s*\(|javascript:|behavior\s*:|-moz-binding/gi, "")
+    .replace(/url\(\s*['"]?(?!https:)[^)]*\)/gi, "none")
+    .slice(0, 20000);
+}
+
+/** Strip scripts, event handlers and non-https links from pasted HTML (also rendered only inside a sandboxed frame). */
+export function sanitizeHtml(html: string) {
+  return html
+    .replace(/<(script|iframe|object|embed|form|link|meta|base)[\s\S]*?(<\/\1>|\/?>)/gi, "")
+    .replace(/\son\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "")
+    .replace(/(href|src)\s*=\s*("|')(?!https:|#)[^"']*\2/gi, '$1=""')
+    .slice(0, 20000);
+}
+
+/** Accept ChatGPT HTML/CSS (preferred) or the older JSON format. */
+export function parsePastedTemplate(input: string, base?: FestivalTemplate): { ok: true; data: FestivalTemplate } | { ok: false; errors: string[] } {
+  const raw = input.trim().replace(/^```(?:html|css|json)?/i, "").replace(/```$/, "").trim();
+  if (raw.startsWith("<") || /<style/i.test(raw)) {
+    const css = [...raw.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/gi)].map((m) => m[1]).join("\n");
+    const siteCss = [...raw.matchAll(/\/\*\s*SITE\s*\*\/([\s\S]*?)\/\*\s*END SITE\s*\*\//gi)].map((m) => m[1]).join("\n");
+    let html = raw.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "");
+    const body = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+    if (body) html = body[1];
+    html = sanitizeHtml(html.replace(/<\/?(html|head|body|!doctype)[^>]*>/gi, "")).trim();
+    if (!html) return { ok: false, errors: ["No HTML found. Paste the full reply from ChatGPT."] };
+    const img = raw.match(/https:\/\/[^\s"'<>)]+\.(?:jpg|jpeg|png|webp)/i)?.[0] ?? "";
+    const b = base ?? defaultTemplate();
+    return {
+      ok: true,
+      data: {
+        ...b,
+        custom_html: html,
+        custom_css: sanitizeCss(css.replace(/\/\*\s*SITE\s*\*\/[\s\S]*?\/\*\s*END SITE\s*\*\//gi, "")) + (siteCss ? "\n/*SITE*/" + sanitizeCss(siteCss) : ""),
+        mobile_image_url: b.mobile_image_url || img,
+        desktop_image_url: b.desktop_image_url || img,
+      },
+    };
+  }
+  return parseJsonTemplate(raw);
+}
+
+/** CSS part meant for the whole shop (between SITE markers). */
+export function siteCssOf(t: FestivalTemplate) {
+  const i = t.custom_css?.indexOf("/*SITE*/") ?? -1;
+  return i >= 0 ? t.custom_css!.slice(i + 8) : "";
+}
+export function welcomeCssOf(t: FestivalTemplate) {
+  const c = t.custom_css ?? "";
+  const i = c.indexOf("/*SITE*/");
+  return i >= 0 ? c.slice(0, i) : c;
+}
+
+function parseJsonTemplate(input: string): { ok: true; data: FestivalTemplate } | { ok: false; errors: string[] } {
   let s = input.trim().replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
   if (s.length > 5000) return { ok: false, errors: ["Pasted text is too long"] };
   let json: unknown;
@@ -91,24 +150,16 @@ export function parsePastedTemplate(input: string): { ok: true; data: FestivalTe
 }
 
 export function chatGptPrompt(c: { name: string; occasion: string; starts_at?: string; ends_at?: string; discount?: number | string }) {
-  return `You are designing a festival sale welcome screen for "Ganesha Rangoli", an Indian handmade rangoli shop.
+  return `Design a festival sale welcome screen AND a sitewide festival look for "Ganesha Rangoli", an Indian handmade rangoli shop (95% visitors on mobile).
 Campaign: ${c.name || "(name)"} | Occasion: ${c.occasion} | Starts: ${c.starts_at || "now"} | Ends: ${c.ends_at || "open"} | Discount: ${c.discount || 0}%
 
-Reply with ONLY one JSON object (no explanation, no HTML, no CSS, no JavaScript) in exactly this format:
-{
-  "version": 1,
-  "theme": one of ${THEME_KEYS.map((k) => `"${k}"`).join(", ")},
-  "welcome_enabled": true,
-  "animation": one of ${ANIMATIONS.map((k) => `"${k}"`).join(", ")},
-  "duration_seconds": integer 2-8,
-  "intensity": one of "low", "medium", "high",
-  "greeting": short headline, max 60 characters,
-  "subtitle": supporting line, max 140 characters,
-  "cta_text": button text, max 30 characters,
-  "primary_color": hex colour like "#d97706",
-  "secondary_color": hex colour like "#7c2d12",
-  "desktop_image_url": "" (leave empty),
-  "mobile_image_url": "" (leave empty)
-}
-Rules: no extra keys, no < > { } characters inside text, warm festive Indian tone, colours must suit the festival.`;
+Reply with ONE html code block containing:
+1. A <style> block for the welcome screen (full-screen, mobile-first, animated with CSS @keyframes only — e.g. glowing diyas for Diwali, Devi motif for Navratri, colour splashes for Holi, falling petals, sparkles).
+2. Inside the same <style>, a section wrapped exactly like:
+   /* SITE */ ...css... /* END SITE */
+   that restyles the whole shop for the festival. Use these hooks: :root { --primary; --accent; --ring } (hex colours), body, header, footer, .card-luxe, .btn-hero, .gradient-text, h1, h2. Keep text readable on white.
+3. The welcome HTML (no <html>/<head> needed). Use placeholders {{COUNTDOWN}}, {{DISCOUNT}}, {{CTA}} where the live countdown, discount and the shop button should appear.
+4. For pictures use a real public https image URL (e.g. from images.unsplash.com) of the festival in <img src="https://...">.
+
+Rules: NO JavaScript, NO <script>, NO onclick/on* attributes, NO forms, NO iframes, NO @import. Pure HTML + CSS only.`;
 }
