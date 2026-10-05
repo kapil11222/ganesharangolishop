@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 import { useLiveCampaigns } from "@/components/site/OfferStrip";
 import { CountdownBoxes, countdownTarget } from "@/components/site/OfferCountdown";
 import { isLive, pickSaleCampaign, type OfferCampaign } from "@/lib/offers";
-import { readTemplate, THEMES, type FestivalTemplate } from "@/lib/festival";
+import { readTemplate, siteCssOf, welcomeCssOf, sanitizeHtml, THEMES, type FestivalTemplate } from "@/lib/festival";
 
 // Module-level: resets on every fresh page load, persists across in-app navigation.
 let shownThisVisit = false;
@@ -44,10 +44,14 @@ export function FestivalExperience() {
   }, [c?.id, tpl?.welcome_enabled, onAdmin]);
 
   if (!c || !tpl) return null;
+  const siteCss = onAdmin ? "" : siteCssOf(tpl);
   return (
+    <>
+    {siteCss && <style data-festival-css dangerouslySetInnerHTML={{ __html: siteCss.replace(/<\//g, "") }} />}
     <AnimatePresence>
       {open && <WelcomeScreen campaign={c} tpl={tpl} onClose={() => setOpen(false)} />}
     </AnimatePresence>
+    </>
   );
 }
 
@@ -81,6 +85,30 @@ export function WelcomeScreen({
   const emoji = tpl.animation === "petals" ? "🌸" : tpl.animation === "glow" ? "🪔" : THEMES[tpl.theme].emoji;
 
   const fixed = preview ? "absolute" : "fixed";
+  if (tpl.custom_html) {
+    const doc = `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;height:100%;overflow:hidden}${welcomeCssOf(tpl).replace(/<\//g, "")}</style></head><body>${sanitizeHtml(tpl.custom_html)
+      .replace(/\{\{COUNTDOWN\}\}|\{\{CTA\}\}/g, "")
+      .replace(/\{\{DISCOUNT\}\}/g, String(campaign.discount_percent ?? ""))}</body></html>`;
+    return (
+      <motion.div role="dialog" aria-label="Festival offer" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        className={`${fixed} inset-0 z-[100] bg-background`}>
+        <iframe title="Festival welcome" sandbox="" srcDoc={doc} className="absolute inset-0 h-full w-full border-0" />
+        <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-3 bg-gradient-to-t from-black/60 to-transparent p-6 pt-16">
+          {phase !== "none" && (
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-xs font-semibold uppercase tracking-wider text-primary-foreground">{phase === "starts" ? "Offer starts in" : "Offer ends in"}</span>
+              <CountdownBoxes target={at} />
+            </div>
+          )}
+          <Link to={campaign.cta_link?.startsWith("/") ? (campaign.cta_link as "/shop") : "/shop"} onClick={onClose}
+            className="inline-flex rounded-full bg-primary-foreground px-6 py-3 text-sm font-bold text-foreground shadow-lg">{tpl.cta_text}</Link>
+        </div>
+        <button type="button" onClick={onClose} className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-black/40 px-3 py-1.5 text-xs font-semibold text-primary-foreground">
+          Skip <X className="size-3.5" />
+        </button>
+      </motion.div>
+    );
+  }
   return (
     <motion.div
       role="dialog"
