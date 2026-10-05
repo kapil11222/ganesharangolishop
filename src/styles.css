@@ -224,3 +224,15 @@
 .goog-te-banner-frame, .skiptranslate iframe, #goog-gt-tt, .goog-te-balloon-frame, .VIpgJd-ZVi9od-ORHb-OEVmcd { display: none !important; }
 body { top: 0 !important; }
 .goog-text-highlight { background: none !important; box-shadow: none !important; }
+
+/* Festival mode: built-in sitewide restyle while a campaign owns the site */
+html[data-festival] {
+  --primary: var(--festival-primary);
+  --ring: var(--festival-primary);
+  --accent: var(--festival-secondary);
+  --primary-glow: color-mix(in oklab, var(--festival-primary) 60%, white);
+}
+html[data-festival] body {
+  background-image: radial-gradient(ellipse at top, color-mix(in oklab, var(--festival-primary) 14%, transparent), transparent 55%);
+}
+html[data-festival] header { border-bottom: 2px solid color-mix(in oklab, var(--festival-primary) 45%, transparent); }

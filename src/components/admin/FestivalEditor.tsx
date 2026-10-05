@@ -89,18 +89,18 @@ export function FestivalEditor({
 
           <div className="rounded-xl border border-border bg-background p-3 space-y-2">
             <Label className="flex items-center gap-1"><Wand2 className="size-4" /> ChatGPT template assistant</Label>
-            <p className="text-xs text-muted-foreground">1. Copy the prompt and paste it in ChatGPT. 2. Paste ChatGPT's JSON reply below. 3. Check and apply. Code is never run — only safe settings are read.</p>
+            <p className="text-xs text-muted-foreground">1. Copy the prompt and paste it in ChatGPT. 2. Paste ChatGPT's full HTML/CSS reply below (pictures links included). 3. Check, preview and apply. Scripts and unsafe code are removed automatically.</p>
             <Button type="button" size="sm" variant="outline" onClick={async () => {
               try { await navigator.clipboard.writeText(chatGptPrompt({ name: ctx.name, occasion: ctx.occasion, starts_at: ctx.starts_at, ends_at: ctx.ends_at, discount: ctx.discount_percent })); toast.success("Prompt copied — paste it in ChatGPT"); }
               catch { toast.error("Could not copy"); }
             }}><Copy className="size-4 mr-1" />Copy prompt for ChatGPT</Button>
-            <Textarea rows={5} value={paste} onChange={(e) => { setPaste(e.target.value); setPending(null); setErrors([]); }} placeholder='{"version": 1, "theme": "diwali", ...}' className="font-mono text-xs" />
+            <Textarea rows={5} value={paste} onChange={(e) => { setPaste(e.target.value); setPending(null); setErrors([]); }} placeholder='<style>...</style> <div>...</div>' className="font-mono text-xs" />
             <div className="flex gap-2">
               <Button type="button" size="sm" variant="outline" onClick={() => {
-                const r = parsePastedTemplate(paste);
+                const r = parsePastedTemplate(paste, tpl);
                 if (r.ok) { setPending(r.data); setErrors([]); } else { setPending(null); setErrors(r.errors); }
               }}>Check template</Button>
-              {pending && <Button type="button" size="sm" onClick={() => { onChange(pending); setPending(null); setPaste(""); toast.success("Template applied — preview and Save"); }}>Apply template</Button>}
+              {pending && <Button type="button" size="sm" onClick={() => { onChange(pending); setPending(null); setPaste(""); toast.success("Template applied — Save to put it live"); }}>Apply template</Button>}
             </div>
             {errors.length > 0 && <ul className="text-xs text-destructive list-disc pl-4">{errors.slice(0, 6).map((e) => <li key={e}>{e}</li>)}</ul>}
             {pending && (
