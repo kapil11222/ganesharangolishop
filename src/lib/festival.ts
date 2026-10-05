@@ -55,7 +55,7 @@ export function defaultTemplate(theme: ThemeKey = "sale"): FestivalTemplate {
     theme,
     welcome_enabled: true,
     animation: theme === "holi" ? "petals" : theme === "diwali" ? "glow" : "sparkle",
-    duration_seconds: 4,
+    duration_seconds: 3,
     intensity: "medium",
     greeting: theme === "sale" ? "The Big Sale is here" : `Happy ${t.label}!`,
     subtitle: "Celebrate with handcrafted rangolis at special prices.",
@@ -74,7 +74,7 @@ export function themeForOccasion(occasion: string): ThemeKey {
 /** Read stored template safely; anything invalid falls back to the built-in theme. */
 export function readTemplate(raw: unknown, occasion = "sale"): FestivalTemplate {
   const r = festivalSchema.safeParse(raw);
-  return r.success ? r.data : defaultTemplate(themeForOccasion(occasion));
+  return r.success ? { ...r.data, duration_seconds: Math.min(3, r.data.duration_seconds) } : defaultTemplate(themeForOccasion(occasion));
 }
 
 /** Parse admin-pasted ChatGPT output. Returns data or human-readable errors. */
@@ -126,8 +126,9 @@ export function parsePastedTemplate(input: string, base?: FestivalTemplate): { o
 
 /** CSS part meant for the whole shop (between SITE markers). */
 export function siteCssOf(t: FestivalTemplate) {
-  const i = t.custom_css?.indexOf("/*SITE*/") ?? -1;
-  return i >= 0 ? t.custom_css!.slice(i + 8) : "";
+  const css = t.custom_css ?? "";
+  const i = css.indexOf("/*SITE*/");
+  return i >= 0 ? css.slice(i + 8) : "";
 }
 export function welcomeCssOf(t: FestivalTemplate) {
   const c = t.custom_css ?? "";
@@ -154,10 +155,10 @@ export function chatGptPrompt(c: { name: string; occasion: string; starts_at?: s
 Campaign: ${c.name || "(name)"} | Occasion: ${c.occasion} | Starts: ${c.starts_at || "now"} | Ends: ${c.ends_at || "open"} | Discount: ${c.discount || 0}%
 
 Reply with ONE html code block containing:
-1. A <style> block for the welcome screen (full-screen, mobile-first, animated with CSS @keyframes only — e.g. glowing diyas for Diwali, Devi motif for Navratri, colour splashes for Holi, falling petals, sparkles).
+1. A <style> block for a punchy 2–3 second welcome: crisp festival artwork, bold sans-serif sale typography, fast reveal and a clean exit. Modern Indian marketplace sale energy, not floating emoji or slow glowing effects. Use CSS @keyframes only; respect prefers-reduced-motion.
 2. Inside the same <style>, a section wrapped exactly like:
    /* SITE */ ...css... /* END SITE */
-   that restyles the whole shop for the festival. Use these hooks: :root { --primary; --accent; --ring } (hex colours), body, header, footer, .card-luxe, .btn-hero, .gradient-text, h1, h2. Keep text readable on white.
+   that restyles the whole shop for the festival. Scope EVERY selector under html[data-festival] .festival-storefront. Available hooks: .festival-nav, .festival-sale, .festival-sale-art, .festival-product, .festival-storefront main, .festival-storefront footer. Built-in styling already transforms navigation, shopping surfaces, product cards and the sale masthead. Keep readable white product surfaces and bold sans-serif headings. Do not hide controls or change prices.
 3. The welcome HTML (no <html>/<head> needed). Use placeholders {{COUNTDOWN}}, {{DISCOUNT}}, {{CTA}} where the live countdown, discount and the shop button should appear.
 4. For pictures use a real public https image URL (e.g. from images.unsplash.com) of the festival in <img src="https://...">.
 
