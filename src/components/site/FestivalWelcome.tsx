@@ -7,6 +7,7 @@ import { useLiveCampaigns } from "@/components/site/OfferStrip";
 import { CountdownBoxes, countdownTarget } from "@/components/site/OfferCountdown";
 import { isLive, pickSaleCampaign, type OfferCampaign } from "@/lib/offers";
 import { readTemplate, siteCssOf, welcomeCssOf, sanitizeHtml, THEMES, type FestivalTemplate } from "@/lib/festival";
+import { FestivalArt, festivalArtwork } from "./FestivalDecorations";
 
 let shownThisVisit = false;
 
@@ -24,10 +25,12 @@ export function FestivalExperience() {
     root.setAttribute("data-festival", tpl.theme);
     root.style.setProperty("--festival-primary", tpl.primary_color);
     root.style.setProperty("--festival-secondary", tpl.secondary_color);
+    root.style.setProperty("--festival-ornament", `url("${festivalArtwork(tpl.theme)}")`);
     return () => {
       root.removeAttribute("data-festival");
       root.style.removeProperty("--festival-primary");
       root.style.removeProperty("--festival-secondary");
+      root.style.removeProperty("--festival-ornament");
     };
   }, [tpl?.theme, tpl?.primary_color, tpl?.secondary_color, onAdmin]);
 
@@ -54,7 +57,6 @@ export function WelcomeScreen({ campaign, tpl, onClose, preview }: {
   const reduce = useReducedMotion();
   const live = isLive(campaign);
   const { phase, at } = countdownTarget(campaign);
-  const art = THEMES[tpl.theme].art;
   const duration = Math.min(3, Math.max(2, tpl.duration_seconds));
   // onClose can change during campaign countdown renders; the timer must not restart.
   useEffect(() => {
@@ -63,10 +65,11 @@ export function WelcomeScreen({ campaign, tpl, onClose, preview }: {
     return () => window.clearTimeout(timer);
   }, [preview, duration]);
 
-  const image = (preview === "desktop" && tpl.desktop_image_url) || tpl.mobile_image_url || tpl.desktop_image_url || art;
+  const image = (preview === "desktop" && tpl.desktop_image_url) || tpl.mobile_image_url || tpl.desktop_image_url;
   const doc = tpl.custom_html ? `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;height:100%;overflow:hidden}${welcomeCssOf(tpl).replace(/<\//g, "")}</style></head><body>${sanitizeHtml(tpl.custom_html).replace(/\{\{COUNTDOWN\}\}|\{\{CTA\}\}/g, "").replace(/\{\{DISCOUNT\}\}/g, String(campaign.discount_percent ?? ""))}</body></html>` : "";
 
   return <motion.div role="dialog" aria-modal="true" aria-label="Festival offer"
+    data-theme={tpl.theme} data-animation={tpl.animation}
     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={reduce ? { opacity: 0 } : { opacity: 0, y: "-8%" }}
     transition={{ duration: 0.18 }}
     className={`festival-welcome ${preview ? "absolute" : "fixed"} inset-0 z-[100] overflow-hidden`}
@@ -76,11 +79,12 @@ export function WelcomeScreen({ campaign, tpl, onClose, preview }: {
         {tpl.desktop_image_url && !preview && <source media="(min-width: 768px)" srcSet={tpl.desktop_image_url} />}
         <img src={image} alt="" className="h-full w-full object-cover" />
       </motion.picture>}
-      <div className="festival-welcome-shade absolute inset-0" />
+      {image && <div className="festival-welcome-shade absolute inset-0" />}
       {!reduce && <div className="festival-ribbons" aria-hidden>{Array.from({ length: { low: 8, medium: 14, high: 22 }[tpl.intensity] }, (_, i) => <i key={i} style={{ left: `${(i * 29) % 100}%`, animationDelay: `${(i % 5) * 0.08}s` }} />)}</div>}
-      <div className="relative flex h-full flex-col items-center justify-center px-6 text-center">
+      <div className="festival-welcome-content relative flex h-full flex-col items-center justify-center px-6 text-center">
+        <FestivalArt theme={tpl.theme} welcome />
         <motion.p initial={reduce ? false : { y: 18, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.25 }} className="mb-4 text-xs font-bold uppercase tracking-widest">Ganesha Rangoli · {THEMES[tpl.theme].label}</motion.p>
-        <motion.h2 initial={reduce ? false : { y: 35, scale: 0.9, opacity: 0 }} animate={{ y: 0, scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 240, damping: 22, delay: 0.08 }} className="festival-welcome-title max-w-xl text-4xl font-black leading-tight md:text-6xl">{tpl.greeting}</motion.h2>
+        <motion.h2 initial={reduce ? false : { y: 35, scale: 0.9, opacity: 0 }} animate={{ y: 0, scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 240, damping: 22, delay: 0.08 }} className="festival-welcome-title max-w-xl text-3xl font-black leading-tight md:text-5xl">{tpl.greeting}</motion.h2>
         <motion.div initial={reduce ? false : { y: 24, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.25, delay: 0.2 }} className="mt-5">
           <span className="festival-welcome-ticket inline-block px-5 py-2 text-xl font-black">{live ? campaign.discount_percent ? `${campaign.discount_percent}% OFF` : "SALE IS LIVE" : "STARTING SOON"}</span>
           <p className="mx-auto mt-4 max-w-sm text-sm font-medium">{tpl.subtitle}</p>

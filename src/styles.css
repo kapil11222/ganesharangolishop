@@ -226,16 +226,12 @@ body { top: 0 !important; }
 .goog-text-highlight { background: none !important; box-shadow: none !important; }
 
 /* Festival mode: built-in sitewide restyle while a campaign owns the site */
-html[data-festival] {
+html[data-festival] .festival-storefront {
   --primary: var(--festival-primary);
   --ring: var(--festival-primary);
   --accent: var(--festival-secondary);
   --primary-glow: color-mix(in oklab, var(--festival-primary) 60%, white);
 }
-html[data-festival] body {
-  background-image: radial-gradient(ellipse at top, color-mix(in oklab, var(--festival-primary) 14%, transparent), transparent 55%);
-}
-html[data-festival] header { border-bottom: 2px solid color-mix(in oklab, var(--festival-primary) 45%, transparent); }
 
 /* Full-shop festival look (Meesho-inspired), active only while a campaign owns it */
 html[data-festival] .festival-storefront {
@@ -272,3 +268,73 @@ html[data-festival] .festival-storefront .festival-footer {
 }
 @keyframes festival-shimmer { to { background-position: 200% 0; } }
 @media (prefers-reduced-motion: reduce) { html[data-festival] .festival-sale { animation: none; } }
+
+/* Recognisable festival scenes, never covering shopping controls. */
+.festival-storefront, .festival-welcome {
+  --festival-paper: oklch(0.99 0.008 90);
+  --festival-ink: oklch(0.22 0.05 350);
+  --festival-marigold: oklch(0.78 0.18 68);
+  --festival-leaf: oklch(0.46 0.12 145);
+  --festival-ribbon: oklch(0.64 0.23 350);
+  --festival-scene-shadow: 0 10px 25px -16px oklch(0.22 0.05 350 / 0.35);
+}
+.festival-celebration { position: relative; overflow: hidden; background: var(--festival-paper); color: var(--festival-ink); border-bottom: 1px solid var(--border); }
+.festival-celebration-inner { display: flex; align-items: center; justify-content: center; gap: 32px; min-height: 180px; padding-block: 26px 16px; }
+.festival-celebration-copy { text-align: center; position: relative; z-index: 1; }
+.festival-celebration-copy p { font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 6px; }
+.festival-celebration-copy h2 { font-family: var(--font-sans); font-weight: 850; font-size: 28px; line-height: 1.2; letter-spacing: 0; }
+.festival-celebration-copy a { display: inline-flex; align-items: center; gap: 10px; margin-top: 12px; font-size: 12px; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+.festival-toran { display: flex; justify-content: space-around; position: absolute; top: -5px; inset-inline: 0; height: 25px; border-top: 3px solid var(--festival-leaf); pointer-events: none; }
+.festival-toran span { display: flex; gap: 2px; align-items: flex-start; }
+.festival-toran i { width: 11px; height: 12px; background: var(--festival-marigold); border-radius: 35%; }
+.festival-toran i:nth-child(2) { height: 22px; width: 9px; background: var(--festival-leaf); border-radius: 0 0 80% 10%; }
+.festival-art-scene { position: relative; width: 150px; height: 150px; flex: 0 0 auto; }
+.festival-art-mandala { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.festival-art-symbol { position: absolute; width: 78%; height: 78%; right: -15%; bottom: -5%; object-fit: contain; }
+.festival-celebration-end { height: 135px; width: 135px; object-fit: contain; }
+.festival-closing { display: flex; gap: 24px; align-items: end; justify-content: center; height: 112px; padding: 12px; background: var(--festival-paper); overflow: hidden; }
+.festival-closing img { height: 78px; width: 78px; object-fit: contain; }
+.festival-closing img:nth-child(3) { height: 95px; width: 95px; }
+html[data-festival] .festival-storefront main h2 { display: flex; align-items: center; gap: 10px; }
+html[data-festival] .festival-storefront main h2::before { content: ""; display: inline-block; flex: 0 0 36px; width: 36px; height: 36px; background: var(--festival-ornament) center / contain no-repeat; }
+html[data-festival] .festival-storefront .festival-product { isolation: isolate; }
+html[data-festival] .festival-storefront .festival-product::after { content: ""; position: absolute; right: 5px; bottom: 5px; width: 32px; height: 32px; background: var(--festival-ornament) center / contain no-repeat; pointer-events: none; z-index: 1; }
+.festival-welcome { background: var(--festival-paper); color: var(--festival-ink); }
+.festival-welcome-content { padding-bottom: 150px; padding-top: 50px; }
+.festival-art-scene-welcome { width: 240px; height: 240px; margin-bottom: 26px; }
+.festival-art-scene-welcome .festival-art-mandala { animation: festival-mandala-reveal 0.7s cubic-bezier(.2,.8,.2,1) both; }
+.festival-art-scene-welcome .festival-art-symbol { animation: festival-symbol-reveal 0.55s 0.15s cubic-bezier(.2,.8,.2,1) both; }
+.festival-welcome[data-animation="glow"] .festival-art-symbol { animation: festival-symbol-reveal 0.55s 0.15s both, festival-lamp 1s 0.7s ease-in-out infinite alternate; }
+.festival-welcome[data-animation="petals"] .festival-art-mandala { animation: festival-mandala-reveal 0.7s both, festival-mandala-turn 2s 0.7s ease-out both; }
+.festival-welcome[data-animation="zoom"] .festival-art-scene-welcome { animation: festival-symbol-reveal 0.65s both; }
+.festival-welcome-title { font-family: var(--font-sans); letter-spacing: 0; }
+.festival-welcome-ticket { background: var(--festival-primary); color: var(--primary-foreground); transform: rotate(-3deg); box-shadow: var(--festival-scene-shadow); }
+.festival-welcome-shade { background: color-mix(in oklab, var(--festival-paper) 86%, transparent); }
+.festival-welcome-progress { background: var(--festival-primary); }
+.festival-skip { color: var(--festival-ink); background: var(--festival-paper); }
+.festival-ribbons { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.festival-ribbons i { position: absolute; top: -20px; width: 7px; height: 14px; background: var(--festival-marigold); animation: festival-confetti 2.4s ease-out both; }
+.festival-ribbons i:nth-child(3n) { background: var(--festival-ribbon); }
+.festival-ribbons i:nth-child(3n + 1) { background: var(--festival-leaf); }
+@keyframes festival-confetti { from { transform: translateY(-20px) rotate(0); } to { transform: translateY(85vh) rotate(320deg); opacity: 0; } }
+@keyframes festival-mandala-reveal { from { opacity: 0; transform: scale(.45) rotate(-35deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
+@keyframes festival-symbol-reveal { from { opacity: 0; transform: translateY(40px) scale(.75); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes festival-mandala-turn { to { transform: rotate(25deg); } }
+@keyframes festival-lamp { to { filter: brightness(1.12); } }
+@media (max-width: 767px) {
+  .festival-celebration-inner { gap: 14px; min-height: 144px; padding-inline: 14px; }
+  .festival-art-scene { width: 95px; height: 95px; }
+  .festival-celebration-copy { flex: 1; text-align: left; }
+  .festival-celebration-copy h2 { font-size: 20px; }
+  .festival-celebration-copy p { font-size: 9px; }
+  .festival-celebration-end { display: none; }
+  .festival-art-scene-welcome { width: 190px; height: 190px; margin-bottom: 18px; }
+  .festival-closing { gap: 10px; height: 90px; }
+  .festival-closing img { width: 55px; height: 55px; }
+  .festival-closing img:nth-child(3) { width: 70px; height: 70px; }
+}
+@media (max-height: 700px) { .festival-art-scene-welcome { width: 130px; height: 130px; margin-bottom: 12px; } .festival-welcome-content { padding-bottom: 140px; } }
+@media (prefers-reduced-motion: reduce) {
+  .festival-welcome *, .festival-storefront .festival-sale { animation: none !important; }
+  .festival-ribbons { display: none; }
+}

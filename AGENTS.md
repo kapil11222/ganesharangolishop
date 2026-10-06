@@ -11,3 +11,4 @@
 
 - Festival storefront styling is scoped to the shared shop layout and campaign-owned CSS tokens; this keeps seller tools unaffected and restores the normal shop when the campaign expires.
 - Pasted welcome HTML stays in a script-disabled sandbox; built-in campaign styling provides the full-shop experience independently of custom welcome markup.
+- Shared festival artwork drives welcome scenes, shop bands and catalogue ornaments; one theme mapping keeps festival identity consistent without modifying product data.

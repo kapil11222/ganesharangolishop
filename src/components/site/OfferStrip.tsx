@@ -23,6 +23,7 @@ export function useLiveCampaigns() {
         .sort((a, b) => Number(isUpcoming(a)) - Number(isUpcoming(b)));
     },
     staleTime: 60_000,
+    refetchInterval: 15_000,
   });
 }
 
