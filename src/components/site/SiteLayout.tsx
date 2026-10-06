@@ -4,6 +4,7 @@ import { WhatsAppFloat } from "./WhatsAppFloat";
 import { ScrollToTop } from "./ScrollToTop";
 import { OfferBars } from "./SaleModeBar";
 import { FestivalExperience } from "./FestivalWelcome";
+import { FestivalShopDecor } from "./FestivalDecorations";
 import type { ReactNode } from "react";
 
 export function SiteLayout({ children }: { children: ReactNode }) {
@@ -12,9 +13,11 @@ export function SiteLayout({ children }: { children: ReactNode }) {
       <FestivalExperience />
       <Navbar />
       <OfferBars />
+      <FestivalShopDecor placement="top" />
       <main className="flex-1">{children}</main>
 
 
+      <FestivalShopDecor placement="footer" />
       <Footer />
       <WhatsAppFloat />
       <ScrollToTop />
