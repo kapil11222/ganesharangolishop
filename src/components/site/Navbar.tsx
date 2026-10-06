@@ -45,7 +45,7 @@ export function Navbar() {
   return (
     <>
 
-      <header
+      <header data-hook="nav"
         className={`sticky top-0 z-50 transition-all duration-500 ${
           scrolled ? "glass-strong shadow-card" : "bg-transparent"
         }`}

@@ -28,7 +28,7 @@ export function SaleModeBar() {
       initial={{ height: 0, opacity: 0 }}
       animate={{ height: "auto", opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="relative overflow-hidden border-b border-border"
+      className="festival-sale relative overflow-hidden border-b border-border"
       style={{
         background: `linear-gradient(100deg, ${accent} 0%, color-mix(in oklab, ${accent} 70%, black) 55%, ${accent} 100%)`,
       }}
