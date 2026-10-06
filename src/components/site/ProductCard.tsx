@@ -37,7 +37,7 @@ export function ProductCard({ p, index = 0 }: { p: ProductCardData; index?: numb
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5, delay: Math.min(index * 0.05, 0.4) }}
       whileHover={{ y: -6 }}
-      className="group relative"
+      className="festival-product group relative"
     >
       <div
         className={`relative rounded-3xl glass overflow-hidden transition-all duration-500 ${

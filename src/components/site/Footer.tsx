@@ -40,7 +40,7 @@ const cols = [
 
 export function Footer() {
   return (
-    <footer className="relative mt-32 border-t border-border bg-card/40 backdrop-blur pt-16">
+    <footer className="festival-footer relative mt-32 border-t border-border bg-card/40 backdrop-blur pt-16">
 
 
       <div className="container-luxe pb-12 grid gap-10 md:grid-cols-2 lg:grid-cols-5">

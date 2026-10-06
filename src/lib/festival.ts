@@ -158,7 +158,7 @@ Reply with ONE html code block containing:
 1. A <style> block for a punchy 2–3 second welcome: crisp festival artwork, bold sans-serif sale typography, fast reveal and a clean exit. Modern Indian marketplace sale energy, not floating emoji or slow glowing effects. Use CSS @keyframes only; respect prefers-reduced-motion.
 2. Inside the same <style>, a section wrapped exactly like:
    /* SITE */ ...css... /* END SITE */
-   that restyles the whole shop for the festival. Scope EVERY selector under html[data-festival] .festival-storefront. Available hooks: .festival-nav, .festival-sale, .festival-sale-art, .festival-product, .festival-storefront main, .festival-storefront footer. Built-in styling already transforms navigation, shopping surfaces, product cards and the sale masthead. Keep readable white product surfaces and bold sans-serif headings. Do not hide controls or change prices.
+   that restyles the whole shop for the festival. Scope EVERY selector under html[data-festival] .festival-storefront. Available hooks: header[data-hook="nav"], .festival-sale, .festival-sale-art, .festival-product, .festival-storefront main, .festival-storefront footer. Built-in styling already transforms navigation, shopping surfaces, product cards and the sale masthead. Keep readable white product surfaces and bold sans-serif headings. Do not hide controls or change prices.
 3. The welcome HTML (no <html>/<head> needed). Use placeholders {{COUNTDOWN}}, {{DISCOUNT}}, {{CTA}} where the live countdown, discount and the shop button should appear.
 4. For pictures use a real public https image URL (e.g. from images.unsplash.com) of the festival in <img src="https://...">.
 
